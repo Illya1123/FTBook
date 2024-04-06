@@ -1,3 +1,4 @@
+
 'use client';
 import { faBell, faHeart, faUser } from '@fortawesome/free-regular-svg-icons';
 import { faCartShopping } from '@fortawesome/free-solid-svg-icons';
