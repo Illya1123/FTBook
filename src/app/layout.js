@@ -1,10 +1,9 @@
-
-import { Inter } from "next/font/google";
-import "./globals.css";
-import Header from "./(routes)/_components/Header";  
-import Footer from "./(routes)/_components/Footer";
-import HomePage from "./(routes)/Home/page";
-import { ClerkProvider } from '@clerk/nextjs'
+import { Inter } from 'next/font/google';
+import './globals.css';
+import Header from './(routes)/_components/Header';
+import Footer from './(routes)/_components/Footer';
+import HomePage from './(routes)/Home/page';
+import { ClerkProvider } from '@clerk/nextjs';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -14,15 +13,15 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
-  return (
-    <ClerkProvider>
-    <html lang="en">
-      <body className={inter.className}>
-        <Header/>
-        {children}
-        <Footer/>
-      </body>
-    </html>
-    </ClerkProvider>
-  );
+	return (
+		<ClerkProvider>
+			<html lang='en'>
+				<body className={inter.className}>
+					<Header />
+					<div className='mx-auto max-w-[1200px] pt-[74px]'>{children}</div>
+					{/* <Footer /> */}
+				</body>
+			</html>
+		</ClerkProvider>
+	);
 }

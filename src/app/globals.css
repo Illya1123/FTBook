@@ -30,20 +30,11 @@ body {
 		Helvetica,
 		Arial,
 		sans-serif;
+	background-color: #f1f8ff;
 }
 
 @layer utilities {
 	.text-balance {
 		text-wrap: balance;
 	}
-}
-
-.before-user::before {
-	content: '';
-	position: absolute;
-	top: -24px;
-	right: -5px;
-	height: 34px;
-	width: 48px;
-	/* background-color: orange; */
 }
