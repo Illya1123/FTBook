@@ -38,3 +38,60 @@ body {
 		text-wrap: balance;
 	}
 }
+
+.quick-view:hover p {
+	display: block;
+}
+
+.quick::after {
+	content: '';
+	position: absolute;
+	top: 100%;
+	left: 50%;
+	margin-left: -5px; /* dịch chuyển mũi tên về trái 5px */
+	border-width: 5px;
+	border-style: solid;
+	border-color: #9ca3af transparent transparent transparent;
+}
+
+/* .sale::after {
+	-webkit-box-sizing: content-box;
+	-moz-box-sizing: content-box;
+	box-sizing: content-box;
+	z-index: 1;
+	width: 22px;
+	height: 22px;
+	top: -1px;
+	right: -17px;
+	margin: 5px;
+	border: none;
+	-webkit-border-radius: 1px 1px 4px;
+	border-radius: 1px 1px 4px;
+	font:
+		medium Arial,
+		Helvetica,
+		sans-serif;
+	background-color: #ff4949;
+	-webkit-transform: rotateY(1deg) rotateZ(-45deg);
+	transform: rotateY(1deg) rotateZ(-45deg);
+} */
+
+.half-square {
+	top: 0;
+	right: -20px;
+	position: absolute;
+	width: 0;
+	height: 0;
+	border-top: 12px solid transparent;
+	border-bottom: 12px solid transparent;
+	border-left: 20px solid #009fe5;
+}
+
+.slider-container-item .slick-prev,
+.slider-container-item .slick-next {
+	z-index: 100;
+}
+.slider-container-item .slick-next:before {
+	color: gray;
+	font-size: 30px;
+}

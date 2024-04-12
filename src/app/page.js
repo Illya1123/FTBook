@@ -5,6 +5,7 @@ import HomePage from './(routes)/Home/page';
 export default function Home() {
 	return (
 		<div>
+			<title>FT BOOK</title>
 			<HomePage />
 		</div>
 	);
