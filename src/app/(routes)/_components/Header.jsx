@@ -131,10 +131,10 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 										<p className='px-6 text-center text-sm'>Vui lòng đăng nhập để xem thông báo</p>
 										<div className=' mt-4'>
 											<div className='my-2 rounded-md border border-blue bg-blue px-2 py-1 text-center text-white hover:opacity-60'>
-												<Link href='#'>Đăng nhập</Link>
+												<Link href='sign-in'>Đăng nhập</Link>
 											</div>
 											<div className='my-2 rounded-md border border-blue px-2 py-1 text-center text-blue hover:opacity-60'>
-												<Link href='#'>Đăng ký</Link>
+												<Link href='sign-up'>Đăng ký</Link>
 											</div>
 										</div>
 									</div>
@@ -157,10 +157,10 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 						<div className='invisible absolute right-0 top-[160%] z-50 min-w-56  bg-white shadow-lg before:absolute before:-right-2 before:-top-3 before:h-8 before:w-11 group-hover:visible'>
 							<div className='rounded-md border px-2 py-2'>
 								<div className='my-2 rounded-md border border-blue bg-blue px-2 py-1 text-center text-white hover:opacity-60 '>
-									<Link href='#'>Đăng nhập</Link>
+									<Link href='sign-in'>Đăng nhập</Link>
 								</div>
 								<div className='my-2 rounded-md border border-blue px-2 py-1 text-center text-blue hover:opacity-60 '>
-									<Link href='#'>Đăng ký</Link>
+									<Link href='sign-up'>Đăng ký</Link>
 								</div>
 							</div>
 						</div>

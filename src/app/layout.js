@@ -19,7 +19,7 @@ export default function RootLayout({ children }) {
 				<body className={inter.className}>
 					<Header />
 					<div className='mx-auto max-w-[1200px] pt-[74px]'>{children}</div>
-					{/* <Footer /> */}
+					<Footer />
 				</body>
 			</html>
 		</ClerkProvider>
