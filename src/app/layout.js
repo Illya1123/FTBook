@@ -23,8 +23,8 @@ export default function RootLayout({ children }) {
 					<NextUIProvider>
 						<Header />
 						<div className='mx-auto max-w-[1200px] pt-[74px]'>{children}</div>
-						{/* <Footer /> */}
-					</NextUIProvider>
+            <Footer />
+					</NextUIProvider>	
 				</body>
 			</html>
 		</ClerkProvider>
