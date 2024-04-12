@@ -20,7 +20,7 @@ function CartPage() {
 									className='h-40 w-40'
 								/>
 							</div>
-							<p className='my-8 text-sm'>Chưa có sản phẩm trong giỏ hàng của bạn.</p>
+							<p className='my-8 text-sm'> Chưa có sản phẩm trong giỏ hàng của bạn.</p>
 							<div className='my-4 rounded-md border border-blue bg-blue px-2 py-2 text-center text-base text-white'>
 								<Link href='#'>MUA SẮM NGAY</Link>
 							</div>
