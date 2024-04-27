@@ -37,9 +37,7 @@ export default function BookDetail() {
 			numberOfVisit: 5,
 		};
 
-		// Set the book state with the hardcoded data
 		setBook(hardcodedBook);
-		// Set the first image as selected by default
 		setSelectedImage(hardcodedBook.image[0]);
 	}, []);
 
@@ -48,7 +46,7 @@ export default function BookDetail() {
 	};
 
 	const handleQuantityChange = (change) => {
-		const newQuantity = Math.max(quantity + change, 1); // Ensures quantity stays at least 1
+		const newQuantity = Math.max(quantity + change, 1);
 		setQuantity(newQuantity);
 	};
 
