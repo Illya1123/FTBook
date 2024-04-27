@@ -8,7 +8,7 @@ const WholeSalePage = () => {
 			<title>Chính sách khách mua sỉ cho website FTBOOK</title>
 
 			<NavigationBar title='Chính sách bảo hành – bồi hoàn' />
-			<AnimationComponents className='container mx-auto py-4'>
+			<AnimationComponents bgPageInfor>
 				<h2 className='mb-4 text-2xl font-semibold'>Chính sách khách mua sỉ cho website FTBOOK</h2>
 				<p>
 					Chào mừng quý khách đến với FTBOOK! Chúng tôi rất vui mừng khi được hợp tác cùng quý khách

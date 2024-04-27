@@ -8,7 +8,7 @@ export default function ShippingPolicy() {
 			<title>Chính Sách Vận Chuyển - FTBOOK</title>
 
 			<NavigationBar title='Chính Sách Vận Chuyển/Đóng Gói cho FTBOOK' />
-			<AnimationComponents>
+			<AnimationComponents bgPageInfor>
 				<h1 className='mb-4 text-3xl font-semibold'>Chính Sách Vận Chuyển/Đóng Gói</h1>
 
 				<section className='mb-8'>

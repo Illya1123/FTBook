@@ -8,7 +8,7 @@ const WarrantyPolicyPage = () => {
 			<title>Chính sách bảo hành – bồi hoàn</title>
 
 			<NavigationBar title='Chính sách bảo hành – bồi hoàn' />
-			<AnimationComponents className='container mx-auto py-4'>
+			<AnimationComponents bgPageInfor>
 				<h2 className='mb-4 text-2xl font-semibold'>CHÍNH SÁCH BẢO HÀNH – BỒI HOÀN</h2>
 				<ul className='mb-4 list-decimal pl-6'>
 					<li>

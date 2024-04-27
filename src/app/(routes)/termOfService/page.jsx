@@ -16,7 +16,7 @@ const TermsOfServicePage = () => {
 				<FontAwesomeIcon icon={faChevronRight} className='mx-2 h-2 w-2 ' />
 				<p className=' text-orange'>Điều khoản sử dụng</p>
 			</div>
-			<AnimationComponents className='min-h-screen  py-4 '>
+			<AnimationComponents bgPageInfor>
 				<div className='mx-auto rounded-md  '>
 					<h2 className='mb-4 text-2xl font-bold'>Điều khoản sử dụng</h2>
 					<p className='mb-8 text-sm'>

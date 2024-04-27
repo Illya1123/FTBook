@@ -15,7 +15,7 @@ const PaymentSecurityPolicy = () => {
 				<FontAwesomeIcon icon={faChevronRight} className='mx-2 h-2 w-2 ' />
 				<p className=' text-orange'>Chính sách bảo mật thanh toán</p>
 			</div>
-			<AnimationComponents>
+			<AnimationComponents bgPageInfor>
 				<h1 className='mb-4 text-3xl font-bold'>CHÍNH SÁCH BẢO MẬT THANH TOÁN</h1>
 
 				<div className='mb-4'>
