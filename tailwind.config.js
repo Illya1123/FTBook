@@ -12,10 +12,17 @@ module.exports = {
 			backgroundImage: {
 				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
 				'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+				'image-sale':
+					"url('https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/promotion/Frame_icon_web.svg')",
 			},
 			colors: {
 				blue: '#009FE5',
+
+				blue1: '#1178F2',
+				blueHover: '#71c5ebb3',
+				blue1Hover: '#1178f2b3',
 				orange: '#F16754',
+				green: '#3CB878',
 			},
 			keyframes: {
 				'fade-in-down': {

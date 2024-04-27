@@ -15,7 +15,7 @@ const PrivacyPage = () => {
 				<p className=' text-orange'>Chính sách bảo mật</p>
 			</div>
 			<title>Chính sách bảo mật - FTBOOK</title>
-			<AnimationComponents>
+			<AnimationComponents bgPageInfor>
 				<h1 className='mb-4 text-2xl font-bold'>Chính sách bảo mật</h1>
 				<p>
 					Chào mừng bạn đến với chính sách bảo mật thông tin cá nhân của FTBOOK. Chúng tôi cam kết

@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import AnimationComponents from '../_components/AnimationComponents';
+import Header from '../_components/Header';
 
 const Contact = () => {
 	const data = [
@@ -161,6 +162,7 @@ const Contact = () => {
 
 	return (
 		<div>
+			<Header activeContact />
 			<title>Hệ thống trung tâm - nhà sách</title>
 			<div className='my-5 flex items-center'>
 				<Link href='/' className='hover:text-blue'>

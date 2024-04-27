@@ -8,7 +8,7 @@ export default function ReturnPolicyPage() {
 			<title>Chính Sách Đổi/Trả/Hoàn Tiền - FTBOOK</title>
 
 			<NavigationBar title='Chính Sách Đổi/Trả/Hoàn Tiền của FTBOOK' />
-			<AnimationComponents className='container mx-auto py-8'>
+			<AnimationComponents bgPageInfor>
 				<h1 className='mb-4 text-3xl font-semibold'>Chính Sách Đổi/Trả/Hoàn Tiền của FTBOOK</h1>
 
 				<div className='rounded-lg '>

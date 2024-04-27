@@ -2,6 +2,16 @@
 import { UserButton } from '@clerk/nextjs';
 import { TabContent, TabLink, Tabs } from 'react-tabs-redux';
 // import Countdown from 'react-countdown';
+import React from 'react';
+import {
+	Modal,
+	ModalContent,
+	ModalHeader,
+	ModalBody,
+	ModalFooter,
+	Button,
+	useDisclosure,
+} from '@nextui-org/react';
 import Slider from 'react-slick';
 import Header from '../_components/Header';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -30,6 +40,7 @@ const slides = [
 ];
 
 function HomePage() {
+	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 	const settingsSlider = {
 		dots: true,
 		infinite: true,
@@ -538,10 +549,42 @@ function HomePage() {
 											</div>
 											<div className='invisible absolute bottom-0 left-0 right-0 top-0 grid grid-cols-3 place-content-center place-items-center rounded-t-md bg-[#009fe557] px-8 group-hover:visible'>
 												<div className='quick-view relative flex h-11 w-11 items-center justify-center rounded bg-white hover:bg-gray-400 hover:text-white'>
-													<FontAwesomeIcon icon={faEye} className=' text-xl ' />
+													<Button onPress={onOpen} className=' bg-transparent '>
+														<FontAwesomeIcon icon={faEye} className='  text-xl' />
+													</Button>
+
 													<p className='quick absolute -top-8 hidden w-20 rounded bg-gray-400 p-1 text-center text-xs text-white'>
-														Quick view
+														Quick view1
 													</p>
+													<Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+														<ModalContent className=' min-w-[600px]'>
+															{(onClose) => (
+																<>
+																	<ModalHeader className='flex flex-col gap-1'>
+																		{/* <Button color='danger' variant='light' onPress={onClose}>
+																		
+																		</Button> */}
+																	</ModalHeader>
+																	<ModalBody>
+																		<div className='flex  '>
+																			<img
+																				src='https://cdn0.fahasa.com/media/catalog/product/8/9/8935309503162.jpg'
+																				alt=''
+																				className='h-52 w-48'
+																			/>
+																			<div>
+																				<h3>Hackers Ielts Listening (Tái Bản)</h3>
+																				<p>Tác giả: ABC</p>
+																				<p>Nhà cung cấp: XYZ</p>
+																				<p>Thông tin về sách</p>
+																			</div>
+																		</div>
+																	</ModalBody>
+																	<ModalFooter></ModalFooter>
+																</>
+															)}
+														</ModalContent>
+													</Modal>
 												</div>
 
 												<div className='quick-view relative flex h-11 w-11 items-center justify-center rounded bg-white hover:bg-gray-400 hover:text-white'>
