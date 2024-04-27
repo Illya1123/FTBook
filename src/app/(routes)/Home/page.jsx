@@ -1,5 +1,5 @@
 'use client';
-import { UserButton } from '@clerk/nextjs';
+import { UserButton, useUser } from '@clerk/nextjs';
 import { TabContent, TabLink, Tabs } from 'react-tabs-redux';
 // import Countdown from 'react-countdown';
 import React from 'react';
@@ -13,6 +13,7 @@ import {
 	useDisclosure,
 } from '@nextui-org/react';
 import Slider from 'react-slick';
+import { useEffect } from 'react';
 import Header from '../_components/Header';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
