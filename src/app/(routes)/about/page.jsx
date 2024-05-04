@@ -6,7 +6,7 @@ import AnimationComponents from '../_components/AnimationComponents';
 import Header from '../_components/Header';
 export default function About() {
 	return (
-		<div className='min-h-screen bg-gray-100'>
+		<div className='min-h-screen '>
 			<Header activeAbout />
 			<title>FT BOOK - Giới thiệu thương hiệu sách</title>
 			<div className='my-5 flex items-center'>

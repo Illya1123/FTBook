@@ -1,35 +1,17 @@
 'use client';
-import { UserButton, useUser } from '@clerk/nextjs';
-import { TabContent, TabLink, Tabs } from 'react-tabs-redux';
-// import Countdown from 'react-countdown';
-import React from 'react';
+import Link from 'next/link';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCartShopping, faChevronRight, faEye, faHeart } from '@fortawesome/free-solid-svg-icons';
+import AnimationComponents from '../_components/AnimationComponents';
+import Header from '../_components/Header';
 import {
+	Button,
 	Modal,
+	ModalBody,
 	ModalContent,
 	ModalHeader,
-	ModalBody,
-	ModalFooter,
-	Button,
 	useDisclosure,
 } from '@nextui-org/react';
-import Slider from 'react-slick';
-import { useEffect } from 'react';
-import Header from '../_components/Header';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-	faAngleRight,
-	faBook,
-	faBrain,
-	faCartShopping,
-	faChevronRight,
-	faChild,
-	faDollarSign,
-	faEarthAsia,
-} from '@fortawesome/free-solid-svg-icons';
-
-import Link from 'next/link';
-import { faEye, faHeart } from '@fortawesome/free-regular-svg-icons';
-import AnimationComponents from '../_components/AnimationComponents';
 const products = [
 	{
 		_id: {
@@ -351,106 +333,14 @@ const products = [
 		},
 	},
 ];
-const slides = [
-	'https://cdn0.fahasa.com/media/magentothem/banner7/Week2_T424_Banner_Slide_840x320_1.jpg',
-	'https://cdn0.fahasa.com/media/magentothem/banner7/Gold_MCBooks0424_Slide_840x320.jpg',
-	'https://cdn0.fahasa.com/media/magentothem/banner7/TanViet_Silver_0424_Ver1_Slide_840x320_1.jpg',
-	'https://cdn0.fahasa.com/media/magentothem/banner7/Zenbook_0424_BannerSlide_840x320.jpg',
-	'https://cdn0.fahasa.com/media/magentothem/banner7/HSO_DoChoiT324-slide_-smallbanner_Slide_840x320.jpg',
-	'https://cdn0.fahasa.com/media/magentothem/banner7/VPP_Slide_T4_840x320_1.jpg',
-];
-
-function HomePage() {
-	const flashProducts = products.slice().sort((a, b) => b.ratingPoint - a.ratingPoint);
-	const filteredProducts = products.filter(
-		(product) => product.categoryAllId === '661949cc343796e299686dc4',
-	);
-	const settingsSlider = {
-		dots: true,
-		infinite: true,
-		speed: 1000,
-		autoplay: true,
-		slidesToShow: 1,
-		slidesToScroll: 1,
-	};
-	var settings = {
-		dots: false,
-		infinite: false,
-		speed: 1000,
-		slidesToShow: 4,
-		slidesToScroll: 1,
-		initialSlide: 0,
-		responsive: [
-			{
-				breakpoint: 1024,
-				settings: {
-					slidesToShow: 3,
-					slidesToScroll: 3,
-					infinite: true,
-					dots: true,
-				},
-			},
-			{
-				breakpoint: 600,
-				settings: {
-					slidesToShow: 2,
-					slidesToScroll: 2,
-					initialSlide: 2,
-				},
-			},
-			{
-				breakpoint: 480,
-				settings: {
-					slidesToShow: 1,
-					slidesToScroll: 1,
-				},
-			},
-		],
-		nextArrow: <SampleNextArrow />,
-		prevArrow: <SamplePrevArrow />,
-	};
-
-	function SampleNextArrow(props) {
-		const { className, style, onClick } = props;
-		return (
-			<div
-				className={className}
-				style={{ ...style, display: 'block', width: '44px' }}
-				onClick={onClick}
-			/>
-		);
-	}
-
-	function SamplePrevArrow(props) {
-		const { className, style, onClick } = props;
-		return <div className={className} style={{ ...style, display: 'block' }} onClick={onClick} />;
-	}
-	const SlideItem = ({ imageUrl }) => {
-		return <img className='h-[378px] w-full' src={imageUrl} alt='Slider Item' />;
-	};
-	// hiển thị màu các danh mục
-	const CategoryLink = ({ href, icon, name, colorC1, colorC2, colorC3, colorC4, colorC5 }) => {
-		return (
-			<Link
-				href={href}
-				className={`flex min-h-40 flex-col items-center justify-center rounded-md 
-				${colorC1 ? 'bg-category1' : colorC2 ? 'bg-category2' : colorC3 ? 'bg-category3' : colorC4 ? 'bg-category4' : colorC5 ? 'bg-category5' : ''} 
-				hover:opacity-60`}
-			>
-				<FontAwesomeIcon icon={icon} className='h-10 w-10 text-white' />
-				<p className='mt-4 text-lg text-white'>{name}</p>
-			</Link>
-		);
-	};
+export default function FlashSalePage() {
 	const ProductCard = ({ product }) => {
 		const { name, image, priceSell, priceDiscount } = product;
 		const firstImage = image[0];
 		const { isOpen, onOpen, onOpenChange } = useDisclosure();
-		// format giá - 3 số thêm 1 dấu chấm - Example: 100000 => 100.000
 		function formatNumber(number) {
 			return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 		}
-		// tính % giảm giá sản phẩm
 		const priceSale = priceSell - priceDiscount;
 		const percentSale = (priceSale / priceSell) * 100;
 		console.log(percentSale);
@@ -480,13 +370,9 @@ function HomePage() {
 														<img src={firstImage} alt='' className='h-52 w-48' />
 														<div>
 															<h3>{name}</h3>
-															<p className='my-4 font-bold text-red-500'>
-																Giá hiện tại: {formatNumber(priceDiscount)}đ
-															</p>
-															<p className=' text-gray-400 line-through'>
-																Giá gốc: {formatNumber(priceSell)}đ
-															</p>
-															{/* <p>Thông tin về sách</p> */}
+															<p>Tác giả: ABC</p>
+															<p>Nhà cung cấp: XYZ</p>
+															<p>Thông tin về sách</p>
 														</div>
 													</div>
 												</ModalBody>
@@ -537,173 +423,26 @@ function HomePage() {
 		);
 	};
 	return (
-		<div>
-			<Header activeHome />
-			<div>
-				{/* Banner */}
-				<div className='my-10'>
-					<Slider {...settingsSlider}>
-						{slides.map((slide, index) => (
-							<SlideItem key={index} imageUrl={slide} />
-						))}
-					</Slider>
-				</div>
-				{/* flash sale */}
-				<AnimationComponents className='my-24'>
-					<div className='my-6 flex items-center justify-between rounded-md bg-white px-2 py-4 '>
-						<div className='flex items-center '>
-							<img src='https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/flashsale/label-flashsale.svg?q=' />
-
-							<p className=' mx-5'>Kết thúc sau</p>
-							{/* <Countdown date={Date.now() + 10000} /> */}
-						</div>
-						<div className='flex items-center text-base hover:text-blue'>
-							<Link href='/flashSale'> Xem tất cả</Link>
-							<FontAwesomeIcon icon={faChevronRight} className='h-4 w-4 font-thin' />
-						</div>
-					</div>
-					<div className='slider-container-item'>
-						<Slider {...settings}>
-							{products.map((product) => (
-								<ProductCard key={product._id.$oid} product={product} />
-							))}
-						</Slider>
-					</div>
-				</AnimationComponents>
-				{/* Category */}
-				<AnimationComponents className='my-24'>
-					<div className='my-6 flex items-center justify-between'>
-						<h3 className=' text-2xl'>Danh mục sản phẩm</h3>
-						<div className='flex items-center text-base hover:text-blue'>
-							<Link href='#'>Xem tất cả</Link>
-							<FontAwesomeIcon icon={faChevronRight} className='h-4 w-4 font-thin' />
-						</div>
-					</div>
-					<div className='grid grid-cols-5 gap-6'>
-						<CategoryLink href='#' icon={faBook} name='Văn học' colorC1 />
-						<CategoryLink href='#' icon={faBrain} name='Tâm lý' colorC2 />
-						<CategoryLink href='#' icon={faChild} name='Thiếu nhi' colorC3 />
-						<CategoryLink href='#' icon={faDollarSign} name='Kinh tế' colorC4 />
-						<CategoryLink href='#' icon={faEarthAsia} name='Ngoại ngữ' colorC5 />
-					</div>
-				</AnimationComponents>
-				{/* Book Selling */}
-				<AnimationComponents className='my-24'>
-					<div className='my-6 flex items-center justify-between'>
-						<h3 className=' text-2xl'>Sách bán chạy nhất</h3>
-						<div className='flex items-center text-base hover:text-blue'>
-							<Link href='#'>Xem tất cả</Link>
-							<FontAwesomeIcon icon={faChevronRight} className='h-4 w-4 font-thin' />
-						</div>
-					</div>
-					<div className='slider-container-item'>
-						<Slider {...settings}>
-							{flashProducts.map((product) => (
-								<ProductCard key={product._id.$oid} product={product} />
-							))}
-						</Slider>
-					</div>
-				</AnimationComponents>
-				{/* ... */}
-				<AnimationComponents className='my-24'>
-					<div className='my-6 flex items-center justify-between'>
-						<h3 className=' text-2xl'>Kinh tế</h3>
-						<div className='flex items-center text-base hover:text-blue'>
-							<Link href='#'>Xem tất cả</Link>
-							<FontAwesomeIcon icon={faChevronRight} className='h-4 w-4 font-thin' />
-						</div>
-					</div>
-					<div className='slider-container-item'>
-						<Slider {...settings}>
-							{filteredProducts.map((product) => (
-								<ProductCard key={product._id.$oid} product={product} />
-							))}
-						</Slider>
-					</div>
-				</AnimationComponents>
-				{/* Thương hiệu nổi bật */}
-				<AnimationComponents className='my-24'>
-					<div className='my-6 flex items-center justify-between '>
-						<h3 className=' text-2xl font-bold'>Thương hiệu nổi bật</h3>
-					</div>
-
-					<Tabs
-						activeLinkStyle={{
-							color: '#009FE5',
-							borderBottom: '1px solid #009FE5',
-							transition: 'background-color 0.3s ease',
-							paddingBottom: '8px',
-						}}
-					>
-						<TabLink to='tab1' className=' hover:text-blue'>
-							Minh Long
-						</TabLink>
-						<TabLink to='tab2' className='mx-10 hover:text-blue'>
-							Tân việt
-						</TabLink>
-						<TabLink to='tab3' className=' hover:text-blue'>
-							Zenbooks
-						</TabLink>
-
-						<TabContent for='tab1' className='mt-10'>
-							<div className='slider-container-item'>
-								<Slider {...settings}>
-									{products.map((product) => (
-										<ProductCard key={product._id.$oid} product={product} />
-									))}
-								</Slider>
-							</div>
-							<div className=' my-10 flex items-center justify-center '>
-								<Link
-									href='#'
-									className=' rounded-md border border-blue px-4 py-1 font-bold text-blue hover:bg-blue hover:text-white '
-								>
-									Xem thêm
-								</Link>
-							</div>
-						</TabContent>
-
-						<TabContent for='tab2' className='mt-10'>
-							<div className='slider-container-item'>
-								<Slider {...settings}>
-									{products.map((product) => (
-										<ProductCard key={product._id.$oid} product={product} />
-									))}
-								</Slider>
-							</div>
-							<div className=' my-10 flex items-center justify-center '>
-								<Link
-									href='#'
-									className=' rounded-md border border-blue px-4 py-1 font-bold text-blue hover:bg-blue hover:text-white '
-								>
-									Xem thêm
-								</Link>
-							</div>
-						</TabContent>
-
-						<TabContent for='tab3' className='mt-10'>
-							<div className='slider-container-item'>
-								<Slider {...settings}>
-									{products.map((product) => (
-										<ProductCard key={product._id.$oid} product={product} />
-									))}
-								</Slider>
-							</div>
-							<div className=' my-10 flex items-center justify-center '>
-								<Link
-									href='#'
-									className=' rounded-md border border-blue px-4 py-1 font-bold text-blue hover:bg-blue hover:text-white '
-								>
-									Xem thêm
-								</Link>
-							</div>
-						</TabContent>
-					</Tabs>
-				</AnimationComponents>
+		<div className='min-h-screen '>
+			<Header activeAbout />
+			<title>FT BOOK - Flash Sale</title>
+			<div className='my-5 flex items-center'>
+				<Link href='/' className='hover:text-blue'>
+					Trang chủ
+				</Link>
+				<FontAwesomeIcon icon={faChevronRight} className='mx-2 h-2 w-2 ' />
+				<p className=' text-orange'>FT BOOK - Flash Sale</p>
 			</div>
-			<UserButton />
+			<AnimationComponents>
+				<div className=' flex items-center justify-center rounded-md bg-red-500 p-6'>
+					<img src='https://cdn0.fahasa.com/media/fahasa_web_image/thunder.jpg' className=' h-8' />
+				</div>
+				<div className='my-6 grid grid-cols-4 gap-6'>
+					{products.map((product) => (
+						<ProductCard key={product._id.$oid} product={product} />
+					))}
+				</div>
+			</AnimationComponents>
 		</div>
 	);
 }
-
-export default HomePage;

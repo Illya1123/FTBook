@@ -9,13 +9,18 @@ import {
 	Button,
 	useDisclosure,
 } from '@nextui-org/react';
+import { useState } from 'react';
 function oneStepCheckoutPage() {
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
+	const [checked, setChecked] = useState();
 
+	const handleChangeCheck = (event) => {
+		setChecked(event.target.checked);
+	};
 	return (
 		<div>
 			<title>Checkout</title>
-			<div className='fixed  bottom-0 left-0 right-0 h-[254px] bg-white shadow-inner '>
+			<div className='fixed  bottom-0 left-0 right-0 h-[180px] bg-white shadow-inner '>
 				<div className='mx-auto max-w-[1200px]'>
 					<div>
 						<div className='my-2 flex'>
@@ -33,18 +38,26 @@ function oneStepCheckoutPage() {
 					</div>
 					<div className='my-4 border'></div>
 					<div className='flex justify-between'>
-						<div className='flex'>
-							<input type='checkbox' name='dk' id='' className='mr-4' />
-							<label for='dk'>
+						<div className='flex items-center'>
+							<input
+								type='checkbox'
+								// name='condition'
+								// id='condition'
+								className='mr-4 h-4 w-4'
+								checked={checked}
+								onChange={handleChangeCheck}
+							/>
+							<div>
 								Bằng việc tiến hành Mua hàng, Bạn đã đồng ý với <br />
 								<Link href='#' className='font-bold text-blue1'>
 									Điều khoản & Điều kiện của Fahasa.com
 								</Link>
-							</label>
+							</div>
 						</div>
 						<Button
 							onPress={onOpen}
 							className='rounded-md bg-blue1 px-12 py-2 font-bold text-white hover:bg-blue1Hover'
+							isDisabled={!checked}
 						>
 							<p>XÁC NHẬN THANH TOÁN</p>
 						</Button>

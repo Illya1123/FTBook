@@ -10,6 +10,7 @@ import GlobalApi from '@/app/_utils/GlobalApi';
 
 import { useState } from 'react';
 
+
 function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 	const {user} = useUser();
 	useEffect(() => {
@@ -17,6 +18,7 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 	}, [user]);
 
 	const createUserProfile = () => {
+
 		if(!localStorage.getItem('isLogin'))
 		{
 		const data = {
@@ -164,32 +166,38 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 										</div>
 									</div>
 								</div>
+
+							)}
+						</div>
+						<div className=' relative h-5 w-5 '>
+							<Link href='/cart'>
+								<FontAwesomeIcon icon={faCartShopping} className=' h-5 w-5 ' />
+							</Link>
+							{quantityCart > 0 ? (
+								<div className='absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-white'>
+									<p>{quantityCart}</p>
+								</div>
+							) : null}
+						</div>
+						{!user ? (
+							<div className='group relative h-5 w-5'>
+								<FontAwesomeIcon icon={faUser} className='z-50 h-5 w-5 cursor-pointer' />
+								<div className=' invisible absolute right-0 top-[160%] z-50 min-w-56  animate-fade-in-down bg-white shadow-lg before:absolute before:-right-2 before:-top-3 before:h-8 before:w-11 group-hover:visible'>
+									<div className=' rounded-md border px-2 py-2'>
+										<div className='my-2 rounded-md border border-blue bg-blue px-2 py-1 text-center text-white hover:opacity-60 '>
+											<Link href='sign-in'>Đăng nhập</Link>
+										</div>
+										<div className='my-2 rounded-md border border-blue px-2 py-1 text-center text-blue hover:opacity-60 '>
+											<Link href='sign-up'>Đăng ký</Link>
+										</div>
+									</div>
+
+								</div>
 							</div>
+						) : (
+							<UserButton />
 						)}
 					</div>
-					<div className=' relative h-5 w-5 '>
-						<Link href='/cart'>
-							<FontAwesomeIcon icon={faCartShopping} className=' h-5 w-5 ' />
-						</Link>
-						{quantityCart > 0 ? (
-							<div className='absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-white'>
-								<p>{quantityCart}</p>
-							</div>
-						) : null}
-					</div>
-					{ !user ? <div className='group relative h-5 w-5'>
-						<FontAwesomeIcon icon={faUser} className='z-50 h-5 w-5 cursor-pointer' />
-						<div className=' animate-fade-in-down invisible absolute right-0 top-[160%] z-50  min-w-56 bg-white shadow-lg before:absolute before:-right-2 before:-top-3 before:h-8 before:w-11 group-hover:visible'>
-							<div className=' rounded-md border px-2 py-2'>
-								<div className='my-2 rounded-md border border-blue bg-blue px-2 py-1 text-center text-white hover:opacity-60 '>
-									<Link href='sign-in'>Đăng nhập</Link>
-								</div>
-								<div className='my-2 rounded-md border border-blue px-2 py-1 text-center text-blue hover:opacity-60 '>
-									<Link href='sign-up'>Đăng ký</Link>
-								</div>
-							</div>
-						</div>
-					</div> : <UserButton /> }
 				</div>
 			</div>
 		</div>

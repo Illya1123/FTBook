@@ -1,12 +1,28 @@
 'use client';
 import { useEffect, useState } from 'react';
 import './bookDetail.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faStar } from '@fortawesome/free-solid-svg-icons';
+import {
+	Button,
+	Modal,
+	ModalBody,
+	ModalContent,
+	ModalFooter,
+	ModalHeader,
+	Slider,
+	Textarea,
+	useDisclosure,
+} from '@nextui-org/react';
+import StarRatings from 'react-star-ratings';
+import { faThumbsUp } from '@fortawesome/free-regular-svg-icons';
 
 export default function BookDetail() {
 	const [book, setBook] = useState(null);
 	const [selectedImage, setSelectedImage] = useState(null);
 	const [quantity, setQuantity] = useState(1);
-
+	const { isOpen, onOpen, onOpenChange } = useDisclosure();
+	const [valueRating, setValueRating] = useState();
 	useEffect(() => {
 		const hardcodedBook = {
 			_id: '662523afd636426682e12ada',
@@ -53,10 +69,55 @@ export default function BookDetail() {
 	if (!book) {
 		return <div>Loading...</div>;
 	}
-
+	const StarItem = ({ rating, valueRating }) => {
+		return (
+			<div className='my-2 flex items-center'>
+				<p>{rating}</p>
+				<FontAwesomeIcon icon={faStar} className='mr-4' />
+				<Slider
+					aria-label='Player progress'
+					color='foreground'
+					hideThumb={true}
+					defaultValue={valueRating}
+					className='max-w-md'
+					isDisabled
+				/>
+			</div>
+		);
+	};
+	const ReviewItem = ({ name, createAt, content, rating }) => {
+		return (
+			<div className=' border-t py-4'>
+				<div className='flex'>
+					<div className='mr-32'>
+						<p>{name}</p>
+						<p>{createAt}</p>
+					</div>
+					<div>
+						<div>
+							<StarRatings
+								rating={rating}
+								starDimension='20px'
+								starSpacing='4px'
+								starRatedColor='#FF9F00'
+							/>
+							<p>{content}</p>
+						</div>
+						<div className='flex items-center gap-2'>
+							<FontAwesomeIcon icon={faThumbsUp} />
+							<p>Thích</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		);
+	};
+	const handleChangeRating = (rating) => {
+		setValueRating(rating);
+	};
 	return (
-		<div className='min-h-screen bg-gray-100'>
-			<div className='mx-auto max-w-4xl px-4 py-8'>
+		<div className='min-h-screen '>
+			<div className='mx-auto  py-8'>
 				<div className='flex'>
 					<div className='mr-4 w-1/4'>
 						<div className='mb-4 flex justify-center'>
@@ -94,7 +155,7 @@ export default function BookDetail() {
 							</div>
 						</div>
 						<div className='mt-8 flex items-center'>
-                            <p>Số lượng:</p>
+							<p>Số lượng:</p>
 							<button className='quantity-button' onClick={() => handleQuantityChange(-1)}>
 								-
 							</button>
@@ -127,6 +188,94 @@ export default function BookDetail() {
 				<div className='mt-8'>
 					<p className='text-lg font-bold'>Mô tả:</p>
 					<div className='text-gray-800'>{book.description}</div>
+				</div>
+				<div className='rounded-md bg-white p-4 '>
+					<p className=' text-2xl font-bold'> Đánh giá sản phẩm</p>
+					<div className='flex items-center gap-10 '>
+						<div className='w-[30%]'>
+							<div className='flex items-center'>
+								<p>5</p>
+								<FontAwesomeIcon icon={faStar} className='mr-4' />
+								<Slider
+									aria-label='Player progress'
+									color='foreground'
+									hideThumb={true}
+									defaultValue={90}
+									className='max-w-md'
+									isDisabled
+								/>
+							</div>
+							<StarItem rating={4} valueRating={0} />
+							<StarItem rating={3} valueRating={0} />
+							<StarItem rating={2} valueRating={0} />
+							<StarItem rating={1} valueRating={0} />
+						</div>
+						<div className='w-[70%]  text-center'>
+							<Button className='w-40' color='primary' onClick={onOpen}>
+								Viết đánh giá
+							</Button>
+							<Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+								<ModalContent>
+									{(onClose) => (
+										<>
+											<ModalHeader className='flex flex-col gap-1 text-center'>
+												Viết đánh giá đánh giá
+											</ModalHeader>
+											<ModalBody>
+												<StarRatings
+													changeRating={handleChangeRating}
+													rating={valueRating}
+													starDimension='20px'
+													starSpacing='4px'
+													starRatedColor='#FF9F00'
+												/>
+												<Textarea
+													isRequired
+													// label='Description'
+													labelPlacement='outside'
+													placeholder='Hãy đánh giá sản phẩm của chúng tôi'
+													className='max-w'
+												/>
+											</ModalBody>
+											<ModalFooter>
+												<Button color='danger' variant='light' onPress={onClose}>
+													Hủy
+												</Button>
+												<Button color='primary' onPress={onClose}>
+													Đánh giá
+												</Button>
+											</ModalFooter>
+										</>
+									)}
+								</ModalContent>
+							</Modal>
+						</div>
+					</div>
+					<div className=' border-t py-4'>
+						<div className='flex'>
+							<div className='mr-32'>
+								<p>User1</p>
+								<p>03/05/2024</p>
+							</div>
+							<div>
+								<div>
+									<StarRatings
+										rating={5}
+										starDimension='20px'
+										starSpacing='4px'
+										starRatedColor='#FF9F00'
+									/>
+									<p>Sách này mang lại nhiều thú vị</p>
+								</div>
+								<div className='flex items-center gap-2'>
+									<FontAwesomeIcon icon={faThumbsUp} />
+									<p>Thích</p>
+								</div>
+							</div>
+						</div>
+					</div>
+					<ReviewItem name='User2' createAt='02/05/2024' content='sách hay' rating={4} />
+					<ReviewItem name='User3' createAt='02/05/2024' content='sách hay' rating={4} />
 				</div>
 			</div>
 		</div>
