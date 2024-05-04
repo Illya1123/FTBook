@@ -2,7 +2,7 @@
 import { Inter } from 'next/font/google';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import { ProSidebarProvider } from 'react-pro-sidebar';
+// import { ProSidebarProvider } from 'react-pro-sidebar';
 import './globals.css';
 import Header from './(routes)/_components/Header';
 import Footer from './(routes)/_components/Footer';
