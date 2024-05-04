@@ -17,12 +17,17 @@ module.exports = {
 			},
 			colors: {
 				blue: '#009FE5',
-
 				blue1: '#1178F2',
 				blueHover: '#71c5ebb3',
 				blue1Hover: '#1178f2b3',
 				orange: '#F16754',
 				green: '#3CB878',
+				category1: '#93CFFF',
+				category2: '#FF9C8C',
+				category3: '#FF649A',
+				category4: '#D3A77F',
+				category5: '#00C9AC',
+				category6: '#009FE5',
 			},
 			keyframes: {
 				'fade-in-down': {
@@ -76,5 +81,19 @@ module.exports = {
 	},
 
 	darkMode: 'class',
-	plugins: [nextui()],
+	plugins: [
+		nextui({
+			themes: {
+				light: {
+					// ...
+					colors: {},
+				},
+				dark: {
+					// ...
+					colors: {},
+				},
+				// ... custom themes
+			},
+		}),
+	],
 };

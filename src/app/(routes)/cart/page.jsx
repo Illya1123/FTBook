@@ -148,7 +148,7 @@ function CartPage() {
 									>
 										Xem thêm <FontAwesomeIcon icon={faAngleRight} />
 									</Button>
-									<Modal isOpen={true} onOpenChange={onOpenChange} size='3xl'>
+									<Modal isOpen={isOpen} onOpenChange={onOpenChange} size='3xl'>
 										<ModalContent onScroll={true}>
 											{(onClose) => (
 												<>
@@ -162,7 +162,7 @@ function CartPage() {
 																<p>Áp dụng tới đa: 1</p>
 															</div>
 															<div className='flex items-start gap-4 '>
-																<div className=' bg-image-sale  flex h-36 w-[17%]  items-center  justify-center bg-contain bg-no-repeat'>
+																<div className=' flex  h-36 w-[17%] items-center  justify-center  bg-image-sale bg-contain bg-no-repeat'>
 																	<img
 																		src='https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/promotion/ico_promotion.svg?q=105606'
 																		alt='sale '
@@ -210,7 +210,7 @@ function CartPage() {
 									</div>
 									<Link
 										className='my-2 block w-full rounded-md bg-blue py-2 text-center font-bold text-white hover:bg-blueHover'
-										href='#'
+										href='/oneStepCheckout'
 									>
 										THANH TOÁN
 									</Link>

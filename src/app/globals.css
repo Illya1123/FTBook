@@ -79,13 +79,13 @@ body {
 
 .half-square {
 	top: 0;
-	right: -20px;
+	right: -10px;
 	position: absolute;
 	width: 0;
 	height: 0;
-	border-top: 12px solid transparent;
-	border-bottom: 12px solid transparent;
-	border-left: 20px solid #009fe5;
+	border-top: 8px solid transparent;
+	border-bottom: 8px solid transparent;
+	border-left: 10px solid #009fe5;
 }
 
 .slider-container-item .slick-prev,

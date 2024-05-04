@@ -6,8 +6,8 @@ function SuccessfulTransaction() {
 	return (
 		<div className='my-4 flex h-[340px] flex-col items-center justify-center bg-white'>
 			<title>Thanh toán thành công</title>
-			<FontAwesomeIcon icon={faCircleCheck} className='text-green mb-2 h-12 w-12' />
-			<p className='text-green text-3xl font-bold'>Đơn hàng của bạn đã được tiếp nhận</p>
+			<FontAwesomeIcon icon={faCircleCheck} className='mb-2 h-12 w-12 text-green' />
+			<p className='text-3xl font-bold text-green'>Đơn hàng của bạn đã được tiếp nhận</p>
 			<div className='my-2 text-center'>
 				<p>Cảm ơn bạn đã mua hàng tại FTBOOK.com</p>
 				<p>

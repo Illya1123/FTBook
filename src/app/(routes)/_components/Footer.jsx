@@ -6,7 +6,7 @@ import AnimationComponents from './AnimationComponents';
 
 function Footer() {
 	return (
-		<div className='border-t bg-white'>
+		<div className='  border-t bg-white'>
 			{/* <div className='mx-auto grid max-w-[1200px] grid-cols-[1fr_4fr] py-4'> */}
 			<div className='mx-auto grid max-w-[1200px] grid-cols-4 gap-6 py-4'>
 				<div>
