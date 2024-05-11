@@ -30,6 +30,7 @@ import {
 import Link from 'next/link';
 import { faEye, faHeart } from '@fortawesome/free-regular-svg-icons';
 import AnimationComponents from '../_components/AnimationComponents';
+import FacebookMsg from '../_components/FacebookMsg';
 const products = [
 	{
 		_id: {
@@ -701,7 +702,7 @@ function HomePage() {
 					</Tabs>
 				</AnimationComponents>
 			</div>
-			<UserButton />
+			<FacebookMsg />
 		</div>
 	);
 }
