@@ -510,7 +510,7 @@ function HomePage() {
 							</div>
 						</div>
 					</div>
-					<Link href='#'>
+					<Link href='/book'>
 						<div className='mx-4 px-2 py-4'>
 							<div>
 								<p className='line-clamp-2 h-10 text-sm'>{name}</p>

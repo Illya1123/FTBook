@@ -17,22 +17,19 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 		user && createUserProfile();
 	}, [user]);
 
-	const createUserProfile = () => {
+	// useEffect(() => {
 
-		if(!localStorage.getItem('isLogin'))
-		{
+	// },[user]);
+
+	const createUserProfile = () => {
 		const data = {
-			firstName: user.firstName,
-			lastName: user.lastName,
 			fullName: user.fullName,
 			email: user.primaryEmailAddress.emailAddress,
 			img: user.imageUrl,
 		}
 		GlobalApi.createUser(data).then(res => {
 			console.log(res.data);
-			localStorage.setItem('isLogin', true);
 		})
-	}
 	}
 	const [quantityCart, setQuantityCart] = useState(0);
 	const [isAuth, setIsAuth] = useState(false);
@@ -166,7 +163,7 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 										</div>
 									</div>
 								</div>
-
+							</div>
 							)}
 						</div>
 						<div className=' relative h-5 w-5 '>
@@ -195,12 +192,12 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 								</div>
 							</div>
 						) : (
-							<UserButton />
+							<UserButton afterSignOutUrl='/'/>
 						)}
 					</div>
 				</div>
 			</div>
-		</div>
+
 	);
 }
 
