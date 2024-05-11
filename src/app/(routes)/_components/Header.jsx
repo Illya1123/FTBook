@@ -203,7 +203,7 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 					)}
 				</div>
 			</div>
-
+		</div>
 	);
 }
 
