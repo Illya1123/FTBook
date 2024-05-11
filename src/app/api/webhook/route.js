@@ -51,7 +51,7 @@ export async function POST(req) {
   const eventType = evt?.type
 
   if (eventType === 'user.created' || eventType === 'user.updated') {
-    const {id, first_name, last_name, image_url, email_addresses} = env?.data ?? {};
+    const {id, first_name, last_name, image_url, email_addresses} = env.data;
 
     try{
         await createOrUpdateUser(id, first_name, last_name, image_url, email_addresses)
@@ -69,7 +69,7 @@ export async function POST(req) {
 
   if(eventType === 'user.deleted'){
     try{
-        const {id} = evt?.data ?? {};
+        const {id} = evt.data ;
         await deleteUser(id);
 
         return new Response('User is deleted',{
