@@ -6,7 +6,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useEffect } from 'react';
-import GlobalApi from '@/app/_utils/GlobalApi';
 
 import { useState } from 'react';
 
