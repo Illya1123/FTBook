@@ -1,7 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
 import SwiperCore, { Navigation, Pagination, Thumbs } from 'swiper';
-import { Swiper, SwiperSlide } from 'swiper/react';
 import './bookDetail.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
@@ -19,7 +18,6 @@ import {
 import StarRatings from 'react-star-ratings';
 import { faThumbsUp } from '@fortawesome/free-regular-svg-icons';
 
-SwiperCore.use([Navigation, Pagination, Thumbs]);
 
 export default function BookDetail() {
 	const [book, setBook] = useState(null);
