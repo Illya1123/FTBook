@@ -14,27 +14,142 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleRight, faTicket } from '@fortawesome/free-solid-svg-icons';
 import RootLayout from '@/app/layout';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { decreaseQuantity, increaseQuantity } from './cartReducer';
+import { dataBookss } from '../_components/data';
+import { useRouter } from 'next/navigation';
+import { useTheme } from '../_components/ThemeProvider';
 function CartPage() {
+	const { setTotalPriceCheckout, setDataCheckout } = useTheme();
+	const router = useRouter();
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 	const [isCart, setIsCart] = useState(true);
 	const [quantity, setQuantity] = useState(1);
+	const [totalPrice, setTotalPrice] = useState(0);
+	const [filterDataCart, setFilterDataCart] = useState([]);
+	const [checkedItems, setCheckedItems] = useState({});
+	const items = useSelector((state) => state.cart.items);
+	// const dispatch = useDispatch();
+	// console.log(items);
 
-	const decreaseQuantity = () => {
-		if (quantity > 1) {
-			setQuantity(quantity - 1);
-		}
+	// const decreaseQuantity = () => {
+	// 	if (quantity > 1) {
+	// 		setQuantity(quantity - 1);
+	// 	}
+	// };
+
+	// const increaseQuantity = () => {
+	// 	setQuantity(quantity + 1);
+	// };
+
+	useEffect(() => {
+		const newFilterCart = dataBookss
+			.filter((cart) => {
+				const cartItem = items.find((item) => item.id === cart._id);
+				return cartItem;
+			})
+			.map((cart) => {
+				const cartItem = items.find((item) => item.id === cart._id);
+				return { ...cart, quantity: cartItem.quantity };
+			});
+		setFilterDataCart(newFilterCart);
+	}, [items]);
+	useEffect(() => {
+		// Calculate total price whenever filterDataCart or checkedItems changes
+		const totalPrice = filterDataCart.reduce((acc, curr) => {
+			if (checkedItems[curr._id]) {
+				const price = curr.priceDiscount ? curr.priceDiscount : curr.priceSell;
+				return acc + price * curr.quantity;
+			}
+			return acc;
+		}, 0);
+		setTotalPrice(totalPrice);
+	}, [filterDataCart, checkedItems]);
+	const toggleItemCheck = (itemId) => {
+		console.log(1);
+		setCheckedItems((prevCheckedItems) => ({
+			...prevCheckedItems,
+			[itemId]: !prevCheckedItems[itemId],
+		}));
 	};
+	const totalPriceFinal = totalPrice + 19000;
+	const CartItem = ({
+		imageSrc,
+		productName,
+		price,
+		quantity,
+		itemId,
+		isChecked,
+		onToggleCheck,
+	}) => {
+		const dispatch = useDispatch();
 
-	const increaseQuantity = () => {
-		setQuantity(quantity + 1);
+		const handleDecrease = () => {
+			dispatch(decreaseQuantity(itemId));
+		};
+
+		const handleIncrease = () => {
+			dispatch(increaseQuantity(itemId));
+		};
+		return (
+			<div className='my-4 flex items-center justify-between border-b p-4'>
+				<div className='flex w-[60%] items-center'>
+					{/* <input type='checkbox' name='checkAllProduct' id='' className='mr-3' /> */}
+					<input
+						type='checkbox'
+						checked={isChecked}
+						onChange={() => onToggleCheck(itemId)}
+						className='mr-3'
+					/>
+					<label htmlFor='checkAllProduct' className='flex'>
+						<img src={imageSrc} alt={productName} className='h-28 w-28' />
+						<p className='text-sm'>{productName}</p>
+					</label>
+				</div>
+				<div className='w-[40%]'>
+					<div className='flex items-center justify-around'>
+						<div className='flex items-center'>
+							<button
+								className='flex h-8 items-center rounded-l border-y border-l px-3 py-1 text-gray-700 hover:bg-gray-100'
+								onClick={handleDecrease}
+							>
+								-
+							</button>
+							<input
+								type='text'
+								className='h-8 w-12 border-y text-center'
+								value={quantity}
+								readOnly
+							/>
+							<button
+								className='flex h-8 items-center rounded-r border-y border-r px-3 py-1 text-gray-700 hover:bg-gray-100'
+								onClick={handleIncrease}
+							>
+								+
+							</button>
+						</div>
+						<p>{price}</p>
+					</div>
+				</div>
+			</div>
+		);
 	};
-
+	// const navigateToCheckout = () => {
+	// 	router.push('/oneStepCheckout');
+	// 	setDataCheckout(filterDataCart);
+	// 	setTotalPriceCheckout(totalPriceFinal);
+	// };
+	const navigateToCheckout = () => {
+		const checkedProducts = filterDataCart.filter((product) => checkedItems[product._id]);
+		router.push('/oneStepCheckout');
+		setDataCheckout(checkedProducts);
+		setTotalPriceCheckout(totalPrice);
+	};
 	return (
 		<>
 			<title>Giỏ hàng</title>
 			<div className='mx-auto max-w-[1200px] '>
-				{isCart ? (
+				{filterDataCart.length > 0 ? (
 					<>
 						<div className='my-2 font-bold'>
 							<p>
@@ -58,7 +173,29 @@ function CartPage() {
 									</div>
 								</div>
 								<div className='rounded-md bg-white'>
-									<div className='my-4 flex items-center justify-between  border-b p-4'>
+									{filterDataCart.map((product) => (
+										<CartItem
+											imageSrc={product.image[0]}
+											productName={product.name}
+											price={product.priceDiscount ? product.priceDiscount : product.priceSell}
+											quantity={product.quantity}
+											itemId={product._id}
+											isChecked={checkedItems[product._id]}
+											onToggleCheck={toggleItemCheck}
+											// decreaseQuantity={decreaseQuantity}
+											// increaseQuantity={increaseQuantity}
+										/>
+									))}
+
+									{/* <CartItem
+										imageSrc='https://cdn0.fahasa.com/media/catalog/product//i/m/image_195509_1_13799.jpg'
+										productName='Thành Công Trong Kinh Doanh Nhờ NLP'
+										price='162.000 đ'
+										quantity={quantity}
+										decreaseQuantity={decreaseQuantity}
+										increaseQuantity={increaseQuantity}
+									/> */}
+									{/* <div className='my-4 flex items-center justify-between border-b  p-4 '>
 										<div className='flex w-[60%] items-center'>
 											<input type='checkbox' name='checkAllProduct' id='' className='mr-3' />
 											<label htmlFor='checkAllProduct' className='flex'>
@@ -95,45 +232,7 @@ function CartPage() {
 												<p>162.000 đ</p>
 											</div>
 										</div>
-									</div>
-									<div className='my-4 flex items-center justify-between border-b  p-4 '>
-										<div className='flex w-[60%] items-center'>
-											<input type='checkbox' name='checkAllProduct' id='' className='mr-3' />
-											<label htmlFor='checkAllProduct' className='flex'>
-												<img
-													src='https://cdn0.fahasa.com/media/catalog/product//i/m/image_195509_1_13799.jpg'
-													alt=''
-													className=' h-28 w-28'
-												/>
-												<p className=' text-sm'>Thành Công Trong Kinh Doanh Nhờ NLP</p>
-											</label>
-										</div>
-										<div className='w-[40%]'>
-											<div className='flex items-center justify-around'>
-												<div className='flex items-center'>
-													<button
-														className=' flex  h-8 items-center rounded-l border-y border-l px-3 py-1 text-gray-700 hover:bg-gray-100'
-														onClick={decreaseQuantity}
-													>
-														-
-													</button>
-													<input
-														type='text'
-														className='h-8 w-12 border-y text-center'
-														value={quantity}
-														readOnly
-													/>
-													<button
-														className='flex h-8  items-center rounded-r border-y border-r px-3 py-1 text-gray-700 hover:bg-gray-100'
-														onClick={increaseQuantity}
-													>
-														+
-													</button>
-												</div>
-												<p>162.000 đ</p>
-											</div>
-										</div>
-									</div>
+									</div> */}
 								</div>
 							</div>
 							<div className='ml-[2%] w-[28%] rounded-md '>
@@ -180,14 +279,6 @@ function CartPage() {
 															</div>
 														</div>
 													</ModalBody>
-													{/* <ModalFooter>
-														<Button color='danger' variant='light' onPress={onClose}>
-															Close
-														</Button>
-														<Button color='primary' onPress={onClose}>
-															Action
-														</Button>
-													</ModalFooter> */}
 												</>
 											)}
 										</ModalContent>
@@ -197,7 +288,7 @@ function CartPage() {
 								<div className='my-4  bg-white p-4 '>
 									<div className='my-2 flex justify-between'>
 										<p className='w-[70%]'>Thành tiền</p>
-										<p className=' text-right'>264.400 đ</p>
+										<p className=' text-right'>{totalPrice} đ</p>
 									</div>
 									<div className='my-2 flex justify-between'>
 										<p className='w-[70%]'>Phí vận chuyển (Giao hàng tiêu chuẩn)</p>
@@ -206,14 +297,14 @@ function CartPage() {
 									<div className='border'></div>
 									<div className='my-2 flex items-center justify-between'>
 										<p className='font-bold'>Tổng Số Tiền (gồm VAT)</p>
-										<p className='text-xl font-bold text-orange'>283.400 đ</p>
+										<p className='text-xl font-bold text-orange'>{totalPriceFinal} đ</p>
 									</div>
-									<Link
+									<Button
 										className='my-2 block w-full rounded-md bg-blue py-2 text-center font-bold text-white hover:bg-blueHover'
-										href='/oneStepCheckout'
+										onClick={navigateToCheckout}
 									>
 										THANH TOÁN
-									</Link>
+									</Button>
 								</div>
 							</div>
 						</div>

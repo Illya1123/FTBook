@@ -8,6 +8,9 @@ import { ClerkProvider } from '@clerk/nextjs';
 import { NextUIProvider } from '@nextui-org/react';
 import ThemeProvider from './(routes)/_components/ThemeProvider';
 import App from './(routes)/app';
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
+import store from './(routes)/store';
 const inter = Inter({ subsets: ['latin'] });
 
 // export const metadata = {
@@ -21,9 +24,11 @@ export default function RootLayout({ children }) {
 			<html lang='en'>
 				<body className={inter.className}>
 					<ThemeProvider>
-						<NextUIProvider>
-							<App children={children} />
-						</NextUIProvider>
+						<Provider store={store}>
+							<NextUIProvider>
+								<App children={children} />
+							</NextUIProvider>
+						</Provider>
 					</ThemeProvider>
 				</body>
 			</html>
