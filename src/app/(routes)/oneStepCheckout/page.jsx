@@ -10,10 +10,17 @@ import {
 	useDisclosure,
 } from '@nextui-org/react';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useTheme } from '../_components/ThemeProvider';
+
 function oneStepCheckoutPage() {
+	const { totalPriceCheckout, dataCheckout } = useTheme();
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 	const [checked, setChecked] = useState();
-
+	const router = useRouter();
+	// const { name } = router.query;
+	console.log('dataCheckout: ', dataCheckout);
+	console.log(totalPriceCheckout);
 	const handleChangeCheck = (event) => {
 		setChecked(event.target.checked);
 	};
@@ -136,8 +143,8 @@ function oneStepCheckoutPage() {
 				<h3 className='my-4 font-bold '>Phương thức vận chuyển</h3>
 				<div className='border'></div>
 				<div className='mt-4'>
-					<input type='radio' name='StandardDelivery' id='' className='mr-2' />
-					<label for='StandardDelivery'>Giao hàng tiêu chuẩn: 19.000đ</label>
+					<input type='radio' name='StandardDelivery' id='StandardDelivery' className='mr-2' />
+					<label htmlFor='StandardDelivery'>Giao hàng tiêu chuẩn: 19.000đ</label>
 				</div>
 			</div>
 			{/* Phương thức thanh toán */}
@@ -145,24 +152,24 @@ function oneStepCheckoutPage() {
 				<h3 className='my-4 font-bold '>Phương thức thanh toán</h3>
 				<div className='border'></div>
 				<div className='mt-4'>
-					<input type='radio' name='ZaloPay' id='' className='mr-2' />
-					<label for='StandardDelivery'>Ví ZaloPay</label>
+					<input type='radio' name='ZaloPay' id='ZaloPay' className='mr-2' />
+					<label htmlFor='ZaloPay'>Ví ZaloPay</label>
 				</div>
 				<div className='mt-4'>
-					<input type='radio' name='VNPay' id='' className='mr-2' />
-					<label for='StandardDelivery'>Ví VNPay</label>
+					<input type='radio' name='VNPay' id='VNPay' className='mr-2' />
+					<label htmlFor='VNPay'>Ví VNPay</label>
 				</div>
 				<div className='mt-4'>
-					<input type='radio' name='ShopeePay' id='' className='mr-2' />
-					<label for='StandardDelivery'>Ví ShopeePay</label>
+					<input type='radio' name='ShopeePay' id='ShopeePay' className='mr-2' />
+					<label htmlFor='ShopeePay'>Ví ShopeePay</label>
 				</div>
 				<div className='mt-4'>
-					<input type='radio' name='MoMo' id='' className='mr-2' />
-					<label for='StandardDelivery'>Ví MoMo</label>
+					<input type='radio' name='MoMo' id='MoMo' className='mr-2' />
+					<label htmlFor='MoMo'>Ví MoMo</label>
 				</div>
 				<div className='mt-4'>
-					<input type='radio' name='directPayment' id='' className='mr-2' />
-					<label for='StandardDelivery'>Thanh toán bằng tiền mặt khi nhận hàng</label>
+					<input type='radio' name='directPayment' id='NH' className='mr-2' />
+					<label htmlFor='NH'>Thanh toán bằng tiền mặt khi nhận hàng</label>
 				</div>
 			</div>
 			{/* Mã khuyến mãi */}

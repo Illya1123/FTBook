@@ -2,11 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-/* :root {
-  --foreground-rgb: 0, 0, 0;
+:root {
+	/* --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-} */
+  --background-end-rgb: 255, 255, 255; */
+}
 
 @media (prefers-color-scheme: dark) {
 	:root {
@@ -15,7 +15,10 @@
 		--background-end-rgb: 0, 0, 0;
 	}
 }
-
+* {
+	font-family: 'SF Pro Display', 'Arial', sans-serif;
+	box-sizing: border-box;
+}
 body {
 	/* color: rgb(var(--foreground-rgb)); */
 	/* background: linear-gradient(
@@ -24,12 +27,12 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb)); */
-	font:
+	/* font:
 		Mona Sans,
 		Helvetica Neue,
 		Helvetica,
 		Arial,
-		sans-serif;
+		sans-serif; */
 	background-color: #f1f8ff;
 }
 
@@ -79,7 +82,7 @@ body {
 
 .half-square {
 	top: 0;
-	right: -10px;
+	right: -9px;
 	position: absolute;
 	width: 0;
 	height: 0;
@@ -88,13 +91,9 @@ body {
 	border-left: 10px solid #009fe5;
 }
 
-.slider-container-item .slick-prev,
-.slider-container-item .slick-next {
-	z-index: 100;
-}
-.slider-container-item .slick-next:before {
-	color: gray;
-	font-size: 30px;
+.slick-prev::before,
+.slick-next::before {
+	display: none;
 }
 .half-square1 {
 	top: 0;

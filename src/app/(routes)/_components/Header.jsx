@@ -10,32 +10,32 @@ import GlobalApi from '@/app/_utils/GlobalApi';
 
 import { useState } from 'react';
 
-
 function Header({ activeHome, activeBook, activeAbout, activeContact }) {
-	const {user} = useUser();
+	const { user } = useUser();
 	useEffect(() => {
 		user && createUserProfile();
 	}, [user]);
 
 	const createUserProfile = () => {
-
-		if(!localStorage.getItem('isLogin'))
-		{
 		const data = {
-			firstName: user.firstName,
-			lastName: user.lastName,
 			fullName: user.fullName,
 			email: user.primaryEmailAddress.emailAddress,
-			img: user.imageUrl,
-		}
-		GlobalApi.createUser(data).then(res => {
+		};
+		GlobalApi.createUser(data).then((res) => {
 			console.log(res.data);
 			localStorage.setItem('isLogin', true);
-		})
-	}
-	}
+		});
+	};
 	const [quantityCart, setQuantityCart] = useState(0);
 	const [isAuth, setIsAuth] = useState(false);
+	const [valueSearched, setValueSearched] = useState([]);
+	const handleChangeValue = (e) => {
+		const value = e.target.value;
+		if (value.indexOf(' ') === 0) {
+			return;
+		}
+		setValueSearched(value);
+	};
 	return (
 		<div className='fixed left-0 right-0 top-0  z-[100000] border-b bg-white'>
 			<div className='mx-auto flex max-w-[1200px] items-center justify-between py-4'>
@@ -50,13 +50,13 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 					<Link className={`${activeHome ? 'text-blue' : ''} hover:text-blue`} href='/'>
 						Trang chủ
 					</Link>
-					<Link className={`${activeBook ? 'text-blue' : ''} hover:text-blue`} href='#'>
+					<Link className={`${activeBook ? 'text-blue' : ''} hover:text-blue`} href='/bookCategory'>
 						Sách
 					</Link>
-					<Link className={`${activeAbout ? 'text-blue' : ''} hover:text-blue`} href='#'>
+					<Link className={`${activeAbout ? 'text-blue' : ''} hover:text-blue`} href='/about'>
 						Giới thiệu
 					</Link>
-					<Link className={`${activeContact ? 'text-blue' : ''} hover:text-blue`} href='#'>
+					<Link className={`${activeContact ? 'text-blue' : ''} hover:text-blue`} href='/contact'>
 						Liên hệ
 					</Link>
 				</div>
@@ -64,18 +64,22 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 					<input
 						className=' w-[400px] rounded-md border py-2 pl-3 pr-20 outline-none'
 						placeholder='Bạn tìm gì...'
+						onChange={handleChangeValue}
+						value={valueSearched}
 					/>
-					<Link
-						href='/search'
-						className='absolute -right-5 top-1/2 -translate-x-1/2 -translate-y-1/2 transform rounded-md bg-blue px-6 py-1 text-white hover:opacity-60'
-					>
-						<FontAwesomeIcon icon={faMagnifyingGlass} className='h-4 w-4' />
-					</Link>
+					{valueSearched.length > 0 && (
+						<Link
+							href='/search'
+							className='absolute -right-5 top-1/2 -translate-x-1/2 -translate-y-1/2 transform rounded-md bg-blue px-6 py-1 text-white hover:opacity-60'
+						>
+							<FontAwesomeIcon icon={faMagnifyingGlass} className='h-4 w-4' />
+						</Link>
+					)}
 				</div>
 				<div className='grid grid-cols-3 place-content-center items-center gap-4'>
 					<div className=' group relative h-5 w-5 '>
 						<FontAwesomeIcon icon={faBell} className='h-5 w-5 cursor-pointer' />
-						{isAuth ? (
+						{user ? (
 							<div className='animate-fadeindown invisible  absolute right-0 top-[160%] z-50 min-w-80 bg-white before:absolute before:-right-2 before:-top-3 before:h-12 before:w-28    group-hover:visible'>
 								<div className='rounded-md border '>
 									<div className='flex items-center justify-between border-b  px-2 py-4'>
@@ -166,38 +170,36 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 										</div>
 									</div>
 								</div>
-
-							)}
-						</div>
-						<div className=' relative h-5 w-5 '>
-							<Link href='/cart'>
-								<FontAwesomeIcon icon={faCartShopping} className=' h-5 w-5 ' />
-							</Link>
-							{quantityCart > 0 ? (
-								<div className='absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-white'>
-									<p>{quantityCart}</p>
-								</div>
-							) : null}
-						</div>
-						{!user ? (
-							<div className='group relative h-5 w-5'>
-								<FontAwesomeIcon icon={faUser} className='z-50 h-5 w-5 cursor-pointer' />
-								<div className=' invisible absolute right-0 top-[160%] z-50 min-w-56  animate-fade-in-down bg-white shadow-lg before:absolute before:-right-2 before:-top-3 before:h-8 before:w-11 group-hover:visible'>
-									<div className=' rounded-md border px-2 py-2'>
-										<div className='my-2 rounded-md border border-blue bg-blue px-2 py-1 text-center text-white hover:opacity-60 '>
-											<Link href='sign-in'>Đăng nhập</Link>
-										</div>
-										<div className='my-2 rounded-md border border-blue px-2 py-1 text-center text-blue hover:opacity-60 '>
-											<Link href='sign-up'>Đăng ký</Link>
-										</div>
-									</div>
-
-								</div>
 							</div>
-						) : (
-							<UserButton />
 						)}
 					</div>
+					<div className=' relative h-5 w-5 '>
+						<Link href='/cart'>
+							<FontAwesomeIcon icon={faCartShopping} className=' h-5 w-5 ' />
+						</Link>
+						{quantityCart > 0 ? (
+							<div className='absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-white'>
+								<p>{quantityCart}</p>
+							</div>
+						) : null}
+					</div>
+					{!user ? (
+						<div className='group relative h-5 w-5'>
+							<FontAwesomeIcon icon={faUser} className='z-50 h-5 w-5 cursor-pointer' />
+							<div className=' invisible absolute right-0 top-[160%] z-50 min-w-56  animate-fade-in-down bg-white shadow-lg before:absolute before:-right-2 before:-top-3 before:h-8 before:w-11 group-hover:visible'>
+								<div className=' rounded-md border px-2 py-2'>
+									<div className='my-2 rounded-md border border-blue bg-blue px-2 py-1 text-center text-white hover:opacity-60 '>
+										<Link href='sign-in'>Đăng nhập</Link>
+									</div>
+									<div className='my-2 rounded-md border border-blue px-2 py-1 text-center text-blue hover:opacity-60 '>
+										<Link href='sign-up'>Đăng ký</Link>
+									</div>
+								</div>
+							</div>
+						</div>
+					) : (
+						<UserButton />
+					)}
 				</div>
 			</div>
 		</div>
