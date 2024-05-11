@@ -17,10 +17,6 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 		user && createUserProfile();
 	}, [user]);
 
-	// useEffect(() => {
-
-	// },[user]);
-
 	const createUserProfile = () => {
 		const data = {
 			fullName: user.fullName,
