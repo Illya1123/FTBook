@@ -16,6 +16,7 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 		user && createUserProfile();
 	}, [user]);
 
+
 	const createUserProfile = () => {
 		const data = {
 			fullName: user.fullName,
@@ -26,6 +27,7 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 			localStorage.setItem('isLogin', true);
 		});
 	};
+
 	const [quantityCart, setQuantityCart] = useState(0);
 	const [isAuth, setIsAuth] = useState(false);
 	const [valueSearched, setValueSearched] = useState([]);
@@ -202,7 +204,7 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 					)}
 				</div>
 			</div>
-		</div>
+
 	);
 }
 

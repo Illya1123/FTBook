@@ -31,10 +31,14 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { faEye, faHeart } from '@fortawesome/free-regular-svg-icons';
 import AnimationComponents from '../_components/AnimationComponents';
+
 import axios from 'axios';
 import { addItem } from '../cart/cartReducer';
 import { useDispatch, useSelector } from 'react-redux';
 import { dataBookss } from '../_components/data';
+
+
+import FacebookMsg from '../_components/FacebookMsg';
 
 const slides = [
 	'https://cdn0.fahasa.com/media/magentothem/banner7/Week2_T424_Banner_Slide_840x320_1.jpg',
@@ -446,6 +450,9 @@ function HomePage() {
 					</>
 				)}
 			</div>
+
+			<FacebookMsg />
+
 		</div>
 	);
 }

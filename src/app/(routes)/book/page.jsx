@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import SwiperCore, { Navigation, Pagination, Thumbs } from 'swiper';
 import './bookDetail.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
@@ -17,10 +18,12 @@ import {
 import StarRatings from 'react-star-ratings';
 import { faThumbsUp } from '@fortawesome/free-regular-svg-icons';
 
+
 export default function BookDetail() {
 	const [book, setBook] = useState(null);
 	const [selectedImage, setSelectedImage] = useState(null);
 	const [quantity, setQuantity] = useState(1);
+	const [price, setPrice] = useState(null);
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 	const [valueRating, setValueRating] = useState();
 	useEffect(() => {
@@ -116,12 +119,23 @@ export default function BookDetail() {
 		setValueRating(rating);
 	};
 	return (
-		<div className='min-h-screen '>
-			<div className='mx-auto  py-8'>
+		<div className='min-h-screen rounded-md bg-white  p-4 '>
+			<div className='mx-auto py-8'>
 				<div className='flex'>
-					<div className='mr-4 w-1/4'>
+					<div className='mr-4 w-1/2'>
 						<div className='mb-4 flex justify-center'>
-							<img src={selectedImage} alt={book.name} className='rounded-lg' />
+							<div className='border w-1 rounded-lg' style={{ width: '50vw', height: '60vh' }}>
+								<img
+									src={selectedImage}
+									alt={book.name}
+									className='rounded-lg'
+									style={{
+										width: '100%',
+										height: '100%',
+										objectFit: 'contain',
+									}}
+								/>
+							</div>
 						</div>
 						<div className='grid grid-cols-4 gap-2'>
 							{book.image.map((image, index) => (
@@ -155,7 +169,7 @@ export default function BookDetail() {
 							</div>
 						</div>
 						<div className='mt-8 flex items-center'>
-							<p>Số lượng:</p>
+							<p className='mr-4'>Số lượng:</p>
 							<button className='quantity-button' onClick={() => handleQuantityChange(-1)}>
 								-
 							</button>
