@@ -11,21 +11,21 @@ import GlobalApi from '@/app/_utils/GlobalApi';
 import { useState } from 'react';
 
 function Header({ activeHome, activeBook, activeAbout, activeContact }) {
-	const { user } = useUser();
-	useEffect(() => {
-		user && createUserProfile();
-	}, [user]);
+	// const { user } = useUser();
+	// useEffect(() => {
+	// 	user && createUserProfile();
+	// }, [user]);
 
-	const createUserProfile = () => {
-		const data = {
-			fullName: user.fullName,
-			email: user.primaryEmailAddress.emailAddress,
-		};
-		GlobalApi.createUser(data).then((res) => {
-			console.log(res.data);
-			localStorage.setItem('isLogin', true);
-		});
-	};
+	// const createUserProfile = () => {
+	// 	const data = {
+	// 		fullName: user.fullName,
+	// 		email: user.primaryEmailAddress.emailAddress,
+	// 	};
+	// 	GlobalApi.createUser(data).then((res) => {
+	// 		console.log(res.data);
+	// 		localStorage.setItem('isLogin', true);
+	// 	});
+	// };
 
 	const [quantityCart, setQuantityCart] = useState(0);
 	const [isAuth, setIsAuth] = useState(false);
@@ -199,7 +199,7 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 							</div>
 						</div>
 					) : (
-						<UserButton />
+						<UserButton afterSignOutUrl='/'/>
 					)}
 				</div>
 			</div>
