@@ -11,7 +11,7 @@ import GlobalApi from '@/app/_utils/GlobalApi';
 import { useState } from 'react';
 
 function Header({ activeHome, activeBook, activeAbout, activeContact }) {
-	// const { user } = useUser();
+	const { user } = useUser();
 	// useEffect(() => {
 	// 	user && createUserProfile();
 	// }, [user]);
