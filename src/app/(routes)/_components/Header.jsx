@@ -1,16 +1,28 @@
 'use client';
 import { UserButton, useUser } from '@clerk/nextjs';
 import { faBell, faHeart, faUser } from '@fortawesome/free-regular-svg-icons';
-import { faCartShopping, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import {
+	faBook,
+	faBrain,
+	faCartShopping,
+	faDollarSign,
+	faMagnifyingGlass,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useEffect } from 'react';
 
 import { useState } from 'react';
+import { Book, Frown, LayoutList, RotateCcw } from 'lucide-react';
+import AnimationComponents from './AnimationComponents';
 
 function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 	const { user } = useUser();
+	const [isFocus, setIsFocus] = useState(false);
+	const [dataProduct, setDataProduct] = useState([]);
+	const [isLoading, setIsLoading] = useState(false);
+	const [resultFilter, setResultFilter] = useState();
 	// useEffect(() => {
 	// 	user && createUserProfile();
 	// }, [user]);
@@ -25,7 +37,27 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 	// 		localStorage.setItem('isLogin', true);
 	// 	});
 	// };
-
+	useEffect(() => {
+		fetch('http://localhost:5000/product')
+			.then((response) => {
+				if (!response.ok) {
+					throw new Error('Network response was not ok');
+				}
+				return response.json();
+			})
+			.then((data) => {
+				setDataProduct(data);
+				setIsLoading(true);
+			})
+			.catch((error) => {
+				console.error('Error fetching data:', error);
+			});
+	});
+	useEffect(() => {
+		if (isLoading) {
+			console.log(dataProduct);
+		}
+	}, [isLoading]);
 	const [quantityCart, setQuantityCart] = useState(0);
 	const [isAuth, setIsAuth] = useState(false);
 	const [valueSearched, setValueSearched] = useState([]);
@@ -35,6 +67,26 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 			return;
 		}
 		setValueSearched(value);
+		const filterProducts = dataProduct.filter((product) =>
+			product.name.toLowerCase().includes(value.toLowerCase()),
+		);
+		setResultFilter(filterProducts);
+		// setIsFocus(false);
+	};
+	const handleFocus = () => {
+		setIsFocus(true);
+	};
+	const handleBlur = () => {
+		setIsFocus(false);
+	};
+	const ItemResult = ({ imageUrl, name }) => {
+		return (
+			<div className='flex cursor-pointer items-center gap-2 px-1 py-2 hover:bg-grayhover'>
+				<img src={imageUrl} alt='a' className='h-16 w-12 ' />
+
+				<p className='line-clamp-2'>{name}</p>
+			</div>
+		);
 	};
 	return (
 		<div className='fixed left-0 right-0 top-0  z-[100000] border-b bg-white'>
@@ -60,13 +112,83 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 						Liên hệ
 					</Link>
 				</div>
+
 				<div className='relative'>
 					<input
 						className=' w-[400px] rounded-md border py-2 pl-3 pr-20 outline-none'
 						placeholder='Bạn tìm gì...'
 						onChange={handleChangeValue}
 						value={valueSearched}
+						onFocus={handleFocus}
+						onBlur={handleBlur}
 					/>
+					{isFocus ? (
+						<div className=' absolute z-[1000000] mt-2 w-[400px] border bg-white px-2 pt-3 shadow-inner '>
+							<div>
+								<div className=' font-bold'>Từ khóa hot</div>
+								<div className=' flex cursor-pointer items-center gap-1 py-1 hover:bg-grayhover'>
+									<RotateCcw style={{ width: '16px', height: '16px' }} />
+									<p>Sách học Tiếng Anh</p>
+								</div>
+								<div className=' flex cursor-pointer items-center gap-1 py-1 hover:bg-grayhover'>
+									<RotateCcw style={{ width: '16px', height: '16px' }} />
+									<p>Sách luyện thi</p>
+								</div>
+								<div className=' flex cursor-pointer items-center gap-1 py-1 hover:bg-grayhover'>
+									<RotateCcw style={{ width: '16px', height: '16px' }} />
+									<p>Sách về Marketing</p>
+								</div>
+							</div>
+							{valueSearched.length > 0 ? (
+								<div className='mt-2 border-t-2 pt-3'>
+									<div className='flex items-center gap-1'>
+										<p className='text-base font-bold'>Sản phẩm</p>
+									</div>
+									{resultFilter.length > 0 ? (
+										resultFilter
+											.slice(0, 3)
+											.map((result) => (
+												<ItemResult
+													key={result._id}
+													imageUrl={result.image[0]}
+													name={result.name}
+												/>
+											))
+									) : (
+										<div className='flex items-center justify-center gap-2 py-3 '>
+											Không tìm thấy sản phẩm phù hợp <Frown />
+										</div>
+									)}
+								</div>
+							) : (
+								<div className='mt-2 border-t-2 pt-3'>
+									<div className='flex items-center gap-1'>
+										<p className=' text-base font-bold'>Danh mục sản phẩm</p>
+									</div>
+									<div className='flex cursor-pointer items-center gap-2 px-1 py-2 hover:bg-grayhover'>
+										<div className='flex items-center justify-center rounded-md bg-category1 p-1'>
+											<FontAwesomeIcon icon={faBook} className='h-4 w-4 text-white' />
+										</div>
+										<p>Văn học</p>
+									</div>
+									<div className='flex cursor-pointer items-center gap-2 px-1 py-2 hover:bg-grayhover'>
+										<div className='flex items-center justify-center rounded-md bg-category2 p-1'>
+											<FontAwesomeIcon icon={faBrain} className='h-4 w-4 text-white' />
+										</div>
+										<p>Tâm lý</p>
+									</div>
+									<div className='flex cursor-pointer items-center gap-2 px-1 py-2 hover:bg-grayhover'>
+										<div className='flex items-center justify-center rounded-md bg-category4 p-1'>
+											<FontAwesomeIcon icon={faDollarSign} className='h-4 w-4 text-white' />
+										</div>
+										<p>Kinh tế</p>
+									</div>
+								</div>
+							)}
+						</div>
+					) : (
+						''
+					)}
 					{valueSearched.length > 0 && (
 						<Link
 							href='/search'
@@ -76,6 +198,7 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 						</Link>
 					)}
 				</div>
+
 				<div className='grid grid-cols-3 place-content-center items-center gap-4'>
 					<div className=' group relative h-5 w-5 '>
 						<FontAwesomeIcon icon={faBell} className='h-5 w-5 cursor-pointer' />
@@ -198,7 +321,7 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 							</div>
 						</div>
 					) : (
-						<UserButton afterSignOutUrl='/'/>
+						<UserButton afterSignOutUrl='/' />
 					)}
 				</div>
 			</div>

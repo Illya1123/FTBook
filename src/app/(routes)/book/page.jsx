@@ -17,15 +17,121 @@ import {
 } from '@nextui-org/react';
 import StarRatings from 'react-star-ratings';
 import { faThumbsUp } from '@fortawesome/free-regular-svg-icons';
-
+import { useTheme } from '../_components/ThemeProvider';
 
 export default function BookDetail() {
+	const { userId } = useTheme();
 	const [book, setBook] = useState(null);
 	const [selectedImage, setSelectedImage] = useState(null);
 	const [quantity, setQuantity] = useState(1);
 	const [price, setPrice] = useState(null);
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 	const [valueRating, setValueRating] = useState();
+	const [descriptionReview, setDescriptionReview] = useState();
+	const [dataBookReview, setDataBookReview] = useState([]);
+	const [dataUser, setDataUser] = useState();
+	const [filterDataReview, setFilterDataReview] = useState([]);
+
+	// const [filterDataReview1, setFilterDataReview1] = useState([]);
+	const [count, setCount] = useState(0);
+	// value tính % số rating đánh giá
+	const [valuePercentStar1, setValuePercentStar1] = useState(0);
+	const [valuePercentStar2, setValuePercentStar2] = useState(0);
+	const [valuePercentStar3, setValuePercentStar3] = useState(0);
+	const [valuePercentStar4, setValuePercentStar4] = useState(0);
+	const [valuePercentStar5, setValuePercentStar5] = useState(0);
+	// đếm số lượng các rating
+	let count1 = 0,
+		count2 = 0,
+		count3 = 0,
+		count4 = 0,
+		count5 = 0;
+	useEffect(() => {
+		fetch('http://localhost:5000/review/product/662523afd636426682e12ada')
+			.then((response) => {
+				if (!response.ok) {
+					throw new Error('Network response was not ok');
+				}
+				return response.json();
+			})
+			.then((data) => {
+				setDataBookReview(data);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	}, [count]);
+	useEffect(() => {
+		if (dataBookReview) {
+			dataBookReview.forEach((rating) => {
+				switch (rating.rating) {
+					case 1:
+						count1++;
+						break;
+					case 2:
+						count2++;
+						break;
+					case 3:
+						count3++;
+						break;
+					case 4:
+						count4++;
+						break;
+					case 5:
+						count5++;
+						break;
+					default:
+						break;
+				}
+			});
+			const totalCount = count1 + count2 + count3 + count4 + count5;
+
+			setValuePercentStar1((count1 / totalCount) * 100);
+			setValuePercentStar2((count2 / totalCount) * 100);
+			setValuePercentStar3((count3 / totalCount) * 100);
+			setValuePercentStar5((count4 / totalCount) * 100);
+			setValuePercentStar5((count5 / totalCount) * 100);
+			// Tính điểm trung bình của các rating
+			const averageRating =
+				(count1 + 2 * count2 + 3 * count3 + 4 * count4 + 5 * count5) / totalCount;
+			// console.log('averageRating: ', averageRating);s
+		}
+	}, [dataBookReview]);
+
+	useEffect(() => {
+		fetch(`http://localhost:5000/user`)
+			.then((response) => {
+				if (!response.ok) {
+					throw new Error('Network response was not ok');
+				}
+				return response.json();
+			})
+			.then((data) => {
+				setDataUser(data);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	}, [count]);
+
+	const mergeUsersIntoReviews = () => {
+		const merged = dataBookReview.map((review) => {
+			const user = dataUser.find((user) => user._id === review.userId);
+			if (user) {
+				return { ...review, userName: `${user.firstName} ${user.lastName}` };
+			} else {
+				return review;
+			}
+		});
+		setFilterDataReview(merged);
+	};
+
+	// Call the merging function when users or reviews are updated
+	useEffect(() => {
+		mergeUsersIntoReviews();
+	}, [dataUser, dataBookReview]);
+	console.log(filterDataReview);
+
 	useEffect(() => {
 		const hardcodedBook = {
 			_id: '662523afd636426682e12ada',
@@ -72,7 +178,7 @@ export default function BookDetail() {
 	if (!book) {
 		return <div>Loading...</div>;
 	}
-	const StarItem = ({ rating, valueRating }) => {
+	const StarItem = ({ rating, valueRating, value }) => {
 		return (
 			<div className='my-2 flex items-center'>
 				<p>{rating}</p>
@@ -83,7 +189,10 @@ export default function BookDetail() {
 					hideThumb={true}
 					defaultValue={valueRating}
 					className='max-w-md'
+					minValue={0}
+					maxValue={100}
 					isDisabled
+					value={value}
 				/>
 			</div>
 		);
@@ -118,13 +227,42 @@ export default function BookDetail() {
 	const handleChangeRating = (rating) => {
 		setValueRating(rating);
 	};
+	const handleOnchangeReview = (e) => {
+		setDescriptionReview(e.target.value);
+	};
+	const handleAddReview = () => {
+		console.log('valueRating', valueRating);
+		console.log('descriptionReview', descriptionReview);
+		console.log('userId', userId);
+		console.log('productId', book._id);
+		fetch('http://localhost:5000/review', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				productId: book._id,
+				userId: userId,
+				content: descriptionReview,
+				rating: valueRating,
+			}),
+		})
+			.then((res) => res.json())
+			.then((json) => {
+				console.log(json);
+				setCount(count + 1);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	};
 	return (
 		<div className='min-h-screen rounded-md bg-white  p-4 '>
 			<div className='mx-auto py-8'>
 				<div className='flex'>
 					<div className='mr-4 w-1/2'>
 						<div className='mb-4 flex justify-center'>
-							<div className='border w-1 rounded-lg' style={{ width: '50vw', height: '60vh' }}>
+							<div className='w-1 rounded-lg border' style={{ width: '50vw', height: '60vh' }}>
 								<img
 									src={selectedImage}
 									alt={book.name}
@@ -207,27 +345,22 @@ export default function BookDetail() {
 					<p className=' text-2xl font-bold'> Đánh giá sản phẩm</p>
 					<div className='flex items-center gap-10 '>
 						<div className='w-[30%]'>
-							<div className='flex items-center'>
-								<p>5</p>
-								<FontAwesomeIcon icon={faStar} className='mr-4' />
-								<Slider
-									aria-label='Player progress'
-									color='foreground'
-									hideThumb={true}
-									defaultValue={90}
-									className='max-w-md'
-									isDisabled
-								/>
-							</div>
-							<StarItem rating={4} valueRating={0} />
-							<StarItem rating={3} valueRating={0} />
-							<StarItem rating={2} valueRating={0} />
-							<StarItem rating={1} valueRating={0} />
+							<StarItem rating={5} valueRating={0} value={valuePercentStar5} />
+							<StarItem rating={4} valueRating={0} value={valuePercentStar4} />
+							<StarItem rating={3} valueRating={0} value={valuePercentStar3} />
+							<StarItem rating={2} valueRating={0} value={valuePercentStar2} />
+							<StarItem rating={1} valueRating={0} value={valuePercentStar1} />
 						</div>
 						<div className='w-[70%]  text-center'>
-							<Button className='w-40' color='primary' onClick={onOpen}>
-								Viết đánh giá
-							</Button>
+							{userId ? (
+								<Button className='w-40' color='primary' onClick={onOpen}>
+									Viết đánh giá
+								</Button>
+							) : (
+								<Button className='w-80' color='primary'>
+									Hãy đăng nhập để đánh giá
+								</Button>
+							)}
 							<Modal isOpen={isOpen} onOpenChange={onOpenChange}>
 								<ModalContent>
 									{(onClose) => (
@@ -236,26 +369,29 @@ export default function BookDetail() {
 												Viết đánh giá đánh giá
 											</ModalHeader>
 											<ModalBody>
-												<StarRatings
-													changeRating={handleChangeRating}
-													rating={valueRating}
-													starDimension='20px'
-													starSpacing='4px'
-													starRatedColor='#FF9F00'
-												/>
+												<div className=' text-center'>
+													<StarRatings
+														changeRating={handleChangeRating}
+														rating={valueRating}
+														starDimension='20px'
+														starSpacing='4px'
+														starRatedColor='#FF9F00'
+													/>
+												</div>
 												<Textarea
 													isRequired
 													// label='Description'
 													labelPlacement='outside'
 													placeholder='Hãy đánh giá sản phẩm của chúng tôi'
 													className='max-w'
+													onChange={handleOnchangeReview}
 												/>
 											</ModalBody>
 											<ModalFooter>
 												<Button color='danger' variant='light' onPress={onClose}>
 													Hủy
 												</Button>
-												<Button color='primary' onPress={onClose}>
+												<Button color='primary' onPress={onClose} onClick={handleAddReview}>
 													Đánh giá
 												</Button>
 											</ModalFooter>
@@ -265,31 +401,16 @@ export default function BookDetail() {
 							</Modal>
 						</div>
 					</div>
-					<div className=' border-t py-4'>
-						<div className='flex'>
-							<div className='mr-32'>
-								<p>User1</p>
-								<p>03/05/2024</p>
-							</div>
-							<div>
-								<div>
-									<StarRatings
-										rating={5}
-										starDimension='20px'
-										starSpacing='4px'
-										starRatedColor='#FF9F00'
-									/>
-									<p>Sách này mang lại nhiều thú vị</p>
-								</div>
-								<div className='flex items-center gap-2'>
-									<FontAwesomeIcon icon={faThumbsUp} />
-									<p>Thích</p>
-								</div>
-							</div>
-						</div>
-					</div>
-					<ReviewItem name='User2' createAt='02/05/2024' content='sách hay' rating={4} />
-					<ReviewItem name='User3' createAt='02/05/2024' content='sách hay' rating={4} />
+					{filterDataReview
+						? filterDataReview.map((product) => (
+								<ReviewItem
+									name={product.userName}
+									createAt={product.createAt}
+									content={product.content}
+									rating={product.rating}
+								/>
+							))
+						: ''}
 				</div>
 			</div>
 		</div>

@@ -37,8 +37,8 @@ import { addItem } from '../cart/cartReducer';
 import { useDispatch, useSelector } from 'react-redux';
 import { dataBookss } from '../_components/data';
 
-
 import FacebookMsg from '../_components/FacebookMsg';
+import { useTheme } from '../_components/ThemeProvider';
 
 const slides = [
 	'https://cdn0.fahasa.com/media/magentothem/banner7/Week2_T424_Banner_Slide_840x320_1.jpg',
@@ -50,6 +50,8 @@ const slides = [
 ];
 
 function HomePage() {
+	const { userId } = useTheme();
+
 	const flashProducts = dataBookss.slice().sort((a, b) => b.ratingPoint - a.ratingPoint);
 	const [dataBooks, setDataBooks] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
@@ -57,16 +59,22 @@ function HomePage() {
 	const [filteredTab1, setFilteredTab1] = useState([]);
 	const [filteredTab2, setFilteredTab2] = useState([]);
 	const [filteredTab3, setFilteredTab3] = useState([]);
-	// useEffect(() => {
-	// 	fetch('http://localhost:5000/product')
-	// 		.then((response) => {
-	// 			setDataBooks(response.data);
-	// 			setIsLoading(true);
-	// 		})
-	// 		.catch((error) => {
-	// 			console.error('Error fetching data:', error);
-	// 		});
-	// });
+	useEffect(() => {
+		fetch('http://localhost:5000/product')
+			.then((response) => {
+				if (!response.ok) {
+					throw new Error('Network response was not ok');
+				}
+				return response.json();
+			})
+			.then(() => {
+				setDataBooks(data);
+				setIsLoading(true);
+			})
+			.catch((error) => {
+				console.error('Error fetching data:', error);
+			});
+	});
 	useEffect(() => {
 		if (dataBookss && isLoading) {
 			const newFilteredProducts = dataBookss.filter(
@@ -173,6 +181,8 @@ function HomePage() {
 		const firstImage = image[0];
 		const { isOpen, onOpen, onOpenChange } = useDisclosure();
 		const items = useSelector((state) => state.cart.items);
+		// console.log(userId);
+		// console.log(items);
 		const dispatch = useDispatch();
 
 		// format giá - 3 số thêm 1 dấu chấm - Example: 100000 => 100.000
@@ -182,12 +192,11 @@ function HomePage() {
 		// tính % giảm giá sản phẩm
 		const priceSale = priceSell - priceDiscount;
 		const percentSale = Math.floor((priceSale / priceSell) * 100);
+
 		const handleAddCart = (id) => {
 			dispatch(addItem(id));
 		};
-		// if (items.lenght > 0) {
-		// 	console.log(items);
-		// }
+
 		return (
 			<div className='relative mx-5 rounded-md bg-white'>
 				<div className='group'>
@@ -210,7 +219,7 @@ function HomePage() {
 											<>
 												<ModalHeader className='flex flex-col gap-1'></ModalHeader>
 												<ModalBody>
-													<div className='flex  '>
+													<div className='flex gap-2  '>
 														<img src={firstImage} alt='' className='h-52 w-48' />
 														<div>
 															<h3>{name}</h3>
@@ -292,7 +301,7 @@ function HomePage() {
 				) : (
 					<>
 						{/* flash sale */}
-						<div className='my-24'>
+						<AnimationComponents className='my-24'>
 							<div className='my-6 flex items-center justify-between rounded-md bg-white px-2 py-4 '>
 								<div className='flex items-center '>
 									<img src='https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/flashsale/label-flashsale.svg?q=' />
@@ -312,13 +321,13 @@ function HomePage() {
 									))}
 								</Slider>
 							</div>
-						</div>
+						</AnimationComponents>
 						{/* Category */}
-						<div className='my-24'>
+						<AnimationComponents className='my-24'>
 							<div className='my-6 flex items-center justify-between'>
 								<h3 className=' text-2xl'>Danh mục sản phẩm</h3>
 								<div className='flex items-center text-base hover:text-blue'>
-									<Link href='#'>Xem tất cả</Link>
+									<Link href='/bookCategory'>Xem tất cả</Link>
 
 									<ChevronRight style={{ height: '16px', width: '16px' }} />
 								</div>
@@ -330,9 +339,9 @@ function HomePage() {
 								<CategoryLink href='#' icon={faDollarSign} name='Kinh tế' colorC4 />
 								<CategoryLink href='#' icon={faEarthAsia} name='Ngoại ngữ' colorC5 />
 							</div>
-						</div>
+						</AnimationComponents>
 						{/* Book Selling */}
-						<div className='my-24'>
+						<AnimationComponents className='my-24'>
 							<div className='my-6 flex items-center justify-between'>
 								<h3 className=' text-2xl'>Sách bán chạy nhất</h3>
 								<div className='flex items-center text-base hover:text-blue'>
@@ -347,7 +356,7 @@ function HomePage() {
 									))}
 								</Slider>
 							</div>
-						</div>
+						</AnimationComponents>
 						{/* ... */}
 						<div className='my-24'>
 							<div className='my-6 flex items-center justify-between'>
@@ -366,7 +375,7 @@ function HomePage() {
 							</div>
 						</div>
 						{/* Thương hiệu nổi bật */}
-						<div className='my-24'>
+						<AnimationComponents className='my-24'>
 							<Tabs
 								activeLinkStyle={{
 									color: '#009FE5',
@@ -446,13 +455,12 @@ function HomePage() {
 								</div> */}
 								</TabContent>
 							</Tabs>
-						</div>
+						</AnimationComponents>
 					</>
 				)}
 			</div>
 
 			<FacebookMsg />
-
 		</div>
 	);
 }
