@@ -19,46 +19,32 @@ import StarRatings from 'react-star-ratings';
 import { faThumbsUp } from '@fortawesome/free-regular-svg-icons';
 
 
-export default function BookDetail() {
+export default function BookDetail({params}) {
 	const [book, setBook] = useState(null);
 	const [selectedImage, setSelectedImage] = useState(null);
 	const [quantity, setQuantity] = useState(1);
 	const [price, setPrice] = useState(null);
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 	const [valueRating, setValueRating] = useState();
-	useEffect(() => {
-		const hardcodedBook = {
-			_id: '662523afd636426682e12ada',
-			name: 'Nghệ Thuật Bán Hàng Bằng Câu Chuyện',
-			categoryAllId: '661949cc343796e299686dc7',
-			categoryDetailId: '66194f95343796e299686ddc',
-			categorySupplierId: '66198823243a328164578cc1',
-			categoryPublishId: '66198b74c9f3ef21a7378d89',
-			categoryYearId: '66198bd0c9f3ef21a7378d94',
-			image: [
-				'https://cdn0.fahasa.com/media/flashmagazine/images/page_images/nghe_thuat_ban_hang_bang_cau_chuyen_tai_ban_2023/2023_03_21_10_28_39_1-390x510.jpg?_gl=1*1wuvo8a*_ga*MjM5MDM3ODcxLjE3MTMzNjIxMzU.*_ga_460L9JMC2G*MTcxMzcwNzM4Mi44LjEuMTcxMzcwNzYwMC42MC4wLjE0MTk5MzY0Mjc.*_gcl_au*MzUxNzI2NTczLjE3MTMzNjIxMzQ.',
-				'https://cdn0.fahasa.com/media/flashmagazine/images/page_images/nghe_thuat_ban_hang_bang_cau_chuyen_tai_ban_2023/2023_03_21_10_28_39_2-390x510.jpg',
-				'https://cdn0.fahasa.com/media/flashmagazine/images/page_images/nghe_thuat_ban_hang_bang_cau_chuyen_tai_ban_2023/2023_03_21_10_28_39_3-390x510.jpg',
-				'https://cdn0.fahasa.com/media/flashmagazine/images/page_images/nghe_thuat_ban_hang_bang_cau_chuyen_tai_ban_2023/2023_03_21_10_28_39_4-390x510.jpg',
-			],
-			priceOld: 188000,
-			priceCurrent: 146000,
-			author: 'Paul Smith',
-			form: 'Bìa Mềm',
-			language: 'Tiếng Việt',
-			yearOfManufacture: 2023,
-			size: '20.5 x 13 x 1 cm',
-			pageQuantity: 200,
-			description:
-				'Câu chuyện là vũ khí bán hàng quan trọng nhất của người bán hàng. Tuy nhiên rất nhiều nhân viên quản lý kinh doanh và nhân viên bán hàng thường kể chuyện rất dở. Rất dở! Các câu chuyện của họ nhàm chán, lộn xộn, thường vô nghĩa, và hầu hết luôn hướng về bản thân.',
-			rate: 4,
-			ratingPoint: 100,
-			numberOfVisit: 5,
-		};
 
-		setBook(hardcodedBook);
-		setSelectedImage(hardcodedBook.image[0]);
-	}, []);
+	useEffect(() => {
+		async function fetchBookData() {
+			try {
+				const response = await fetch(`http://localhost:5000/product/${params.bookId}`);
+				if (!response.ok) {
+					throw new Error('Network response was not ok');
+				}
+				const bookData = await response.json();
+				setBook(bookData);
+				setSelectedImage(bookData.image[0]);
+				console.log(book);
+			} catch (error) {
+				console.error('Error fetching book data:', error);
+			}
+		}
+	
+		fetchBookData();
+	}, [params.bookId]);
 
 	const handleImageClick = (imageUrl) => {
 		setSelectedImage(imageUrl);
@@ -161,10 +147,10 @@ export default function BookDetail() {
 							<div className='flex items-center'>
 								<p className='text-lg font-bold text-gray-600'>Giá: </p>
 								<p className='ml-4 text-lg font-medium text-emerald-500 '>
-									{book.priceCurrent} VNĐ
+									{book.priceDiscount} VNĐ
 								</p>
-								{book.priceOld && (
-									<p className='ml-4 mr-2 text-gray-600 line-through'> {book.priceOld} VNĐ</p>
+								{book.priceSell && (
+									<p className='ml-4 mr-2 text-gray-600 line-through'> {book.priceSell} VNĐ</p>
 								)}
 							</div>
 						</div>

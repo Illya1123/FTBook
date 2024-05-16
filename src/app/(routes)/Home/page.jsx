@@ -58,15 +58,21 @@ function HomePage() {
 	const [filteredTab2, setFilteredTab2] = useState([]);
 	const [filteredTab3, setFilteredTab3] = useState([]);
 	// useEffect(() => {
-	// 	fetch('http://localhost:5000/product')
-	// 		.then((response) => {
-	// 			setDataBooks(response.data);
-	// 			setIsLoading(true);
-	// 		})
-	// 		.catch((error) => {
-	// 			console.error('Error fetching data:', error);
-	// 		});
-	// });
+    //     async function fetchData() {
+    //         try {
+    //             const response = await axios.get('http://localhost:5000/product');
+    //             setDataBooks(response.data); // Lưu dữ liệu sách vào state dataBooks
+    //             setIsLoading(false); // Đã load xong dữ liệu, setIsLoading(false)
+				
+    //         } catch (error) {
+    //             console.error('Error fetching data:', error);
+    //         }
+    //     }
+
+    //     fetchData();
+    // }, []);
+
+
 	useEffect(() => {
 		if (dataBookss && isLoading) {
 			const newFilteredProducts = dataBookss.filter(
@@ -87,7 +93,7 @@ function HomePage() {
 			setFilteredTab2(newFilterTab2);
 			setFilteredTab3(newFilterTab3);
 		}
-	}, [isLoading, dataBookss]);
+	}, [isLoading, dataBooks]);
 
 	const settingsSlider = {
 		dots: true,
@@ -248,7 +254,7 @@ function HomePage() {
 							</div>
 						</div>
 					</div>
-					<Link href='/book'>
+					<Link href={`/book/${_id}`}>
 						<div className='mx-4 px-2 py-4'>
 							<div>
 								<p className='line-clamp-2 h-10 text-sm'>{name}</p>
@@ -451,7 +457,7 @@ function HomePage() {
 				)}
 			</div>
 
-			<FacebookMsg />
+			{/* <FacebookMsg /> */}
 
 		</div>
 	);
