@@ -195,43 +195,49 @@ function HomePage() {
 		const percentSale = Math.floor((priceSale / priceSell) * 100);
 
 		const handleAddToCart = async (_id) => {
+			// Tạo đối tượng JSON để gửi lên server
+			const cartData = {
+				productId: _id,
+				quantity: 1,
+			};
 			try {
-				// Gửi yêu cầu GET đến endpoint của giỏ hàng để lấy thông tin giỏ hàng của người dùng
-				const cartResponse = await axios.get(`http://localhost:5000/cart?userId=${user.id}`);
-				const existingCart = cartResponse.data;
-				
-				// Kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng chưa
-				const existingProductIndex = existingCart.products.findIndex(product => product.productId === _id);
-				
-				if (existingProductIndex !== -1) {
-					// Nếu sản phẩm đã tồn tại trong giỏ hàng, tăng quantity lên 1
-					existingCart.products[existingProductIndex].quantity += 1;
-					
-					// Gửi yêu cầu PUT để cập nhật giỏ hàng
-					const updateResponse = await axios.put(`http://localhost:5000/cart?userId=${user.id}`, existingCart);
-					console.log('Cart updated:', updateResponse.data);
+				// Kiểm tra xem giỏ hàng của người dùng đã tồn tại hay chưa
+				const existingCart = await axios.get(`http://localhost:5000/cart?userId=${user.id}`);
+
+				if (existingCart.data.length > 0) {
+					// Nếu giỏ hàng đã tồn tại
+					const cartId = existingCart.data[0]._id;
+					const existingProductIndex = existingCart.data[0].products.findIndex(
+						(product) => product.productId === _id,
+					);
+
+					if (existingProductIndex !== -1) {
+						// Nếu sản phẩm đã tồn tại trong giỏ hàng, thực hiện cập nhật số lượng
+						const existingProduct = existingCart.data[0].products[existingProductIndex];
+						const newQuantity = existingProduct.quantity + 1;
+						await axios.put(`http://localhost:5000/cart/edit/${user.id}`, {
+							productId: _id,
+							quantity: newQuantity,
+						});
+						console.log('Cart updated with quantity:', newQuantity);
+					} else {
+						// Nếu sản phẩm chưa tồn tại trong giỏ hàng, thêm mới sản phẩm vào giỏ hàng
+						await axios.post(`http://localhost:5000/cart/edit/${user.id}`, cartData);
+						console.log('Product added to cart.');
+					}
 				} else {
-					// Nếu sản phẩm chưa tồn tại trong giỏ hàng, thêm nó vào danh sách sản phẩm
-					const cartData = {
+					// Nếu giỏ hàng chưa tồn tại, thực hiện thêm mới
+					const response = await axios.post('http://localhost:5000/cart', {
 						userId: user.id,
 						status: 'active',
-						products: [
-							{
-								productId: _id,
-								quantity: 1
-							},
-						]
-					};
-					
-					// Gửi yêu cầu POST để thêm sản phẩm mới vào giỏ hàng
-					const response = await axios.post('http://localhost:5000/cart', cartData);
+						products: [cartData],
+					});
 					console.log('Cart added:', response.data);
 				}
 			} catch (error) {
 				console.error('Error adding to cart:', error);
 			}
 		};
-
 		return (
 			<div className='relative mx-5 rounded-md bg-white'>
 				<div className='group'>
