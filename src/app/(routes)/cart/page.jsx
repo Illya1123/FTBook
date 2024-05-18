@@ -19,6 +19,8 @@ import { decreaseQuantity, increaseQuantity } from './cartReducer';
 import { dataBookss } from '../_components/data';
 import { useRouter } from 'next/navigation';
 import { useTheme } from '../_components/ThemeProvider';
+import { fetchCartItems } from './cartReducer';
+import { useUser } from '@clerk/nextjs';
 
 function CartPage() {
 	const { setTotalPriceCheckout, setDataCheckout, userId } = useTheme();
@@ -29,6 +31,16 @@ function CartPage() {
 	const [checkedItems, setCheckedItems] = useState({});
 	const [selectAll, setSelectAll] = useState(false);
 	const items = useSelector((state) => state.cart.items);
+	const dispatch = useDispatch();
+	const { user } = useUser();
+
+	useEffect(() => {
+		if (user) {
+			dispatch(fetchCartItems(user.id));
+		}
+	}, [dispatch, user]);
+
+	console.log('items', items);
 
 	useEffect(() => {
 		const newFilterCart = dataBookss
@@ -125,7 +137,7 @@ function CartPage() {
 								+
 							</button>
 						</div>
-						<p>{price}</p>
+						<p>{price.toLocaleString('vi-VN', { minimumFractionDigits: 0 })}</p>
 					</div>
 				</div>
 			</div>
@@ -250,7 +262,7 @@ function CartPage() {
 										<div className='border'></div>
 										<div className='my-2 flex items-center justify-between'>
 											<p className='font-bold'>Tổng Số Tiền (gồm VAT)</p>
-											<p className='text-xl font-bold text-orange'>{totalPriceFinal} đ</p>
+											<p className='text-xl font-bold text-orange'>{totalPriceFinal.toLocaleString('vi-VN', { minimumFractionDigits: 0 })} đ</p>
 										</div>
 										<Button
 											className='my-2 block w-full rounded-md bg-blue py-2 text-center font-bold text-white hover:bg-blueHover'
