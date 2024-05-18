@@ -202,7 +202,7 @@ function HomePage() {
 			};
 			try {
 				// Kiểm tra xem giỏ hàng của người dùng đã tồn tại hay chưa
-				const existingCart = await axios.get(`http://localhost:5000/cart?userId=${user.id}`);
+				const existingCart = await axios.get(`http://localhost:5000/cart/user/${user.id}`);
 
 				if (existingCart.data.length > 0) {
 					// Nếu giỏ hàng đã tồn tại
