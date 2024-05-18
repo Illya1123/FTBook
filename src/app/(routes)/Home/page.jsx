@@ -195,22 +195,38 @@ function HomePage() {
 		const percentSale = Math.floor((priceSale / priceSell) * 100);
 
 		const handleAddToCart = async (_id) => {
-			// Tạo đối tượng JSON để gửi lên server
-			const cartData = {
-				userId: user.id,
-				status: 'active',
-				products: [
-					{
-						productId: _id, // ID của sản phẩm (thay thế bằng ID thực tế)
-						quantity: 1 // Số lượng sản phẩm trong giỏ hàng
-					},
-				]
-			};
-	
 			try {
-				// Gửi request POST đến http://localhost:5000/cart
-				const response = await axios.post('http://localhost:5000/cart', cartData);
-				console.log('Cart added:', response.data);
+				// Gửi yêu cầu GET đến endpoint của giỏ hàng để lấy thông tin giỏ hàng của người dùng
+				const cartResponse = await axios.get(`http://localhost:5000/cart?userId=${user.id}`);
+				const existingCart = cartResponse.data;
+				
+				// Kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng chưa
+				const existingProductIndex = existingCart.products.findIndex(product => product.productId === _id);
+				
+				if (existingProductIndex !== -1) {
+					// Nếu sản phẩm đã tồn tại trong giỏ hàng, tăng quantity lên 1
+					existingCart.products[existingProductIndex].quantity += 1;
+					
+					// Gửi yêu cầu PUT để cập nhật giỏ hàng
+					const updateResponse = await axios.put(`http://localhost:5000/cart?userId=${user.id}`, existingCart);
+					console.log('Cart updated:', updateResponse.data);
+				} else {
+					// Nếu sản phẩm chưa tồn tại trong giỏ hàng, thêm nó vào danh sách sản phẩm
+					const cartData = {
+						userId: user.id,
+						status: 'active',
+						products: [
+							{
+								productId: _id,
+								quantity: 1
+							},
+						]
+					};
+					
+					// Gửi yêu cầu POST để thêm sản phẩm mới vào giỏ hàng
+					const response = await axios.post('http://localhost:5000/cart', cartData);
+					console.log('Cart added:', response.data);
+				}
 			} catch (error) {
 				console.error('Error adding to cart:', error);
 			}
