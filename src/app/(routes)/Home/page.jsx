@@ -51,6 +51,7 @@ const slides = [
 
 function HomePage() {
 	const { userId } = useTheme();
+	const { user } = useUser();
 
 	const flashProducts = dataBookss.slice().sort((a, b) => b.ratingPoint - a.ratingPoint);
 	const [dataBooks, setDataBooks] = useState([]);
@@ -193,8 +194,26 @@ function HomePage() {
 		const priceSale = priceSell - priceDiscount;
 		const percentSale = Math.floor((priceSale / priceSell) * 100);
 
-		const handleAddCart = (id) => {
-			dispatch(addItem(id));
+		const handleAddToCart = async (_id) => {
+			// Tạo đối tượng JSON để gửi lên server
+			const cartData = {
+				userId: user.id,
+				status: 'active',
+				products: [
+					{
+						productId: _id, // ID của sản phẩm (thay thế bằng ID thực tế)
+						quantity: 1 // Số lượng sản phẩm trong giỏ hàng
+					},
+				]
+			};
+	
+			try {
+				// Gửi request POST đến http://localhost:5000/cart
+				const response = await axios.post('http://localhost:5000/cart', cartData);
+				console.log('Cart added:', response.data);
+			} catch (error) {
+				console.error('Error adding to cart:', error);
+			}
 		};
 
 		return (
@@ -248,7 +267,7 @@ function HomePage() {
 								</p>
 							</div>
 							<div className='quick-view relative flex h-11 w-11 items-center justify-center rounded bg-white hover:bg-gray-400 hover:text-white'>
-								<Button onClick={() => handleAddCart(_id)} className=' bg-transparent '>
+								<Button onClick={() => handleAddToCart(_id)} className=' bg-transparent '>
 									<FontAwesomeIcon icon={faCartShopping} />
 								</Button>
 								<p className='quick absolute -top-12 hidden w-20 rounded bg-gray-400 p-1 text-center text-xs text-white'>
@@ -459,8 +478,6 @@ function HomePage() {
 					</>
 				)}
 			</div>
-
-			<FacebookMsg />
 		</div>
 	);
 }
