@@ -1,8 +1,12 @@
+'use client';
 import { faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useTheme } from '../_components/ThemeProvider';
 
 function SuccessfulTransaction() {
+	const { codeOrder } = useTheme();
 	return (
 		<div className='my-4 flex h-[340px] flex-col items-center justify-center bg-white'>
 			<title>Thanh toán thành công</title>
@@ -11,7 +15,7 @@ function SuccessfulTransaction() {
 			<div className='my-2 text-center'>
 				<p>Cảm ơn bạn đã mua hàng tại FTBOOK.com</p>
 				<p>
-					Mã đơn hàng của bạn là: <span className='text-orange'>aduahd3f8effada2</span>{' '}
+					Mã đơn hàng của bạn là: <span className='text-orange'>{codeOrder}</span>
 				</p>
 				<p>Chúng tôi sẽ liên lạc với bạn trong thời gian sớm nhất.</p>
 			</div>

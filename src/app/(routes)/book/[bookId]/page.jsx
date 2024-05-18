@@ -18,33 +18,47 @@ import {
 import StarRatings from 'react-star-ratings';
 import { faThumbsUp } from '@fortawesome/free-regular-svg-icons';
 
-
-export default function BookDetail({params}) {
+export default function BookDetail({ params }) {
 	const [book, setBook] = useState(null);
 	const [selectedImage, setSelectedImage] = useState(null);
 	const [quantity, setQuantity] = useState(1);
 	const [price, setPrice] = useState(null);
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 	const [valueRating, setValueRating] = useState();
+	
+	const [categoryAll, setCategoryAll] = useState(null);
 
 	useEffect(() => {
-		async function fetchBookData() {
-			try {
-				const response = await fetch(`http://localhost:5000/product/${params.bookId}`);
-				if (!response.ok) {
-					throw new Error('Network response was not ok');
-				}
-				const bookData = await response.json();
-				setBook(bookData);
-				setSelectedImage(bookData.image[0]);
-				console.log(book);
-			} catch (error) {
-				console.error('Error fetching book data:', error);
-			}
-		}
-	
-		fetchBookData();
-	}, [params.bookId]);
+        async function fetchData() {
+            try {
+                // Fetch thông tin sách
+                const bookResponse = await fetch(`http://localhost:5000/product/${params.bookId}`);
+                if (!bookResponse.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const bookData = await bookResponse.json();
+                setBook(bookData);
+                setSelectedImage(bookData.image[0]);
+
+                // Lấy categoryAllId từ thông tin sách đã fetch
+                const categoryAllId = bookData?.categoryAllId;
+
+                // Fetch thông tin categoryAll
+                const categoryAllResponse = await fetch(`http://localhost:5000/categoryAll/${categoryAllId}`);
+                if (!categoryAllResponse.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const categoryAllData = await categoryAllResponse.json();
+                setCategoryAll(categoryAllData);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        fetchData();
+    }, [params.bookId]);
+
+	const breadcrumbItems = ["Trang chủ	", categoryAll?.name, book?.name];
 
 	const handleImageClick = (imageUrl) => {
 		setSelectedImage(imageUrl);
@@ -104,13 +118,23 @@ export default function BookDetail({params}) {
 	const handleChangeRating = (rating) => {
 		setValueRating(rating);
 	};
+
 	return (
 		<div className='min-h-screen rounded-md bg-white  p-4 '>
+			{/* Breadcrumb */}
+            <nav className="flex justify-start">
+                {breadcrumbItems.map((item, index) => (
+                    <span key={index} className="text-gray-600">
+                        {item}
+                        {index < breadcrumbItems.length - 1 && <span className="mx-1">&gt;</span>}
+                    </span>
+                ))}
+            </nav>
 			<div className='mx-auto py-8'>
 				<div className='flex'>
 					<div className='mr-4 w-1/2'>
 						<div className='mb-4 flex justify-center'>
-							<div className='border w-1 rounded-lg' style={{ width: '50vw', height: '60vh' }}>
+							<div className='w-1 rounded-lg border' style={{ width: '50vw', height: '60vh' }}>
 								<img
 									src={selectedImage}
 									alt={book.name}
@@ -123,16 +147,33 @@ export default function BookDetail({params}) {
 								/>
 							</div>
 						</div>
-						<div className='grid grid-cols-4 gap-2'>
-							{book.image.map((image, index) => (
-								<img
-									key={index}
-									src={image}
-									alt={`Image ${index}`}
-									className='cursor-pointer rounded-lg border border-gray-300 hover:bg-gray-200'
-									onClick={() => handleImageClick(image)}
-								/>
-							))}
+						<div className='image-container'>
+							<div className='image-grid grid grid-cols-4 gap-2'>
+								{book.image.map((image, index) => (
+									<img
+										key={index}
+										src={image}
+										alt={`Image ${index}`}
+										className='cursor-pointer rounded-lg border border-gray-300 hover:bg-gray-200'
+										style={{
+											width: '100%',
+											height: '100%',
+											objectFit: 'contain',
+										}}
+										onClick={() => handleImageClick(image)}
+									/>
+								))}
+							</div>
+							{book.image.length > 5 && (
+								<button className='arrow-button left-arrow' onClick={() => scrollImages(-100)}>
+									&lt;
+								</button>
+							)}
+							{book.image.length > 5 && (
+								<button className='arrow-button right-arrow' onClick={() => scrollImages(100)}>
+									&gt;
+								</button>
+							)}
 						</div>
 					</div>
 					<div className='w-3/4'>
@@ -147,23 +188,42 @@ export default function BookDetail({params}) {
 							<div className='flex items-center'>
 								<p className='text-lg font-bold text-gray-600'>Giá: </p>
 								<p className='ml-4 text-lg font-medium text-emerald-500 '>
-									{book.priceDiscount} VNĐ
+									{book.priceDiscount.toLocaleString('vi-VN', { minimumFractionDigits: 0 })} VNĐ
 								</p>
 								{book.priceSell && (
-									<p className='ml-4 mr-2 text-gray-600 line-through'> {book.priceSell} VNĐ</p>
+									<p className='ml-4 mr-2 text-gray-600 line-through'>
+										{' '}
+										{book.priceSell.toLocaleString('vi-VN', { minimumFractionDigits: 0 })} VNĐ
+									</p>
+								)}
+								{book.priceSell && book.priceDiscount && (
+									<p className='ml-4 animate-flash text-red-600 text-large'>
+										Giảm{' '}
+										{Math.round(((book.priceSell - book.priceDiscount) / book.priceSell) * 100)}%
+									</p>
 								)}
 							</div>
 						</div>
 						<div className='mt-8 flex items-center'>
 							<p className='mr-4'>Số lượng:</p>
-							<button className='quantity-button' onClick={() => handleQuantityChange(-1)}>
-								-
+							<div className='flex flex-row-reverse items-center'>
+								<button
+									className='quantity-button rounded-md border border-gray-300 bg-white px-4 py-2 text-gray-700 transition duration-300 ease-in-out'
+									onClick={() => handleQuantityChange(1)}
+								>
+									<span className='button-icon text-lg'>+</span>
+								</button>
+								<p className='mx-2 text-lg font-medium'>{quantity}</p>
+								<button
+									className='quantity-button rounded-md border border-gray-300 bg-white px-4 py-2 text-gray-700 transition duration-300 ease-in-out'
+									onClick={() => handleQuantityChange(-1)}
+								>
+									<span className='button-icon text-lg'>-</span>
+								</button>
+							</div>
+							<button className='buy-now-button bg-blue-500 ml-4 rounded-md px-4 py-2 text-white transition duration-300 ease-in-out'>
+								Mua Ngay ({quantity} sản phẩm)
 							</button>
-							<p className='mx-2 text-lg font-medium'>{quantity}</p>
-							<button className='quantity-button' onClick={() => handleQuantityChange(1)}>
-								+
-							</button>
-							<button className='buy-now-button ml-4'>Mua Ngay ({quantity} sản phẩm)</button>
 						</div>
 					</div>
 				</div>

@@ -51,6 +51,7 @@ const slides = [
 
 function HomePage() {
 	const { userId } = useTheme();
+	const { user } = useUser();
 
 	const flashProducts = dataBookss.slice().sort((a, b) => b.ratingPoint - a.ratingPoint);
 	const [dataBooks, setDataBooks] = useState([]);
@@ -193,8 +194,42 @@ function HomePage() {
 		const priceSale = priceSell - priceDiscount;
 		const percentSale = Math.floor((priceSale / priceSell) * 100);
 
-		const handleAddCart = (id) => {
-			dispatch(addItem(id));
+		const handleAddToCart = async (_id) => {
+			try {
+				// Gửi yêu cầu GET đến endpoint của giỏ hàng để lấy thông tin giỏ hàng của người dùng
+				const cartResponse = await axios.get(`http://localhost:5000/cart?userId=${user.id}`);
+				const existingCart = cartResponse.data;
+				
+				// Kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng chưa
+				const existingProductIndex = existingCart.products.findIndex(product => product.productId === _id);
+				
+				if (existingProductIndex !== -1) {
+					// Nếu sản phẩm đã tồn tại trong giỏ hàng, tăng quantity lên 1
+					existingCart.products[existingProductIndex].quantity += 1;
+					
+					// Gửi yêu cầu PUT để cập nhật giỏ hàng
+					const updateResponse = await axios.put(`http://localhost:5000/cart?userId=${user.id}`, existingCart);
+					console.log('Cart updated:', updateResponse.data);
+				} else {
+					// Nếu sản phẩm chưa tồn tại trong giỏ hàng, thêm nó vào danh sách sản phẩm
+					const cartData = {
+						userId: user.id,
+						status: 'active',
+						products: [
+							{
+								productId: _id,
+								quantity: 1
+							},
+						]
+					};
+					
+					// Gửi yêu cầu POST để thêm sản phẩm mới vào giỏ hàng
+					const response = await axios.post('http://localhost:5000/cart', cartData);
+					console.log('Cart added:', response.data);
+				}
+			} catch (error) {
+				console.error('Error adding to cart:', error);
+			}
 		};
 
 		return (
@@ -248,7 +283,7 @@ function HomePage() {
 								</p>
 							</div>
 							<div className='quick-view relative flex h-11 w-11 items-center justify-center rounded bg-white hover:bg-gray-400 hover:text-white'>
-								<Button onClick={() => handleAddCart(_id)} className=' bg-transparent '>
+								<Button onClick={() => handleAddToCart(_id)} className=' bg-transparent '>
 									<FontAwesomeIcon icon={faCartShopping} />
 								</Button>
 								<p className='quick absolute -top-12 hidden w-20 rounded bg-gray-400 p-1 text-center text-xs text-white'>
@@ -257,7 +292,7 @@ function HomePage() {
 							</div>
 						</div>
 					</div>
-					<Link href='/book'>
+					<Link href={`/book/${_id}`}>
 						<div className='mx-4 px-2 py-4'>
 							<div>
 								<p className='line-clamp-2 h-10 text-sm'>{name}</p>
@@ -459,8 +494,6 @@ function HomePage() {
 					</>
 				)}
 			</div>
-
-			<FacebookMsg />
 		</div>
 	);
 }
