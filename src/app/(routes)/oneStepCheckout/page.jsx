@@ -254,9 +254,16 @@ function oneStepCheckoutPage() {
 	const handleChangeValueWard = (e) => {
 		setValueWardUser(e.target.value);
 	};
-	const handleChangeValueAddress = (e) => {
-		setValueAddressUser(e.target.value);
-	};
+	// const handleChangeValueAddress = (e) => {
+	// 	setValueAddressUser(valueWardUser + ', ' + valueDistrictUser + ', ' + valueProvinceUser);
+	// };
+
+	useEffect(() => {
+		if (valueWardUser && valueDistrictUser && valueProvinceUser) {
+			setValueAddressUser(valueWardUser + ', ' + valueDistrictUser + ', ' + valueProvinceUser);
+		}
+	
+	}, [valueWardUser, valueDistrictUser, valueProvinceUser]);
 	// -------------------------- confirm payment ----------------------------
 
 	const handleConfirmPayment = () => {
@@ -273,7 +280,7 @@ function oneStepCheckoutPage() {
 		console.log('products', products);
 		const userData = {
 			userId,
-			name: dataUser.fullName,
+			name: valueNameUser,
 			address: valueAddressUser,
 			totalPrice: totalPriceFinal ? totalPriceFinal + 19000 : totalPriceCheckout + 19000,
 			orderStatus: orderStatus,
@@ -554,7 +561,7 @@ function oneStepCheckoutPage() {
 								type='text'
 								className=' ml-4 w-1/2 rounded-md border px-2 py-1 outline-none'
 								value={valueAddressUser}
-								onChange={handleChangeValueAddress}
+								// onChange={handleChangeValueAddress}
 								// defaultValue={`${dataUser.addresses.ward}, ${dataUser.addresses.district}, ${dataUser.addresses.province}`}
 							/>
 						</div>

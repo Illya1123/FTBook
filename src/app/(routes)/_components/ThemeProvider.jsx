@@ -6,7 +6,7 @@ const HeaderContext = createContext();
 function ThemeProvider({ children }) {
 	const [isHeader, setIsHeader] = useState(true);
 	const [roleUser, setRoleUser] = useState('user');
-	const [userId, setUserId] = useState('6642f919e60deac0b3e1eb4e');
+	const [userId, setUserId] = useState('6642f919e60deac0b3e1eb4e'); // set động
 	// const [userId, setUserId] = useState('');
 	const [isFocusSearch, setIsFocusSearch] = useState(false);
 	const [dataCheckout, setDataCheckout] = useState([
