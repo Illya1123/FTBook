@@ -80,9 +80,11 @@ function ThemeProvider({ children }) {
 			quantityPurchased: 1,
 		},
 	]);
+
 	const [totalPriceCheckout, setTotalPriceCheckout] = useState(300000);
 	const [purchasedProduct, setPurchasedProduct] = useState([]);
 	const [codeOrder, setCodeOrder] = useState();
+	const [isOnBoarding, setIsOnBoarding] = useState(false);
 	return (
 		<HeaderContext.Provider
 			value={{
@@ -100,6 +102,8 @@ function ThemeProvider({ children }) {
 				setUserId,
 				codeOrder,
 				setCodeOrder,
+				isOnBoarding,
+				setIsOnBoarding,
 			}}
 		>
 			{children}

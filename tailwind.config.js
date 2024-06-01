@@ -97,5 +97,6 @@ module.exports = {
 				// ... custom themes
 			},
 		}),
+		require('tailwindcss-animate'),
 	],
 };

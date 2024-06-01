@@ -60,6 +60,7 @@ function HomePage() {
 	const [filteredTab1, setFilteredTab1] = useState([]);
 	const [filteredTab2, setFilteredTab2] = useState([]);
 	const [filteredTab3, setFilteredTab3] = useState([]);
+
 	useEffect(() => {
 		fetch('http://localhost:5000/product')
 			.then((response) => {
@@ -68,7 +69,7 @@ function HomePage() {
 				}
 				return response.json();
 			})
-			.then(() => {
+			.then((data) => {
 				setDataBooks(data);
 				setIsLoading(true);
 			})
@@ -177,11 +178,13 @@ function HomePage() {
 			</Link>
 		);
 	};
+
 	const ProductCard = ({ product }) => {
 		const { name, image, priceSell, priceDiscount, _id } = product;
 		const firstImage = image[0];
 		const { isOpen, onOpen, onOpenChange } = useDisclosure();
 		const items = useSelector((state) => state.cart.items);
+		const [favorite, setFavorite] = useState([]);
 		// console.log(userId);
 		// console.log(items);
 		const dispatch = useDispatch();
@@ -238,6 +241,8 @@ function HomePage() {
 				console.error('Error adding to cart:', error);
 			}
 		};
+		let productId = [];
+		const handleAddFavorite = async (_id) => {};
 		return (
 			<div className='relative mx-5 rounded-md bg-white'>
 				<div className='group'>
@@ -281,7 +286,7 @@ function HomePage() {
 								</Modal>
 							</div>
 							<div className='quick-view relative flex h-11 w-11 items-center justify-center rounded bg-white hover:bg-gray-400 hover:text-white'>
-								<Button className=' bg-transparent '>
+								<Button className=' bg-transparent ' onClick={() => handleAddFavorite(_id)}>
 									<FontAwesomeIcon icon={faHeart} />
 								</Button>
 								<p className='quick absolute -top-12 hidden  w-28 rounded bg-gray-400 p-1 text-center text-xs text-white'>
@@ -341,6 +346,23 @@ function HomePage() {
 					<Spinner />
 				) : (
 					<>
+						{/* BookCategoryFavorites */}
+						<AnimationComponents className='my-24'>
+							<div className='my-6 flex items-center justify-between'>
+								<h3 className=' text-2xl'>Đề xuất cho bạn</h3>
+								{/* <div className='flex items-center text-base hover:text-blue'>
+									<Link href='#'>Xem tất cả</Link>
+									<ChevronRight style={{ height: '16px', width: '16px' }} />
+								</div> */}
+							</div>
+							<div className='slider-container-item'>
+								<Slider {...settings}>
+									{dataBookss.map((product) => (
+										<ProductCard key={product._id} product={product} />
+									))}
+								</Slider>
+							</div>
+						</AnimationComponents>
 						{/* flash sale */}
 						<AnimationComponents className='my-24'>
 							<div className='my-6 flex items-center justify-between rounded-md bg-white px-2 py-4 '>

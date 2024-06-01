@@ -17,48 +17,96 @@ import {
 } from '@nextui-org/react';
 import StarRatings from 'react-star-ratings';
 import { faThumbsUp } from '@fortawesome/free-regular-svg-icons';
+import { useTheme } from '../../_components/ThemeProvider';
 
 export default function BookDetail({ params }) {
+	const { userId } = useTheme();
 	const [book, setBook] = useState(null);
 	const [selectedImage, setSelectedImage] = useState(null);
 	const [quantity, setQuantity] = useState(1);
 	const [price, setPrice] = useState(null);
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 	const [valueRating, setValueRating] = useState();
-	
+	const [valueContent, setValueContent] = useState();
 	const [categoryAll, setCategoryAll] = useState(null);
+	const [dataReview, setDataReview] = useState();
+	const [checkReview, setCheckReview] = useState();
+	const [valueUserName, setValueUserName] = useState();
+	const [Reload, setReload] = useState(0);
+	const loadUser = () => {
+		fetch(`http://localhost:5000/user/${userId}`)
+			.then((userResponse) => {
+				if (!userResponse.ok) {
+					throw new Error('Network response was not ok');
+				}
+				return userResponse.json();
+			})
+			.then((userData) => {
+				setValueUserName(userData.fullName);
+			})
+			.catch((error) => {
+				console.error('Error fetching data:', error);
+			});
+	};
+	function fetchData() {
+		// Fetch thông tin sách
+		fetch(`http://localhost:5000/product/${params.bookId}`)
+			.then((bookResponse) => {
+				if (!bookResponse.ok) {
+					throw new Error('Network response was not ok');
+				}
+				return bookResponse.json();
+			})
+			.then((bookData) => {
+				setBook(bookData);
+				setSelectedImage(bookData.image[0]);
 
+				// Lấy categoryAllId từ thông tin sách đã fetch
+				const categoryAllId = bookData?.categoryAllId;
+
+				// Fetch thông tin categoryAll
+				return fetch(`http://localhost:5000/categoryAll/${categoryAllId}`);
+			})
+			.then((categoryAllResponse) => {
+				if (!categoryAllResponse.ok) {
+					throw new Error('Network response was not ok');
+				}
+				return categoryAllResponse.json();
+			})
+			.then((categoryAllData) => {
+				setCategoryAll(categoryAllData);
+			})
+			.catch((error) => {
+				console.error('Error fetching data:', error);
+			});
+	}
+	const loadReview = () => {
+		fetch(`http://localhost:5000/review/product/${params.bookId}`)
+			.then((reviewResponse) => {
+				if (!reviewResponse.ok) {
+					throw new Error('Network response was not ok');
+				}
+				return reviewResponse.json();
+			})
+			.then((reviewData) => {
+				setDataReview(reviewData);
+			})
+			.catch((error) => {
+				console.error('Error fetching data:', error);
+			});
+	};
 	useEffect(() => {
-        async function fetchData() {
-            try {
-                // Fetch thông tin sách
-                const bookResponse = await fetch(`http://localhost:5000/product/${params.bookId}`);
-                if (!bookResponse.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const bookData = await bookResponse.json();
-                setBook(bookData);
-                setSelectedImage(bookData.image[0]);
+		fetchData();
 
-                // Lấy categoryAllId từ thông tin sách đã fetch
-                const categoryAllId = bookData?.categoryAllId;
-
-                // Fetch thông tin categoryAll
-                const categoryAllResponse = await fetch(`http://localhost:5000/categoryAll/${categoryAllId}`);
-                if (!categoryAllResponse.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const categoryAllData = await categoryAllResponse.json();
-                setCategoryAll(categoryAllData);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        }
-
-        fetchData();
-    }, [params.bookId]);
-
-	const breadcrumbItems = ["Trang chủ	", categoryAll?.name, book?.name];
+		loadUser();
+	}, [params.bookId]);
+	useEffect(() => {
+		loadReview();
+	}, [params.bookId, Reload]);
+	// if (dataReview) {
+	// 	console.log(dataReview);
+	// }
+	const breadcrumbItems = ['Trang chủ	', categoryAll?.name, book?.name];
 
 	const handleImageClick = (imageUrl) => {
 		setSelectedImage(imageUrl);
@@ -75,38 +123,40 @@ export default function BookDetail({ params }) {
 	const StarItem = ({ rating, valueRating }) => {
 		return (
 			<div className='my-2 flex items-center'>
-				<p>{rating}</p>
-				<FontAwesomeIcon icon={faStar} className='mr-4' />
-				<Slider
-					aria-label='Player progress'
-					color='foreground'
-					hideThumb={true}
-					defaultValue={valueRating}
-					className='max-w-md'
-					isDisabled
-				/>
+				<p className='text-lg font-semibold text-gray-900'>{rating}</p>
+				<FontAwesomeIcon icon={faStar} className='ml-4 text-yellow-500' />
+				<div className='mx-4 flex-grow'>
+					<Slider
+						aria-label='Player progress'
+						color='yellow'
+						hideThumb={true}
+						defaultValue={valueRating}
+						className='w-full'
+						isDisabled
+					/>
+				</div>
 			</div>
 		);
 	};
 	const ReviewItem = ({ name, createAt, content, rating }) => {
 		return (
-			<div className=' border-t py-4'>
+			<div className='border-t  py-4'>
 				<div className='flex'>
 					<div className='mr-32'>
-						<p>{name}</p>
-						<p>{createAt}</p>
+						<p className='text-lg font-semibold text-gray-800'>{name}</p>
+						<p className='text-sm text-gray-500'>{createAt}</p>
 					</div>
-					<div>
-						<div>
+					<div className='flex-1'>
+						<div className='mb-2'>
 							<StarRatings
 								rating={rating}
 								starDimension='20px'
 								starSpacing='4px'
 								starRatedColor='#FF9F00'
 							/>
-							<p>{content}</p>
+							<p className='mt-2 text-gray-700'>{content}</p>
 						</div>
-						<div className='flex items-center gap-2'>
+						<div className='flex cursor-pointer items-center gap-2 text-gray-600 hover:text-gray-800'>
 							<FontAwesomeIcon icon={faThumbsUp} />
 							<p>Thích</p>
 						</div>
@@ -118,18 +168,98 @@ export default function BookDetail({ params }) {
 	const handleChangeRating = (rating) => {
 		setValueRating(rating);
 	};
+	const handleChangeContent = (e) => {
+		setValueContent(e.target.value);
+	};
+	const handleAddReview = () => {
+		console.log(1);
+
+		console.log('productId: ' + params.bookId);
+		console.log('userId:' + userId);
+		console.log(valueRating);
+		console.log(valueContent);
+		const newReviewer = {
+			userName: valueUserName,
+			userId: userId,
+			rating: valueRating,
+			content: valueContent,
+		};
+		fetch(`http://localhost:5000/review/product/${params.bookId}`)
+			.then((response) => {
+				if (!response.ok) {
+					throw new Error('Network response was not ok');
+				}
+				return response.json();
+			})
+			.then((response) => {
+				console.log(response);
+				if (response.length === 0) {
+					const reviewData = {
+						productId: params.bookId,
+						reviewer: [newReviewer],
+					};
+					fetch('http://localhost:5000/review', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify(reviewData),
+					})
+						.then((response) => {
+							if (!response.ok) {
+								throw new Error('Network response was not ok');
+							}
+							return response.json();
+						})
+						.then((response) => {
+							// console.log(response);
+							setReload(Reload + 1);
+						})
+						.catch((error) => {
+							console.error('Error:', error);
+						});
+				} else {
+					const reviewId = response[0]._id;
+					const updatedReviewers = [...response[0].reviewer, newReviewer];
+
+					fetch(`http://localhost:5000/review/${reviewId}`, {
+						method: 'PATCH',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify({ reviewer: updatedReviewers }),
+					})
+						.then((response) => {
+							if (!response.ok) {
+								throw new Error('Network response was not ok');
+							}
+							return response.json();
+						})
+						.then((response) => {
+							// console.log(response);
+							setReload(Reload + 1);
+						})
+						.catch((error) => {
+							console.error('Error:', error);
+						});
+				}
+			})
+			.catch((error) => {
+				console.error('Error:', error);
+			});
+	};
 
 	return (
 		<div className='min-h-screen rounded-md bg-white  p-4 '>
 			{/* Breadcrumb */}
-            <nav className="flex justify-start">
-                {breadcrumbItems.map((item, index) => (
-                    <span key={index} className="text-gray-600">
-                        {item}
-                        {index < breadcrumbItems.length - 1 && <span className="mx-1">&gt;</span>}
-                    </span>
-                ))}
-            </nav>
+			<nav className='flex justify-start'>
+				{breadcrumbItems.map((item, index) => (
+					<span key={index} className='text-gray-600'>
+						{item}
+						{index < breadcrumbItems.length - 1 && <span className='mx-1'>&gt;</span>}
+					</span>
+				))}
+			</nav>
 			<div className='mx-auto py-8'>
 				<div className='flex'>
 					<div className='mr-4 w-1/2'>
@@ -178,93 +308,134 @@ export default function BookDetail({ params }) {
 					</div>
 					<div className='w-3/4'>
 						<div className='flex flex-col justify-between'>
-							<div>
+							<div className='my-3'>
 								<h1 className='mb-4 text-3xl font-bold'>{book.name}</h1>
-								<div className='flex items-center'>
-									<p className='text-sm text-gray-600'>Tác giả: </p>
-									<p className='ml-4 font-medium text-gray-800'>{book.author}</p>
+								<div className='flex items-center text-base'>
+									<p className='font-bold'>Tác giả: </p>
+									<p className='ml-4  '>{book.author}</p>
 								</div>
 							</div>
-							<div className='flex items-center'>
-								<p className='text-lg font-bold text-gray-600'>Giá: </p>
-								<p className='ml-4 text-lg font-medium text-emerald-500 '>
+							<div className='my-3 flex items-center '>
+								<p className='text-base font-bold '>Giá: </p>
+								<p className='ml-4 text-lg text-emerald-500 '>
 									{book.priceDiscount.toLocaleString('vi-VN', { minimumFractionDigits: 0 })} VNĐ
 								</p>
 								{book.priceSell && (
-									<p className='ml-4 mr-2 text-gray-600 line-through'>
+									<p className='ml-4 mr-2 text-sm text-gray-600 line-through'>
 										{' '}
 										{book.priceSell.toLocaleString('vi-VN', { minimumFractionDigits: 0 })} VNĐ
 									</p>
 								)}
 								{book.priceSell && book.priceDiscount && (
-									<p className='ml-4 animate-flash text-red-600 text-large'>
+									<p className='animate-flash ml-4 text-lg text-red-600'>
 										Giảm{' '}
 										{Math.round(((book.priceSell - book.priceDiscount) / book.priceSell) * 100)}%
 									</p>
 								)}
 							</div>
 						</div>
-						<div className='mt-8 flex items-center'>
-							<p className='mr-4'>Số lượng:</p>
-							<div className='flex flex-row-reverse items-center'>
-								<button
-									className='quantity-button rounded-md border border-gray-300 bg-white px-4 py-2 text-gray-700 transition duration-300 ease-in-out'
-									onClick={() => handleQuantityChange(1)}
-								>
-									<span className='button-icon text-lg'>+</span>
-								</button>
-								<p className='mx-2 text-lg font-medium'>{quantity}</p>
-								<button
-									className='quantity-button rounded-md border border-gray-300 bg-white px-4 py-2 text-gray-700 transition duration-300 ease-in-out'
-									onClick={() => handleQuantityChange(-1)}
-								>
-									<span className='button-icon text-lg'>-</span>
-								</button>
+						<div className='my-3 flex items-center gap-12'>
+							<div className='flex items-center gap-2'>
+								<p className=''>Số lượng:</p>
+								<div className='flex  items-center'>
+									<button
+										className=' rounded-l-md border border-gray-300 bg-white px-4 py-1 text-gray-700 transition duration-300 ease-in-out hover:border-gray-400 hover:bg-gray-100 active:scale-95 active:shadow-md'
+										onClick={() => handleQuantityChange(-1)}
+									>
+										<span className='button-icon text-lg'>-</span>
+									</button>
+									<p className=' border-y border-gray-300 px-4 py-1 text-lg font-medium'>
+										{quantity}
+									</p>
+									<button
+										className='rounded-r-md  border border-gray-300 bg-white px-4 py-1 text-gray-700 transition duration-300 ease-in-out hover:border-gray-400 hover:bg-gray-100 active:scale-95 active:shadow-md'
+										onClick={() => handleQuantityChange(1)}
+									>
+										<span className='button-icon text-lg'>+</span>
+									</button>
+								</div>
 							</div>
-							<button className='buy-now-button bg-blue-500 ml-4 rounded-md px-4 py-2 text-white transition duration-300 ease-in-out'>
-								Mua Ngay ({quantity} sản phẩm)
+							<button className=' my-3 w-60 rounded-md bg-blue1 px-4 py-2 text-white transition duration-300 ease-in-out hover:bg-blue1Hover'>
+								Mua Ngay
 							</button>
 						</div>
 					</div>
 				</div>
-				<p className='mt-4 rounded border border-gray-300 p-4'>Thông tin chi tiết:</p>
-				<div className='mt-4 rounded border border-gray-300 p-4'>
-					<div className='flex'>
-						<div className='w-1/2'>
-							<p className='text-gray-600'>Hình thức: {book.form}</p>
-							<p className='text-gray-600'>Ngôn ngữ: {book.language}</p>
-							<p className='text-gray-600'>Năm phát hành: {book.yearOfManufacture}</p>
-							<p className='text-gray-600'>Kích thước: {book.size}</p>
-							<p className='text-gray-600'>Số trang: {book.pageQuantity}</p>
-						</div>
-						<div className='w-1/2'>
-							<p className='text-gray-600'>
-								Điểm xếp hạng: {book.rate} ({book.ratingPoint} points)
-							</p>
-							<p className='text-gray-600'>Số người xem: {book.numberOfVisit}</p>
-						</div>
-					</div>
+				<p className='mt-4 rounded-lg border  bg-white p-6 text-xl font-bold text-gray-800 shadow'>
+					Thông tin chi tiết:
+				</p>
+
+				<div className='mt-4 rounded-lg border shadow'>
+					<table className='min-w-full  '>
+						<tbody className='divide-y  bg-white'>
+							<tr>
+								<td className='w-1/5 whitespace-nowrap rounded-lg border-r border-gray-300 px-6 py-4 text-sm font-medium text-gray-700'>
+									Hình thức
+								</td>
+								<td className='whitespace-nowrap rounded-lg px-6 py-4 text-sm text-gray-900'>
+									{book.form}
+								</td>
+							</tr>
+							<tr>
+								<td className='whitespace-nowrap border-r border-gray-300 px-6 py-4 text-sm font-medium text-gray-700'>
+									Ngôn ngữ
+								</td>
+								<td className='whitespace-nowrap px-6 py-4 text-sm text-gray-900'>
+									{book.language}
+								</td>
+							</tr>
+							<tr>
+								<td className='whitespace-nowrap border-r border-gray-300 px-6 py-4 text-sm font-medium text-gray-700'>
+									Năm phát hành
+								</td>
+								<td className='whitespace-nowrap px-6 py-4 text-sm text-gray-900'>
+									{book.yearOfManufacture}
+								</td>
+							</tr>
+							<tr>
+								<td className='whitespace-nowrap border-r border-gray-300 px-6 py-4 text-sm font-medium text-gray-700'>
+									Kích thước
+								</td>
+								<td className='whitespace-nowrap px-6 py-4 text-sm text-gray-900'>{book.size}</td>
+							</tr>
+							<tr>
+								<td className='whitespace-nowrap border-r border-gray-300 px-6 py-4 text-sm font-medium text-gray-700'>
+									Số trang
+								</td>
+								<td className='whitespace-nowrap px-6 py-4 text-sm text-gray-900'>
+									{book.pageQuantity}
+								</td>
+							</tr>
+							<tr>
+								<td className='whitespace-nowrap border-r border-gray-300 px-6 py-4 text-sm font-medium text-gray-700'>
+									Điểm xếp hạng
+								</td>
+								<td className='whitespace-nowrap px-6 py-4 text-sm text-gray-900'>
+									{book.rate} ({book.ratingPoint} points)
+								</td>
+							</tr>
+							<tr>
+								<td className='whitespace-nowrap rounded-lg border-r border-gray-300 px-6 py-4 text-sm font-medium text-gray-700'>
+									Số người xem
+								</td>
+								<td className='whitespace-nowrap rounded-lg px-6 py-4 text-sm text-gray-900'>
+									{book.numberOfVisit}
+								</td>
+							</tr>
+						</tbody>
+					</table>
 				</div>
+
 				<div className='mt-8'>
-					<p className='text-lg font-bold'>Mô tả:</p>
-					<div className='text-gray-800'>{book.description}</div>
+					<p className='text-lg font-bold text-gray-900'>Mô tả:</p>
+					<div className='mt-2 text-sm text-gray-700'>{book.description}</div>
 				</div>
 				<div className='rounded-md bg-white p-4 '>
-					<p className=' text-2xl font-bold'> Đánh giá sản phẩm</p>
+					<p className='text-2xl font-bold text-gray-900'>Đánh giá sản phẩm</p>
 					<div className='flex items-center gap-10 '>
 						<div className='w-[30%]'>
-							<div className='flex items-center'>
-								<p>5</p>
-								<FontAwesomeIcon icon={faStar} className='mr-4' />
-								<Slider
-									aria-label='Player progress'
-									color='foreground'
-									hideThumb={true}
-									defaultValue={90}
-									className='max-w-md'
-									isDisabled
-								/>
-							</div>
+							<StarItem rating={5} valueRating={90} />
+
 							<StarItem rating={4} valueRating={0} />
 							<StarItem rating={3} valueRating={0} />
 							<StarItem rating={2} valueRating={0} />
@@ -295,13 +466,14 @@ export default function BookDetail({ params }) {
 													labelPlacement='outside'
 													placeholder='Hãy đánh giá sản phẩm của chúng tôi'
 													className='max-w'
+													onChange={handleChangeContent}
 												/>
 											</ModalBody>
 											<ModalFooter>
 												<Button color='danger' variant='light' onPress={onClose}>
 													Hủy
 												</Button>
-												<Button color='primary' onPress={onClose}>
+												<Button color='primary' onPress={onClose} onClick={handleAddReview}>
 													Đánh giá
 												</Button>
 											</ModalFooter>
@@ -311,31 +483,24 @@ export default function BookDetail({ params }) {
 							</Modal>
 						</div>
 					</div>
-					<div className=' border-t py-4'>
-						<div className='flex'>
-							<div className='mr-32'>
-								<p>User1</p>
-								<p>03/05/2024</p>
-							</div>
-							<div>
-								<div>
-									<StarRatings
-										rating={5}
-										starDimension='20px'
-										starSpacing='4px'
-										starRatedColor='#FF9F00'
-									/>
-									<p>Sách này mang lại nhiều thú vị</p>
-								</div>
-								<div className='flex items-center gap-2'>
-									<FontAwesomeIcon icon={faThumbsUp} />
-									<p>Thích</p>
-								</div>
-							</div>
-						</div>
-					</div>
-					<ReviewItem name='User2' createAt='02/05/2024' content='sách hay' rating={4} />
-					<ReviewItem name='User3' createAt='02/05/2024' content='sách hay' rating={4} />
+					{dataReview &&
+					dataReview.length > 0 &&
+					dataReview[0].reviewer &&
+					dataReview[0].reviewer.length > 0 ? (
+						dataReview[0].reviewer.map((data, index) => (
+							<ReviewItem
+								key={index}
+								name={data.userName} // Replace with actual user name if available
+								createdAt={data.createdAt}
+								content={data.content}
+								rating={data.rating}
+							/>
+						))
+					) : (
+						<div>Chưa có đánh giá nào</div>
+					)}
+					{/* <ReviewItem name='User2' createAt='02/05/2024' content='sách hay' rating={4} />
+					<ReviewItem name='User3' createAt='02/05/2024' content='sách hay' rating={4} /> */}
 				</div>
 			</div>
 		</div>

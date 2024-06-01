@@ -57,7 +57,13 @@ function ListCheckbox({ option, onSelect }) {
 		</div>
 	);
 }
-function SideBarComponent({ filterPrice, filterSupplier, filterPublish, filterYear }) {
+function SideBarComponent({
+	filterPrice,
+	filterSupplier,
+	filterPublish,
+	filterYear,
+	filterCategory,
+}) {
 	const [activeButton, setActiveButton] = useState(null);
 	const [selectedOptionPrice, setSelectedOptionPrice] = useState([]);
 	const [selectedOptionSupplier, setSelectedOptionSupplier] = useState([]);
@@ -103,10 +109,13 @@ function SideBarComponent({ filterPrice, filterSupplier, filterPublish, filterYe
 	}, []);
 	const buttonCategory = ({ _id, name }) => (
 		<div
-			key={_id}
+			// key={_id}
 			className={`cursor-pointer rounded-lg px-4 py-2 
 					${activeButton === _id ? 'bg-blue-500 text-orange' : ' hover:text-orange'}`}
-			onClick={() => setActiveButton(_id)}
+			onClick={() => {
+				setActiveButton(_id);
+				filterCategory(_id);
+			}}
 		>
 			{name}
 		</div>
@@ -126,52 +135,54 @@ function SideBarComponent({ filterPrice, filterSupplier, filterPublish, filterYe
 		// }
 	};
 	const handleSelectOptionSupplier = (option) => {
-		const isSelected = selectedOptionSupplier.some(
-			(selectedOption) => selectedOption._id === option._id,
-		);
-		if (isSelected) {
-			setSelectedOptionSupplier(
-				selectedOptionSupplier.filter((selectedOption) => selectedOption._id !== option._id),
-			);
-			filterSupplier(
-				selectedOptionSupplier.filter((selectedOption) => selectedOption._id !== option._id),
-			);
-		} else {
-			setSelectedOptionSupplier([...selectedOptionSupplier, option]);
-			filterSupplier([...selectedOptionSupplier, option]);
-		}
+		filterSupplier(option);
+		// const isSelected = selectedOptionSupplier.some(
+		// 	(selectedOption) => selectedOption._id === option._id,
+		// );
+		// if (isSelected) {
+		// 	setSelectedOptionSupplier(
+		// 		selectedOptionSupplier.filter((selectedOption) => selectedOption._id !== option._id),
+		// 	);
+		// 	filterSupplier(
+		// 		selectedOptionSupplier.filter((selectedOption) => selectedOption._id !== option._id),
+		// 	);
+		// } else {
+		// 	setSelectedOptionSupplier([...selectedOptionSupplier, option]);
+		// 	filterSupplier([...selectedOptionSupplier, option]);
+		// }
 	};
 	const handleSelectOptionPublish = (option) => {
-		// filterPublish(option);
-		const isSelected = selectedOptionPublish.some(
-			(selectedOption) => selectedOption._id === option._id,
-		);
-		if (isSelected) {
-			setSelectedOptionPublish(
-				selectedOptionPublish.filter((selectedOption) => selectedOption._id !== option._id),
-			);
-			filterPublish(
-				selectedOptionPublish.filter((selectedOption) => selectedOption._id !== option._id),
-			);
-		} else {
-			setSelectedOptionPublish([...selectedOptionPublish, option]);
-			filterPublish([...selectedOptionPublish, option]);
-		}
+		filterPublish(option);
+		// const isSelected = selectedOptionPublish.some(
+		// 	(selectedOption) => selectedOption._id === option._id,
+		// );
+		// if (isSelected) {
+		// 	setSelectedOptionPublish(
+		// 		selectedOptionPublish.filter((selectedOption) => selectedOption._id !== option._id),
+		// 	);
+		// 	filterPublish(
+		// 		selectedOptionPublish.filter((selectedOption) => selectedOption._id !== option._id),
+		// 	);
+		// } else {
+		// 	setSelectedOptionPublish([...selectedOptionPublish, option]);
+		// 	filterPublish([...selectedOptionPublish, option]);
+		// }
 	};
 	// console.log(selectedOptionPublish);
 	const handleSelectOptionYear = (option) => {
-		const isSelected = selectedOptionYear.some(
-			(selectedOption) => selectedOption._id === option._id,
-		);
-		if (isSelected) {
-			setSelectedOptionYear(
-				selectedOptionYear.filter((selectedOption) => selectedOption._id !== option._id),
-			);
-			filterYear(selectedOptionYear.filter((selectedOption) => selectedOption._id !== option._id));
-		} else {
-			setSelectedOptionYear([...selectedOptionYear, option]);
-			filterYear([...selectedOptionYear, option]);
-		}
+		filterYear(option);
+		// const isSelected = selectedOptionYear.some(
+		// 	(selectedOption) => selectedOption._id === option._id,
+		// );
+		// if (isSelected) {
+		// 	setSelectedOptionYear(
+		// 		selectedOptionYear.filter((selectedOption) => selectedOption._id !== option._id),
+		// 	);
+		// 	filterYear(selectedOptionYear.filter((selectedOption) => selectedOption._id !== option._id));
+		// } else {
+		// 	setSelectedOptionYear([...selectedOptionYear, option]);
+		// 	filterYear([...selectedOptionYear, option]);
+		// }
 	};
 
 	return (

@@ -28,18 +28,56 @@ function bookCategory() {
 	const [filterValue, setFilterValue] = useState([]);
 	const [valueFilterSupplier, setValueFilterSupplier] = useState([]);
 	// const [filterValue, setValueFilterPrice] = useState();
+	const [isLoaing, setIsLoading] = useState([]);
 	const [dataFilter, setDataFilter] = useState([]);
+	const [filterValueCategory, setFilterValueCategory] = useState();
+	const [filterValueSupplier, setFilterValueSupplier] = useState([]);
+	const [filterValuePublished, setFilterValuePublished] = useState([]);
+	const [filterValueYear, setFilterValueYear] = useState([]);
 	// const [selectedKeys, setSelectedKeys] = React.useState(new Set(['Bestseller']));
 	// const selectedValue = React.useMemo(
 	// 	() => Array.from(selectedKeys).join(", ").replaceAll("_", " "),
 	// 	[selectedKeys]
 	//   );
-	const [selectedKeys, setSelectedKeys] = React.useState(new Set(['']));
-
+	const [selectedKeys, setSelectedKeys] = useState(new Set(['']));
+	// console.log(filterValue);
+	// console.log(filterValueSupplier);
 	const selectedValue = React.useMemo(
 		() => Array.from(selectedKeys).join(', ').replaceAll('_', ' '),
 		[selectedKeys],
 	);
+	// console.log(selectedKeys.currentKey);
+	// console.log(dataBook);
+	useEffect(() => {
+		console.log(selectedKeys);
+		console.log('dataBook', dataBook);
+		console.log('dataFilter', dataFilter);
+
+		if (selectedKeys.currentKey) {
+			if (dataFilter.length > 0) {
+				let sortedDataFilter;
+				if (selectedKeys.currentKey === 'Giá tăng dần') {
+					sortedDataFilter = [...dataFilter].sort((a, b) => a.priceDiscount - b.priceDiscount);
+				} else if (selectedKeys.currentKey === 'Giá giảm dần') {
+					sortedDataFilter = [...dataFilter].sort((a, b) => b.priceDiscount - a.priceDiscount);
+				} else if (selectedKeys.currentKey === 'Bán chạy tuần') {
+					sortedDataFilter = [...dataFilter].sort((a, b) => b.ratingPoint - a.ratingPoint);
+				}
+				setDataFilter(sortedDataFilter);
+			} else {
+				let sortedDataBook;
+				if (selectedKeys.currentKey === 'Giá tăng dần') {
+					sortedDataBook = [...dataBook].sort((a, b) => a.priceSell - b.priceSell);
+				} else if (selectedKeys.currentKey === 'Giá giảm dần') {
+					sortedDataBook = [...dataBook].sort((a, b) => b.priceSell - a.priceSell);
+				} else if (selectedKeys.currentKey === 'Bán chạy tuần') {
+					sortedDataBook = [...dataBook].sort((a, b) => b.ratingPoint - a.ratingPoint);
+				}
+				setDataBook(sortedDataBook);
+			}
+		}
+	}, [selectedKeys]);
+
 	useEffect(() => {
 		axios
 			.get('http://localhost:5000/product')
@@ -157,9 +195,55 @@ function bookCategory() {
 			</div>
 		);
 	};
-	const handleChangeValueSupplier = (value) => {
-		// console.log(value);
-	};
+
+	useEffect(() => {
+		const filteredData = dataBook.filter((book) => {
+			const priceFilter =
+				filterValue.length === 0 ||
+				filterValue.some((filter) => {
+					return (
+						!filter ||
+						!filter.priceMin ||
+						!filter.priceMax ||
+						(book.priceDiscount > filter.priceMin && book.priceDiscount < filter.priceMax)
+					);
+				});
+
+			const categoryFilter = !filterValueCategory || book.categoryAllId === filterValueCategory;
+
+			const supplierFilter =
+				filterValueSupplier.length === 0 ||
+				filterValueSupplier.some((filter) => {
+					return !filter || book.categorySupplierId === filter._id;
+				});
+
+			const publishedFilter =
+				filterValuePublished.length === 0 ||
+				filterValuePublished.some((filter) => {
+					return book.categoryPublishId === filter._id;
+				});
+
+			const yearFilter =
+				filterValueYear.length === 0 ||
+				filterValueYear.some((filter) => {
+					return book.categoryYearId === filter._id;
+				});
+
+			return priceFilter && categoryFilter && supplierFilter && publishedFilter && yearFilter;
+		});
+
+		setDataFilter(filteredData);
+	}, [
+		filterValue,
+		filterValueCategory,
+		filterValueSupplier,
+		filterValuePublished,
+		filterValueYear,
+	]);
+
+	// useEffect(()=>{
+	// 	if()
+	// },[selectedKeys])
 	const handleChangeValue = (value) => {
 		// Nếu giá trị đã tồn tại trong mảng filterValue, hãy loại bỏ nó
 		if (filterValue.includes(value)) {
@@ -171,34 +255,41 @@ function bookCategory() {
 			setFilterValue(updatedFilterValue);
 		}
 	};
-
-	useEffect(() => {
-		if (filterValue && filterValue.length > 0) {
-			const filteredData = dataBook.filter((book) => {
-				return filterValue.some((filter) => {
-					// Nếu filter không có giá trị, trả về true để bỏ qua bộ lọc này
-					if (!filter || !filter.priceMin || !filter.priceMax) {
-						return true;
-					}
-					// Kiểm tra nếu giá sách nằm trong phạm vi giá trị được lọc
-					return book.priceDiscount > filter.priceMin && book.priceDiscount < filter.priceMax;
-				});
-			});
-			setDataFilter(filteredData);
+	const handleChangeValueSupplier = (value) => {
+		if (filterValueSupplier.includes(value)) {
+			const updatedFilterValue = filterValueSupplier.filter((item) => item !== value);
+			setFilterValueSupplier(updatedFilterValue);
 		} else {
-			// Nếu không có bộ lọc nào, hiển thị toàn bộ dữ liệu
-			setDataFilter(dataBook);
+			const updatedFilterValue = [...filterValueSupplier, value];
+			setFilterValueSupplier(updatedFilterValue);
 		}
-	}, [filterValue, dataBook]);
-	// useEffect(()=>{
-	// 	if()
-	// },[selectedKeys])
+	};
 	const handleChangeValuePublish = (value) => {
-		// console.log(value);
+		if (filterValuePublished.includes(value)) {
+			const updatedFilterValue = filterValuePublished.filter((item) => item !== value);
+			setFilterValuePublished(updatedFilterValue);
+		} else {
+			const updatedFilterValue = [...filterValuePublished, value];
+			setFilterValuePublished(updatedFilterValue);
+		}
 	};
 	const handleChangeValueYear = (value) => {
-		console.log(value);
+		if (filterValueYear.includes(value)) {
+			const updatedFilterValue = filterValueYear.filter((item) => item !== value);
+			setFilterValueYear(updatedFilterValue);
+		} else {
+			const updatedFilterValue = [...filterValueYear, value];
+			setFilterValueYear(updatedFilterValue);
+		}
 	};
+
+	const handleChangeValueCategory = (value) => {
+		setFilterValueCategory(value);
+	};
+	const hanleChangeSelectKey = (e) => {
+		console.log(e);
+	};
+	console.log('dataBooksssss', dataBook);
 	return (
 		<div>
 			<title>Book Category</title>
@@ -209,10 +300,10 @@ function bookCategory() {
 						filterSupplier={handleChangeValueSupplier}
 						filterPublish={handleChangeValuePublish}
 						filterYear={handleChangeValueYear}
+						filterCategory={handleChangeValueCategory}
 					/>
 				</div>
 				<div className='ml-5 w-full rounded-md bg-white p-5'>
-					{/* select dropdown */}
 					<div className='flex items-center'>
 						<p className='mr-2'>Sắp xếp theo: </p>
 						<div>
@@ -229,11 +320,9 @@ function bookCategory() {
 									selectionMode='single'
 									selectedKeys={selectedKeys}
 									onSelectionChange={setSelectedKeys}
+									onChange={hanleChangeSelectKey}
 									color='primary'
 								>
-									{/* <DropdownItem key='Bestseller'>Bán chạy tuần</DropdownItem>
-									<DropdownItem key='PricesIncrease'>Giá tăng dần</DropdownItem>
-									<DropdownItem key='PricesDecrease'>Giá giảm dần</DropdownItem> */}
 									<DropdownItem key='Bán chạy tuần' textValue='ABC'>
 										Bán chạy tuần
 									</DropdownItem>
@@ -243,71 +332,28 @@ function bookCategory() {
 							</Dropdown>
 						</div>
 					</div>
-					{/* item */}
-					<div className=' my-5 grid grid-cols-4 gap-4'>
-						{filterValue.length === 0
-							? // Nếu filterValue rỗng, hiển thị dataBook
-								dataBook.map((product) => <ProductCard key={product._id} product={product} small />)
-							: // Ngược lại, hiển thị dataFilter nếu đã được lọc
-								dataFilter.map((product) => (
-									<ProductCard key={product._id} product={product} small />
-								))}
-						{/* <div className='my-5'>
-							<div className='relative max-w-[288px] rounded-md border bg-white'>
-								<div className='group '>
-									<div className=' relative flex cursor-pointer flex-col items-center'>
-										<div className='p-6'>
-											<img
-												src='https://cdn0.fahasa.com/media/catalog/product/8/9/8935309503162.jpg'
-												alt=''
-												className='h-40 w-40'
-											/>
-										</div>
-										<div className='invisible absolute bottom-0 left-0 right-0 top-0 grid grid-cols-3 place-content-center place-items-center rounded-t-md bg-[#009fe557] px-8 group-hover:visible'>
-											<Tooltip showArrow={true} content='Xem chi tiết' delay={300}>
-												<Button className='h-11 min-w-11 rounded-md bg-white p-0'>
-													<FontAwesomeIcon icon={faEye} className=' text-xl  ' />
-												</Button>
-											</Tooltip>
 
-											<Tooltip showArrow={true} content='Thêm vào yêu thích' delay={300}>
-												<Button className='h-11 min-w-11 rounded-md bg-white p-0'>
-													<FontAwesomeIcon icon={faHeart} className=' text-xl  ' />
-												</Button>
-											</Tooltip>
-
-											<Tooltip showArrow={true} content='Thêm giỏ hàng' delay={300}>
-												<Button className='h-11 min-w-11 rounded-md bg-white p-0'>
-													<FontAwesomeIcon icon={faCartShopping} className=' text-xl  ' />
-												</Button>
-											</Tooltip>
-										</div>
-									</div>
-									<Link href='#'>
-										<div className='mx-4 px-2 py-4'>
-											<div>
-												<p className='line-clamp-3 text-sm'>Hackers Ielts Listening (Tái Bản)</p>
-											</div>
-											<div className='flex items-center'>
-												<p className='my-2  mr-2 text-base font-bold text-red-500'>240.000 đ</p>
-												<p className=' text-sm text-gray-300 line-through'>140.000 đ</p>
-											</div>
-											<StarRatings
-												rating={4.403}
-												starDimension='16px'
-												starSpacing='5px'
-												starRatedColor='#F6A500'
-											/>
-										</div>
-									</Link>
-								</div>
-								<div className=' absolute top-3  w-8 bg-blue text-center text-white'>
-									<p className=' text-xs'>24%</p>
-									<div className='half-square1'></div>
-								</div>
-							</div>
-						</div> */}
-					</div>
+					{filterValueCategory === undefined &&
+					filterValue.length === 0 &&
+					filterValueSupplier.length === 0 &&
+					filterValuePublished.length === 0 &&
+					filterValueYear.length === 0 ? (
+						<div className=' my-5 grid grid-cols-4 gap-4'>
+							{dataBook.map((product) => (
+								<ProductCard key={product._id} product={product} small />
+							))}
+						</div>
+					) : dataFilter.length > 0 ? (
+						<div className=' my-5 grid grid-cols-4 gap-4'>
+							{dataFilter.map((product) => (
+								<ProductCard key={product._id} product={product} small />
+							))}
+						</div>
+					) : (
+						<div className='flex h-32 w-full items-center justify-center text-2xl'>
+							Không tìm thấy kết quả phù hợp
+						</div>
+					)}
 				</div>
 			</div>
 		</div>
@@ -315,3 +361,25 @@ function bookCategory() {
 }
 
 export default bookCategory;
+
+// {filterValueCategory === undefined &&
+// 	filterValue.length === 0 &&
+// 	filterValueSupplier.length === 0 &&
+// 	filterValuePublished.length === 0 &&
+// 	filterValueYear.length === 0 ? (
+// 		<div className='my-5 grid grid-cols-4 gap-4'>
+// 			{dataBook.map((product) => (
+// 				<ProductCard key={product._id} product={product} small />
+// 			))}
+// 		</div>
+// 	) : dataFilter.length > 0 ? (
+// 		<div className='my-5 grid grid-cols-4 gap-4'>
+// 			{dataFilter.map((product) => (
+// 				<ProductCard key={product._id} product={product} small />
+// 			))}
+// 		</div>
+// 	) : (
+// 		<div className='flex h-32 w-full items-center justify-center text-2xl'>
+// 			Không tìm thấy kết quả phù hợp
+// 		</div>
+// 	)}

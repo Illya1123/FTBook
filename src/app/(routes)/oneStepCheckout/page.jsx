@@ -8,11 +8,16 @@ import {
 	ModalFooter,
 	Button,
 	useDisclosure,
+	Input,
 } from '@nextui-org/react';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from '../_components/ThemeProvider';
 import { country } from '../_components/data';
+import { Select, SelectItem } from '@nextui-org/react';
+import { SelectorIcon } from '../_components/icon';
+import './style.css';
+import axios from 'axios';
 const discountCodes = [
 	{
 		id: 1,
@@ -126,6 +131,11 @@ function oneStepCheckoutPage() {
 	const [inforDiscountCode, setInforDiscountCode] = useState();
 	const [totalPriceFinal, setTotalPriceFinal] = useState();
 	const [orderStatus, setOrderStatus] = useState('Đã đặt hàng');
+	const [orderId, setOderId] = useState();
+	// address
+	const [valueCity, setValueCity] = useState('');
+	const [valueDistrict, setValueDistrict] = useState('');
+	const [valueWard, setValueWard] = useState('');
 	// format number 199000 => 199.000
 	function formatNumber(number) {
 		const parts = number.toString().split('.');
@@ -199,7 +209,7 @@ function oneStepCheckoutPage() {
 		}
 	}, [appliedDiscountCode]);
 	// ------------------------ Phương thức thanh toán ------------------------
-	const [selectedMethod, setSelectedMethod] = useState('');
+	const [selectedMethod, setSelectedMethod] = useState('VNPay');
 	const [nameMethod, setNameMethod] = useState('Thanh toán khi nhận hàng');
 
 	const handleMethodChange = (e) => {
@@ -254,9 +264,61 @@ function oneStepCheckoutPage() {
 	const handleChangeValueWard = (e) => {
 		setValueWardUser(e.target.value);
 	};
-	// const handleChangeValueAddress = (e) => {
-	// 	setValueAddressUser(valueWardUser + ', ' + valueDistrictUser + ', ' + valueProvinceUser);
-	// };
+
+	const handleChangeValueAddress = (e) => {
+		setValueAddressUser(e.target.value);
+	};
+	//render address
+	const renderCities = () => {
+		return country.map((city) => ({
+			key: city.name,
+			label: city.name,
+		}));
+	};
+
+	const handleCityChange = (e) => {
+		setValueCity(e.target.value);
+		setValueProvinceUser(e.target.value);
+		setValueDistrictUser('');
+		const fullAddress = `${e.target.value}`;
+		setValueAddressUser(fullAddress);
+	};
+	const renderDistricts = () => {
+		if (!valueProvinceUser) return [];
+
+		const city = country.find((city) => city.name === valueProvinceUser);
+		return city.districts.map((district) => ({
+			key: district.name,
+			label: district.name,
+		}));
+	};
+	const handleDistrictChange = (e) => {
+		setValueDistrictUser(e.target.value);
+		const fullAddress = `${e.target.value}, ${valueProvinceUser}`;
+		setValueAddressUser(fullAddress);
+	};
+
+	const renderWards = () => {
+		if (!valueProvinceUser || !valueDistrictUser) return [];
+
+		const city = country.find((city) => city.name === valueProvinceUser);
+		const district = city.districts.find((district) => district.name === valueDistrictUser);
+		return district.wards.map((ward) => ({
+			key: ward.name,
+			label: ward.name,
+		}));
+	};
+	const handleWardChange = (e) => {
+		setValueWardUser(e.target.value);
+		const fullAddress = `${e.target.value}, ${valueDistrictUser}, ${valueProvinceUser}`;
+		setValueAddressUser(fullAddress);
+	};
+
+
+
+		// Prepare the user data for the order
+	
+
 
 	useEffect(() => {
 		if (valueWardUser && valueDistrictUser && valueProvinceUser) {
@@ -368,6 +430,7 @@ function oneStepCheckoutPage() {
 
 	
 
+
 	const InputInforItem = ({ title, onChange, value }) => {
 		return (
 			<div className='my-6 flex items-center'>
@@ -452,7 +515,7 @@ function oneStepCheckoutPage() {
 	return (
 		<div>
 			<title>Checkout</title>
-			<div className='fixed  bottom-0 left-0 right-0  h-[180px] bg-white shadow-inner '>
+			<div className='fixed  bottom-0 left-0 right-0 z-[99]  h-[180px] bg-white shadow-inner '>
 				<div className='mx-auto max-w-[1200px]'>
 					<div>
 						<div className='my-2 flex'>
@@ -561,9 +624,10 @@ function oneStepCheckoutPage() {
 							<div className='w-44'>
 								<p>Họ và tên người nhận</p>
 							</div>
-							<input
+							<Input
 								type='text'
-								className=' ml-4 w-1/2 rounded-md border px-2 py-1 outline-none'
+								variant='bordered'
+								className=' ml-4 w-1/2  px-2 py-1 outline-none '
 								value={valueNameUser}
 								onChange={handleChangeValueName}
 							/>
@@ -572,9 +636,10 @@ function oneStepCheckoutPage() {
 							<div className='w-44'>
 								<p>Số điện thoại</p>
 							</div>
-							<input
+							<Input
 								type='text'
-								className=' ml-4 w-1/2 rounded-md border px-2 py-1 outline-none'
+								variant='bordered'
+								className=' ml-4 w-1/2  px-2 py-1 outline-none '
 								value={valuePhoneUser}
 								onChange={handleChangeValuePhone}
 							/>
@@ -583,45 +648,71 @@ function oneStepCheckoutPage() {
 							<div className='w-44'>
 								<p>Tỉnh/Thành Phố</p>
 							</div>
-							<input
-								type='text'
-								className=' ml-4 w-1/2 rounded-md border px-2 py-1 outline-none'
-								value={valueProvinceUser}
-								onChange={handleChangeValueProvince}
-							/>
+							<Select
+								color='default'
+								placeholder={'Chọn Tỉnh/Thành phố'}
+								labelPlacement='outside'
+								variant='bordered'
+								disableSelectorIconRotation
+								selectorIcon={<SelectorIcon />}
+								onChange={handleCityChange}
+								className=' ml-4 w-1/2 border-0 px-2 py-1 text-black  outline-none'
+							>
+								{renderCities().map((data) => (
+									<SelectItem key={data.key}>{data.label}</SelectItem>
+								))}
+							</Select>
 						</div>
 						<div className='my-6 flex items-center'>
 							<div className='w-44'>
 								<p>Quận/Huyện</p>
 							</div>
-							<input
-								type='text'
-								className=' ml-4 w-1/2 rounded-md border px-2 py-1 outline-none'
+							<Select
+								placeholder='Chọn Quận/Huyện'
+								labelPlacement='outside'
+								variant='bordered'
+								className=' ml-4 w-1/2 border-0 px-2 py-1 outline-none '
+								disableSelectorIconRotation
+								selectorIcon={<SelectorIcon />}
+								onChange={handleDistrictChange}
 								value={valueDistrictUser}
-								onChange={handleChangeValueDistrict}
-							/>
+							>
+								{renderDistricts().map((data) => (
+									<SelectItem key={data.key}>{data.label}</SelectItem>
+								))}
+							</Select>
 						</div>
 						<div className='my-6 flex items-center'>
 							<div className='w-44'>
 								<p>Phường/Xã</p>
 							</div>
-							<input
-								type='text'
-								className=' ml-4 w-1/2 rounded-md border px-2 py-1 outline-none'
+							<Select
+								placeholder='Chọn Phường/Xã'
+								labelPlacement='outside'
+								variant='bordered'
+								className=' ml-4 w-1/2 border-0 px-2 py-1 outline-none '
+								disableSelectorIconRotation
+								selectorIcon={<SelectorIcon />}
+								onChange={handleWardChange}
 								value={valueWardUser}
-								onChange={handleChangeValueWard}
-							/>
+							>
+								{renderWards().map((data) => (
+									<SelectItem key={data.key}>{data.label}</SelectItem>
+								))}
+							</Select>
 						</div>
 						<div className='my-6 flex items-center'>
 							<div className='w-44'>
 								<p>Địa chỉ</p>
 							</div>
-							<input
+							<Input
 								type='text'
-								className=' ml-4 w-1/2 rounded-md border px-2 py-1 outline-none'
+								variant='bordered'
+								className=' ml-4 w-1/2  px-2 py-1 outline-none '
 								value={valueAddressUser}
-								// onChange={handleChangeValueAddress}
-								// defaultValue={`${dataUser.addresses.ward}, ${dataUser.addresses.district}, ${dataUser.addresses.province}`}
+
+								onChange={handleChangeValueAddress}
+
 							/>
 						</div>
 					</>
@@ -732,7 +823,7 @@ function oneStepCheckoutPage() {
 							Áp dụng
 						</button>
 					</div>
-					<Button className='ml-4  text-blue1  hover:text-blue1Hover' onPress={onOpen1}>
+					<Button className='ml-4 ' color='primary' variant='ghost' onPress={onOpen1}>
 						Chọn mã khuyến mãi
 					</Button>
 					<Modal isOpen={isOpen1} onOpenChange={onOpenChange1} size='3xl'>

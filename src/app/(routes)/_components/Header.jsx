@@ -14,10 +14,12 @@ import { motion } from 'framer-motion';
 import { useEffect } from 'react';
 
 import { useState } from 'react';
-import { Book, Frown, LayoutList, RotateCcw } from 'lucide-react';
+import { Book, Frown, LayoutList, RotateCcw, UserRoundCog } from 'lucide-react';
 import AnimationComponents from './AnimationComponents';
+import { useTheme } from './ThemeProvider';
 
 function Header({ activeHome, activeBook, activeAbout, activeContact }) {
+	const { roleUser } = useTheme();
 	const { user } = useUser();
 	const [isFocus, setIsFocus] = useState(false);
 	const [dataProduct, setDataProduct] = useState([]);
@@ -53,11 +55,11 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 				console.error('Error fetching data:', error);
 			});
 	});
-	useEffect(() => {
-		if (isLoading) {
-			console.log(dataProduct);
-		}
-	}, [isLoading]);
+	// useEffect(() => {
+	// 	if (isLoading) {
+	// 		console.log(dataProduct);
+	// 	}
+	// }, [isLoading]);
 	const [quantityCart, setQuantityCart] = useState(0);
 	const [isAuth, setIsAuth] = useState(false);
 	const [valueSearched, setValueSearched] = useState([]);
@@ -88,8 +90,11 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 			</div>
 		);
 	};
+	const handleSwitchAdmin = () => {
+		window.location.href = 'http://localhost:3000';
+	};
 	return (
-		<div className='fixed left-0 right-0 top-0  z-[100000] border-b bg-white'>
+		<div className='fixed left-0 right-0 top-0 z-[90]   border-b bg-white'>
 			<div className='mx-auto flex max-w-[1200px] items-center justify-between py-4'>
 				<div>
 					<h1 className='text-2xl font-bold text-blue'>
@@ -296,16 +301,23 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 							</div>
 						)}
 					</div>
-					<div className=' relative h-5 w-5 '>
-						<Link href='/cart'>
-							<FontAwesomeIcon icon={faCartShopping} className=' h-5 w-5 ' />
-						</Link>
-						{quantityCart > 0 ? (
-							<div className='absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-white'>
-								<p>{quantityCart}</p>
-							</div>
-						) : null}
-					</div>
+					{roleUser === 'user' ? (
+						<div className=' relative h-5 w-5 '>
+							<Link href='/cart'>
+								<FontAwesomeIcon icon={faCartShopping} className=' h-5 w-5 ' />
+							</Link>
+							{quantityCart > 0 ? (
+								<div className='absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-white'>
+									<p>{quantityCart}</p>
+								</div>
+							) : null}
+						</div>
+					) : (
+						<div onClick={handleSwitchAdmin} className=' cursor-pointer'>
+							<UserRoundCog />
+							{/* <FontAwesomeIcon icon={faCartShopping} className=' h-5 w-5 ' /> */}
+						</div>
+					)}
 					{!user ? (
 						<div className='group relative h-5 w-5'>
 							<FontAwesomeIcon icon={faUser} className='z-50 h-5 w-5 cursor-pointer' />
