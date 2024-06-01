@@ -264,6 +264,7 @@ function oneStepCheckoutPage() {
 	const handleChangeValueWard = (e) => {
 		setValueWardUser(e.target.value);
 	};
+
 	const handleChangeValueAddress = (e) => {
 		setValueAddressUser(e.target.value);
 	};
@@ -312,151 +313,123 @@ function oneStepCheckoutPage() {
 		const fullAddress = `${e.target.value}, ${valueDistrictUser}, ${valueProvinceUser}`;
 		setValueAddressUser(fullAddress);
 	};
-	// -------------------------- confirm payment ----------------------------
 
-	// const handleConfirmPayment = async () => {
-	// 	// Prepare the product data for the order
-	// 	const products = dataCheckout.map((product) => ({
-	// 		productId: product._id,
-	// 		quantity: product.quantityPurchased,
-	// 	}));
 
-	// 	// Prepare the user data for the order
-	// 	const userData = {
-	// 		userId,
-	// 		name: valueNameUser,
-	// 		address: valueAddressUser,
-	// 		totalPrice: totalPriceFinal ? totalPriceFinal + 19000 : totalPriceCheckout + 19000,
-	// 		orderStatus,
-	// 		paymentMethod: nameMethod,
-	// 		products,
-	// 	};
-
-	// 	try {
-	// 		// Send order creation request
-	// 		const orderResponse = await fetch('http://localhost:5000/payment', {
-	// 			method: 'POST',
-	// 			headers: {
-	// 				'Content-Type': 'application/json',
-	// 			},
-	// 			body: JSON.stringify(userData),
-	// 		});
-
-	// 		if (!orderResponse.ok) {
-	// 			throw new Error('Order creation failed');
-	// 		}
-
-	// 		const orderData = await orderResponse.json();
-	// 		console.log('Created Order ID:', orderData._id);
-
-	// 		// Send payment URL creation request if the selected method is VNPay
-	// 		if (selectedMethod === 'VNPay') {
-	// 			const paymentData = {
-	// 				amount: totalPriceFinal ? totalPriceFinal + 19000 : totalPriceCheckout + 19000,
-	// 				orderId: orderData._id, // Use orderId from the created order
-	// 				bankCode: 'VNBANK',
-	// 				language: 'vn',
-	// 			};
-
-	// 			const paymentResponse = await fetch('http://localhost:5000/order/create_payment_url', {
-	// 				method: 'POST',
-	// 				headers: {
-	// 					'Content-Type': 'application/json',
-	// 				},
-	// 				body: JSON.stringify(paymentData),
-	// 			});
-
-	// 			if (!paymentResponse.ok) {
-	// 				throw new Error('Payment URL creation failed');
-	// 			}
-
-	// 			const paymentResponseData = await paymentResponse.json();
-	// 			const paymentUrl = paymentResponseData;
-	// 			console.log('paymentUrl', paymentUrl);
-
-	// 			// Redirect user to the payment URL
-	// 			window.location.href = paymentUrl;
-	// 		} else {
-	// 			// Redirect to successful transaction page if not using VNPay
-	// 			router.push('/successfulTransaction');
-	// 		}
-	// 	} catch (error) {
-	// 		console.error('Error:', error);
-	// 		// Display error message to the user or take other actions as needed
-	// 		alert('There was an error processing your request. Please try again.');
-	// 	}
-	// };
-	const handleConfirmPayment = async () => {
-		// Prepare the product data for the order
-		const products = dataCheckout.map((product) => ({
-			productId: product._id,
-			quantity: product.quantityPurchased,
-		}));
 
 		// Prepare the user data for the order
-		const userData = {
-			userId,
-			name: valueNameUser,
-			address: valueAddressUser,
-			totalPrice: totalPriceFinal ? totalPriceFinal + 19000 : totalPriceCheckout + 19000,
-			orderStatus,
-			paymentMethod: nameMethod,
-			products,
-		};
+	
 
-		try {
-			// Send order creation request
-			const orderResponse = await fetch('http://localhost:5000/payment', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(userData),
-			});
 
-			if (!orderResponse.ok) {
-				throw new Error('Order creation failed');
-			}
-
-			const orderData = await orderResponse.json();
-			console.log('Created Order ID:', orderData._id);
-
-			// Send payment URL creation request if the selected method is VNPay
-			if (selectedMethod === 'VNPay') {
-				const paymentData = {
-					amount: totalPriceFinal ? totalPriceFinal + 19000 : totalPriceCheckout + 19000,
-					orderId: orderData._id, // Use orderId from the created order
-					bankCode: 'VNBANK',
-					language: 'vn',
-				};
-
-				const paymentResponse = await fetch('http://localhost:5000/order/create_payment_url', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify(paymentData),
-				});
-
-				if (!paymentResponse.ok) {
-					throw new Error('Payment URL creation failed');
-				}
-
-				const paymentUrl = await paymentResponse.json(); // Assuming the backend returns the URL as a plain text string
-				console.log('paymentUrl', paymentUrl.url);
-				// window.location.href = 'http://www.google.com';
-				// Redirect user to the payment URL
-				window.location.href = paymentUrl.url;
-			} else {
-				// Redirect to successful transaction page if not using VNPay
-				router.push('/successfulTransaction');
-			}
-		} catch (error) {
-			console.error('Error:', error);
-			// Display error message to the user or take other actions as needed
-			alert('There was an error processing your request. Please try again.');
+	useEffect(() => {
+		if (valueWardUser && valueDistrictUser && valueProvinceUser) {
+			setValueAddressUser(valueWardUser + ', ' + valueDistrictUser + ', ' + valueProvinceUser);
 		}
-	};
+	
+	}, [valueWardUser, valueDistrictUser, valueProvinceUser]);
+	// -------------------------- confirm payment ----------------------------
+
+	// Biến để đánh dấu việc callback đã nhận được
+	const handleConfirmPayment = () => {
+    const products = dataCheckout.map((product) => ({
+        productId: product._id,
+        quantity: product.quantityPurchased,
+    }));
+
+    const userData = {
+        userId,
+        name: valueNameUser,
+        address: valueAddressUser,
+        totalPrice: totalPriceFinal ? totalPriceFinal + 19000 : totalPriceCheckout + 19000,
+        orderStatus: selectedMethod === 'MoMo' ? 'Đã thanh toán' : orderStatus,
+        paymentMethod: selectedMethod,
+        products,
+    };
+
+    // Function to handle payment for MoMo
+    const processPaymentMoMo = () => {
+        const paymentPromise = fetch('http://localhost:5000/payment_momo', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                totalPrice: userData.totalPrice,
+            }),
+        })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        });
+
+        paymentPromise.then((data) => {
+            window.location.href = data.shortLink; // Chuyển trang
+            const checkStatusPromise = fetch('http://localhost:5000/check-status-transaction', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ orderId: data.orderId }),
+            })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            });
+
+            checkStatusPromise.then((statusData) => {
+                console.log(statusData);
+                if (statusData.message === 'Thành công.') {
+                    processPayment();
+                }
+            })
+            .catch((err) => {
+                console.error('Error:', err);
+            });
+        })
+        .catch((err) => {
+            console.error('Error:', err);
+        });
+    };
+
+    const processPayment = () => {
+        fetch('http://localhost:5000/payment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(userData),
+        })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then((data) => {
+            setCodeOrder(data._id);
+            router.push(`/successfulTransaction`);
+        })
+        .catch((err) => {
+            console.error('Error:', err);
+        });
+    };
+
+    if (selectedMethod === 'MoMo') {
+		processPayment();
+        processPaymentMoMo();
+    } else {
+        processPayment();
+    }
+};
+
+	
+
+
+	
+
 
 	const InputInforItem = ({ title, onChange, value }) => {
 		return (
@@ -605,7 +578,8 @@ function oneStepCheckoutPage() {
 									</ModalHeader>
 									<ModalBody>
 										<div className='my-4  '>
-											<p>Đường Hàn Thuyên, khu phố 6 P, Thủ Đức, Thành phố Hồ Chí Minh</p>
+											{/* <p>Đường Hàn Thuyên, khu phố 6 P, Thủ Đức, Thành phố Hồ Chí Minh</p> */}
+											<p>{valueAddressUser}</p>
 										</div>
 									</ModalBody>
 									<ModalFooter>
@@ -736,7 +710,9 @@ function oneStepCheckoutPage() {
 								variant='bordered'
 								className=' ml-4 w-1/2  px-2 py-1 outline-none '
 								value={valueAddressUser}
+
 								onChange={handleChangeValueAddress}
+
 							/>
 						</div>
 					</>
