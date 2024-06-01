@@ -18,7 +18,7 @@ const TermsOfServicePage = () => {
 			</div>
 			<AnimationComponents bgPageInfor>
 				<div className='mx-auto rounded-md  '>
-					<h2 className='mb-4 text-2xl font-bold'>Điều khoản sử dụng</h2>
+					<h2 className='mb-4 text-3xl font-bold'>Điều khoản sử dụng</h2>
 					<p className='mb-8 text-sm'>
 						Xin vui lòng đọc kỹ các điều khoản và điều kiện sau đây ("Điều khoản") trước khi sử dụng
 						website FTBOOK ("Chúng tôi", "của chúng tôi"). Bằng cách truy cập hoặc sử dụng website

@@ -171,7 +171,7 @@ const Contact = () => {
 				<FontAwesomeIcon icon={faChevronRight} className='mx-2 h-2 w-2 ' />
 				<p className=' text-orange'>Hệ thống trung tâm - nhà sách</p>
 			</div>
-			<AnimationComponents className='my-5'>
+			<div className='my-5'>
 				<table className='min-w-full border bg-white'>
 					<thead>
 						<tr className='text-sm'>
@@ -200,7 +200,7 @@ const Contact = () => {
 						))}
 					</tbody>
 				</table>
-			</AnimationComponents>
+			</div>
 		</div>
 	);
 };

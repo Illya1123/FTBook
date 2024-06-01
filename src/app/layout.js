@@ -11,6 +11,7 @@ import App from './(routes)/app';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import store from './(routes)/store';
+import { Headset } from 'lucide-react';
 const inter = Inter({ subsets: ['latin'] });
 
 // export const metadata = {
@@ -22,7 +23,17 @@ export default function RootLayout({ children }) {
 	return (
 		<ClerkProvider>
 			<html lang='en'>
+				<head>
+					<script src='https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1'></script>
+				</head>
+
 				<body className={inter.className}>
+					<df-messenger
+						intent='WELCOME'
+						chat-title={'Hổ trợ khách hàng'}
+						agent-id='95bd4b0c-499f-460c-9792-cac351be790c'
+						language-code='vi'
+					></df-messenger>
 					<ThemeProvider>
 						<Provider store={store}>
 							<NextUIProvider>
