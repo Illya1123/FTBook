@@ -52,7 +52,7 @@ function OnboardingPage() {
 	};
 	return (
 		<div className='bg-white'>
-			<Confetti width={window.innerWidth} height={window.innerHeight} />
+			{/* <Confetti width={window.innerWidth} height={window.innerHeight} /> */}
 			<div className='fixed left-0 right-0 top-0 py-5 text-center text-4xl shadow-md'>
 				<h1 className='text-blue'>
 					FT <span className=' text-orange'>BOOK</span>
