@@ -24,11 +24,21 @@ export default function FlashSalePage() {
 		fetch('http://localhost:5000/product')
 			.then((res) => res.json())
 			.then((data) => {
-				setIsLoading(true);
 				setProducts(data);
+				setIsLoading(true);
 			})
 			.catch((err) => console.log(err));
 	}, []);
+	useEffect(() => {
+		if (products) {
+			const filterData = products.filter((data) => {
+				const priceSale = data.priceSell - data.priceDiscount;
+				const percent = (priceSale / data.priceSell) * 100;
+				return percent > 30;
+			});
+			setProducts(filterData);
+		}
+	}, [products]);
 	// const ProductCard = ({ product }) => {
 	// 	const { name, image, priceSell, priceDiscount, _id } = product;
 	// 	const firstImage = image[0];
