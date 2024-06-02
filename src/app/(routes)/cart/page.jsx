@@ -36,7 +36,7 @@ function CartPage() {
 
 	useEffect(() => {
 		if (user) {
-			dispatch(fetchCartItems(user.id));
+			dispatch(fetchCartItems(user?.id));
 		}
 	}, [dispatch, user]);
 

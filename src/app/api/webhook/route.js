@@ -61,6 +61,8 @@ export async function POST(req) {
           email_addresses
         );
 
+        // localStorage.setItem('userId', id);
+
         return new Response('User is created or updated',{
             status: 200
         })
