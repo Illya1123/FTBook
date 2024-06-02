@@ -4,7 +4,7 @@ import FacebookMsg from './_components/FacebookMsg';
 import Footer from './_components/Footer';
 import Header from './_components/Header';
 import { useTheme } from './_components/ThemeProvider';
-import Favorite from './_components/Favorite';
+import Favorite from './_components/favorite';
 
 function App({ children }) {
 	const { isOnBoarding } = useTheme();
@@ -12,7 +12,7 @@ function App({ children }) {
 		<>
 			{isOnBoarding ? (
 				<div className='bg-white'>
-					<div className='   '>{children}</div>
+					<div className=' '>{children}</div>
 				</div>
 			) : (
 				<>

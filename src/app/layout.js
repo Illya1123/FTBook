@@ -11,7 +11,6 @@ import App from './(routes)/app';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import store from './(routes)/store';
-import { Headset } from 'lucide-react';
 const inter = Inter({ subsets: ['latin'] });
 
 // export const metadata = {
@@ -30,7 +29,7 @@ export default function RootLayout({ children }) {
 				<body className={inter.className}>
 					<df-messenger
 						intent='WELCOME'
-						chat-title={'Hổ trợ khách hàng'}
+						chat-title={'Chăm sóc khách hàng'}
 						agent-id='95bd4b0c-499f-460c-9792-cac351be790c'
 						language-code='vi'
 					></df-messenger>
