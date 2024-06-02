@@ -1,14 +1,40 @@
 'use client';
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
+import { useUser } from '@clerk/nextjs';
 
 const HeaderContext = createContext();
 
 function ThemeProvider({ children }) {
 	const [isHeader, setIsHeader] = useState(true);
 	const [roleUser, setRoleUser] = useState('user');
-	const [userId, setUserId] = useState('6642f919e60deac0b3e1eb4e'); // set động
-	// const [userId, setUserId] = useState('');
+	console.log('roleUser:', roleUser);
+	const { user } = useUser(); 
+	const [userId, setUserId] = useState(user?.id);
+	console.log('userId:', userId);
 	const [isFocusSearch, setIsFocusSearch] = useState(false);
+
+	useEffect(() => {
+		const fetchUserRole = async () => {
+			try {
+				const response = await fetch(`http://localhost:5000/user/user/${user?.id}`);
+				const userData = await response.json();
+				console.log('userData:', userData);
+				if (userData && userData.length > 0) {
+					setUserId(userData[0]?._id);
+					setRoleUser(userData[0]?.role);
+				} else {
+					setRoleUser('user');
+				}
+			} catch (error) {
+				console.error('Error fetching user role:', error);
+			}
+		};
+	
+		fetchUserRole();
+	}, [user?.id]);
+	
+
+
 	const [dataCheckout, setDataCheckout] = useState([
 		{
 			_id: '662e1402382f8696bd2fa764',
