@@ -80,11 +80,12 @@ function ThemeProvider({ children }) {
 			quantityPurchased: 1,
 		},
 	]);
-
+	const [valueSearch, setValueSearch] = useState();
 	const [totalPriceCheckout, setTotalPriceCheckout] = useState(300000);
 	const [purchasedProduct, setPurchasedProduct] = useState([]);
 	const [codeOrder, setCodeOrder] = useState();
 	const [isOnBoarding, setIsOnBoarding] = useState(false);
+	const [reLoadFavorites, setReLoadFavorites] = useState(0);
 	return (
 		<HeaderContext.Provider
 			value={{
@@ -104,6 +105,10 @@ function ThemeProvider({ children }) {
 				setCodeOrder,
 				isOnBoarding,
 				setIsOnBoarding,
+				valueSearch,
+				setValueSearch,
+				reLoadFavorites,
+				setReLoadFavorites,
 			}}
 		>
 			{children}

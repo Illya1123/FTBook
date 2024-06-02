@@ -1,6 +1,5 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-
 import {
 	Dropdown,
 	DropdownTrigger,
@@ -22,8 +21,16 @@ import StarRatings from 'react-star-ratings';
 import SideBarComponent from '../_components/SideBarComponent';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
-
+import { useTheme } from '../_components/ThemeProvider';
+// import { useSearchParams, useRouter } from 'next/navigation';
 function bookCategory() {
+	const { valueSearch, setValueSearch } = useTheme();
+
+	// const searchParams = useSearchParams();
+	// const receivedValue = searchParams.get('valueSearched');
+	// const valueSearchs = valueSearch;
+	// // Use the receivedValue for displaying books or further processing
+	console.log('valueSearch:', valueSearch);
 	const [dataBook, setDataBook] = useState([]);
 	const [filterValue, setFilterValue] = useState([]);
 	const [valueFilterSupplier, setValueFilterSupplier] = useState([]);
@@ -50,8 +57,8 @@ function bookCategory() {
 	// console.log(dataBook);
 	useEffect(() => {
 		console.log(selectedKeys);
-		console.log('dataBook', dataBook);
-		console.log('dataFilter', dataFilter);
+		// console.log('dataBook', dataBook);
+		// console.log('dataFilter', dataFilter);
 
 		if (selectedKeys.currentKey) {
 			if (dataFilter.length > 0) {
@@ -77,7 +84,14 @@ function bookCategory() {
 			}
 		}
 	}, [selectedKeys]);
-
+	useEffect(() => {
+		if (valueSearch && dataBook) {
+			const filterProducts = dataBook.filter((product) =>
+				product.name.toLowerCase().includes(valueSearch.toLowerCase()),
+			);
+			setDataFilter(filterProducts);
+		}
+	}, [valueSearch, dataBook]);
 	useEffect(() => {
 		axios
 			.get('http://localhost:5000/product')
@@ -289,7 +303,7 @@ function bookCategory() {
 	const hanleChangeSelectKey = (e) => {
 		console.log(e);
 	};
-	console.log('dataBooksssss', dataBook);
+	// console.log('dataBooksssss', dataBook);
 	return (
 		<div>
 			<title>Book Category</title>
@@ -337,7 +351,8 @@ function bookCategory() {
 					filterValue.length === 0 &&
 					filterValueSupplier.length === 0 &&
 					filterValuePublished.length === 0 &&
-					filterValueYear.length === 0 ? (
+					filterValueYear.length === 0 &&
+					valueSearch === undefined ? (
 						<div className=' my-5 grid grid-cols-4 gap-4'>
 							{dataBook.map((product) => (
 								<ProductCard key={product._id} product={product} small />

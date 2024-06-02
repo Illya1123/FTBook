@@ -17,14 +17,15 @@ import { useState } from 'react';
 import { Book, Frown, LayoutList, RotateCcw, UserRoundCog } from 'lucide-react';
 import AnimationComponents from './AnimationComponents';
 import { useTheme } from './ThemeProvider';
-
+import { useRouter } from 'next/navigation';
 function Header({ activeHome, activeBook, activeAbout, activeContact }) {
-	const { roleUser } = useTheme();
+	const { roleUser, setValueSearch } = useTheme();
 	const { user } = useUser();
 	const [isFocus, setIsFocus] = useState(false);
 	const [dataProduct, setDataProduct] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [resultFilter, setResultFilter] = useState();
+	const router = useRouter();
 	// useEffect(() => {
 	// 	user && createUserProfile();
 	// }, [user]);
@@ -92,6 +93,10 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 	};
 	const handleSwitchAdmin = () => {
 		window.location.href = 'http://localhost:3000';
+	};
+	const handleSetValueSearched = () => {
+		setValueSearch(valueSearched);
+		router.push('/bookCategory', { query: { valueSearched } });
 	};
 	return (
 		<div className='fixed left-0 right-0 top-0 z-[90]   border-b bg-white'>
@@ -195,12 +200,13 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 						''
 					)}
 					{valueSearched.length > 0 && (
-						<Link
-							href='/search'
+						<div
+							// href={`/bookCategory`}
 							className='absolute -right-5 top-1/2 -translate-x-1/2 -translate-y-1/2 transform rounded-md bg-blue px-6 py-1 text-white hover:opacity-60'
+							onClick={handleSetValueSearched}
 						>
 							<FontAwesomeIcon icon={faMagnifyingGlass} className='h-4 w-4' />
-						</Link>
+						</div>
 					)}
 				</div>
 

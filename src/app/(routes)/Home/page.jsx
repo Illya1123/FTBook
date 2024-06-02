@@ -50,7 +50,6 @@ const slides = [
 ];
 
 function HomePage() {
-	const { userId } = useTheme();
 	const { user } = useUser();
 
 	const flashProducts = dataBookss.slice().sort((a, b) => b.ratingPoint - a.ratingPoint);
@@ -180,11 +179,13 @@ function HomePage() {
 	};
 
 	const ProductCard = ({ product }) => {
+		const { userId, reLoadFavorites, setReLoadFavorites } = useTheme();
 		const { name, image, priceSell, priceDiscount, _id } = product;
 		const firstImage = image[0];
 		const { isOpen, onOpen, onOpenChange } = useDisclosure();
 		const items = useSelector((state) => state.cart.items);
 		const [favorite, setFavorite] = useState([]);
+
 		// console.log(userId);
 		// console.log(items);
 		const dispatch = useDispatch();
@@ -242,7 +243,52 @@ function HomePage() {
 			}
 		};
 		let productId = [];
-		const handleAddFavorite = async (_id) => {};
+		const handleAddFavorite = async (value) => {
+			console.log('================================');
+			// console.log(userId);
+			// console.log(value);
+			console.log('================================');
+
+			axios
+				.get(`http://localhost:5000/favorite/user/${userId}`)
+				.then((res) => {
+					// console.log('existingFavorite', res.data);
+					const existingFavorite = res.data;
+					console.log('existingFavorite', existingFavorite);
+					if (existingFavorite.length > 0) {
+						console.log('1s');
+
+						axios
+							.patch(`http://localhost:5000/favorite/user/${userId}`, {
+								productId: [value],
+							})
+							.then((res) => {
+								console.log('res.data9999', res.data);
+								setReLoadFavorites(reLoadFavorites + 1);
+							})
+							.catch((err) => {
+								console.log(err);
+							});
+					} else {
+						axios
+							.post('http://localhost:5000/favorite', {
+								userId: userId,
+								productId: [value],
+							})
+							.then((res) => {
+								console.log(res.data);
+
+								setReLoadFavorites(reLoadFavorites + 1);
+							})
+							.catch((err) => {
+								console.log(err);
+							});
+					}
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+		};
 		return (
 			<div className='relative mx-5 rounded-md bg-white'>
 				<div className='group'>
@@ -369,7 +415,7 @@ function HomePage() {
 								<div className='flex items-center '>
 									<img src='https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/flashsale/label-flashsale.svg?q=' />
 
-									<p className=' mx-5'>Kết thúc sau</p>
+									{/* <p className=' mx-5'>Kết thúc sau</p> */}
 									{/* <Countdown date={Date.now() + 10000} /> */}
 								</div>
 								<div className='flex items-center text-base hover:text-blue'>

@@ -115,6 +115,7 @@ function oneStepCheckoutPage() {
 	const router = useRouter();
 	const { totalPriceCheckout, dataCheckout, userId, setCodeOrder } = useTheme();
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
+	const [isShowTotalPriceCheckout, setIsShowTotalPriceCheckout] = useState(true);
 	const [isLoading, setIsLoading] = useState(false);
 	const [checked, setChecked] = useState(true);
 	const [dataUser, setDataUser] = useState();
@@ -136,6 +137,9 @@ function oneStepCheckoutPage() {
 	const [valueCity, setValueCity] = useState('');
 	const [valueDistrict, setValueDistrict] = useState('');
 	const [valueWard, setValueWard] = useState('');
+
+	const [dataDiscountCode, setDataDiscountCode] = useState([]);
+	const [isLoadingDiscount, setIsLoadingDiscount] = useState(false);
 	// format number 199000 => 199.000
 	function formatNumber(number) {
 		const parts = number.toString().split('.');
@@ -145,13 +149,31 @@ function oneStepCheckoutPage() {
 		}
 		return parts.join('.');
 	}
+
+	useEffect(() => {
+		fetch('http://localhost:5000/discountCode')
+			.then((response) => {
+				if (!response.ok) {
+					throw new Error('Network response was not ok');
+				}
+				return response.json();
+			})
+			.then((data) => {
+				console.log(data);
+				setDataDiscountCode(data);
+				setIsLoadingDiscount(true);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	}, []);
 	// ------------------------ Mã giảm giá ------------------------
 	useEffect(() => {
-		const newFilterDiscount = discountCodes.filter(
-			(discount) => totalPriceCheckout > discount.applicableValue,
+		const newFilterDiscount = dataDiscountCode.filter(
+			(discount) => totalPriceCheckout > discount.applicableCode,
 		);
 		setListDiscount(newFilterDiscount);
-	}, []);
+	}, [isLoadingDiscount]);
 	const handleChangeDiscountCode = (e) => {
 		setValueDiscountCode(e.target.value);
 	};
@@ -314,122 +336,163 @@ function oneStepCheckoutPage() {
 		setValueAddressUser(fullAddress);
 	};
 
-
-
-		// Prepare the user data for the order
-	
-
+	// Prepare the user data for the order
 
 	useEffect(() => {
 		if (valueWardUser && valueDistrictUser && valueProvinceUser) {
 			setValueAddressUser(valueWardUser + ', ' + valueDistrictUser + ', ' + valueProvinceUser);
 		}
-	
 	}, [valueWardUser, valueDistrictUser, valueProvinceUser]);
 	// -------------------------- confirm payment ----------------------------
 
 	// Biến để đánh dấu việc callback đã nhận được
 	const handleConfirmPayment = () => {
-    const products = dataCheckout.map((product) => ({
-        productId: product._id,
-        quantity: product.quantityPurchased,
-    }));
+		const products = dataCheckout.map((product) => ({
+			productId: product._id,
+			quantity: product.quantityPurchased,
+		}));
 
-    const userData = {
-        userId,
-        name: valueNameUser,
-        address: valueAddressUser,
-        totalPrice: totalPriceFinal ? totalPriceFinal + 19000 : totalPriceCheckout + 19000,
-        orderStatus: selectedMethod === 'MoMo' ? 'Đã thanh toán' : orderStatus,
-        paymentMethod: selectedMethod,
-        products,
-    };
+		const userData = {
+			userId,
+			name: valueNameUser,
+			address: valueAddressUser,
+			totalPrice: totalPriceFinal ? totalPriceFinal + 19000 : totalPriceCheckout + 19000,
+			orderStatus:
+				selectedMethod === 'MoMo' || selectedMethod === 'VNPay' ? 'Đã thanh toán' : orderStatus,
+			paymentMethod: selectedMethod,
+			products,
+		};
 
-    // Function to handle payment for MoMo
-    const processPaymentMoMo = () => {
-        const paymentPromise = fetch('http://localhost:5000/payment_momo', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                totalPrice: userData.totalPrice,
-            }),
-        })
-        .then((response) => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        });
+		// Function to handle payment for MoMo
+		const processPaymentMoMo = () => {
+			const paymentPromise = fetch('http://localhost:5000/payment_momo', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					totalPrice: userData.totalPrice,
+				}),
+			}).then((response) => {
+				if (!response.ok) {
+					throw new Error('Network response was not ok');
+				}
+				return response.json();
+			});
 
-        paymentPromise.then((data) => {
-            window.location.href = data.shortLink; // Chuyển trang
-            const checkStatusPromise = fetch('http://localhost:5000/check-status-transaction', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ orderId: data.orderId }),
-            })
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            });
+			paymentPromise
+				.then((data) => {
+					window.location.href = data.shortLink; // Chuyển trang
+					const checkStatusPromise = fetch('http://localhost:5000/check-status-transaction', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify({ orderId: data.orderId }),
+					}).then((response) => {
+						if (!response.ok) {
+							throw new Error('Network response was not ok');
+						}
+						return response.json();
+					});
 
-            checkStatusPromise.then((statusData) => {
-                console.log(statusData);
-                if (statusData.message === 'Thành công.') {
-                    processPayment();
-                }
-            })
-            .catch((err) => {
-                console.error('Error:', err);
-            });
-        })
-        .catch((err) => {
-            console.error('Error:', err);
-        });
-    };
+					checkStatusPromise
+						.then((statusData) => {
+							console.log(statusData);
+							if (statusData.message === 'Thành công.') {
+								processPayment();
+							}
+						})
+						.catch((err) => {
+							console.error('Error:', err);
+						});
+				})
+				.catch((err) => {
+					console.error('Error:', err);
+				});
+		};
+		const processPaymentVNPay = () => {
+			const paymentPromise = fetch('http://localhost:5000/order', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					totalPrice: userData.totalPrice,
+				}),
+			}).then((response) => {
+				if (!response.ok) {
+					throw new Error('Network response was not ok');
+				}
+				return response.json();
+			});
 
-    const processPayment = () => {
-        fetch('http://localhost:5000/payment', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(userData),
-        })
-        .then((response) => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then((data) => {
-            setCodeOrder(data._id);
-            router.push(`/successfulTransaction`);
-        })
-        .catch((err) => {
-            console.error('Error:', err);
-        });
-    };
+			paymentPromise
+				.then((data) => {
+					window.location.href = data.vnpUrl; // Redirect to VNPay payment page
+					const checkStatusPromise = fetch('http://localhost:5000/check-status-transaction-vnpay', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						// body: JSON.stringify({ orderId: data.orderId }),
+						body: JSON.stringify({ orderId: data.vnp_TxnRef }),
+					}).then((response) => {
+						if (!response.ok) {
+							throw new Error('Network response was not ok');
+						}
+						return response.json();
+					});
 
-    if (selectedMethod === 'MoMo') {
-		processPayment();
-        processPaymentMoMo();
-    } else {
-        processPayment();
-    }
-};
+					checkStatusPromise
+						.then((statusData) => {
+							console.log(statusData);
+							if (statusData.message === 'Thành công.') {
+								processPayment();
+							}
+						})
+						.catch((err) => {
+							console.error('Error:', err);
+						});
+				})
+				.catch((err) => {
+					console.error('Error:', err);
+				});
+		};
 
-	
+		const processPayment = () => {
+			fetch('http://localhost:5000/payment', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(userData),
+			})
+				.then((response) => {
+					if (!response.ok) {
+						throw new Error('Network response was not ok');
+					}
+					return response.json();
+				})
+				.then((data) => {
+					setCodeOrder(data._id);
+					router.push(`/successfulTransaction`);
+				})
+				.catch((err) => {
+					console.error('Error:', err);
+				});
+		};
 
-
-	
-
+		if (selectedMethod === 'MoMo') {
+			processPayment();
+			processPaymentMoMo();
+		} else if (selectedMethod === 'VNPay') {
+			processPayment();
+			processPaymentVNPay();
+		} else {
+			processPayment();
+		}
+	};
 
 	const InputInforItem = ({ title, onChange, value }) => {
 		return (
@@ -446,36 +509,58 @@ function oneStepCheckoutPage() {
 			</div>
 		);
 	};
-	const DiscountCode = ({ discount, onclick, onPress }) => {
+	const DiscountCode = ({ discount, onclick, onPress, setIsShowTotalPriceCheckout }) => {
 		const handleApplyDiscount = () => {
-			// Gọi hàm xử lý sự kiện từ component cha và truyền mã giảm giá
 			onclick(discount.code);
+			setIsShowTotalPriceCheckout(true);
 		};
+		function formatNumber(number) {
+			return number.toLocaleString('de-DE');
+		}
+		function formatDate(dateString) {
+			const date = new Date(dateString);
+			return date.toLocaleDateString('en-GB', {
+				day: '2-digit',
+				month: '2-digit',
+				year: 'numeric',
+			});
+		}
+		// If the discount code expires, hide it
+		const currentDate = new Date();
+		const endDate = new Date(discount.endDate);
+		if (endDate < currentDate) {
+			return null;
+		}
 		return (
-			<div>
-				<div className='flex items-center justify-between' key={discount.id}>
-					<p>Mã Khuyến mãi</p>
-					<p>Áp dụng tới đa: 1</p>
+			<div className='my-4 rounded-lg border p-4 shadow-md' key={discount.id}>
+				<div className='mb-2 flex items-center justify-between'>
+					<p className='font-semibold text-gray-700'>Mã Khuyến mãi</p>
+					<p className='text-gray-500'>Áp dụng tối đa: 1</p>
 				</div>
 				<div className='flex items-start gap-4'>
-					<div className='flex h-36 w-[17%] items-center justify-center bg-image-sale bg-contain bg-no-repeat'>
+					<div className='flex h-36 w-[17%] items-center justify-center rounded-lg bg-gray-100 bg-image-sale bg-contain bg-no-repeat'>
 						<img
 							src='https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/promotion/ico_promotion.svg?q=105606'
-							alt='sale '
-							className=''
+							alt='sale'
+							className='h-16 w-16'
 						/>
 					</div>
 					<div className='w-[80%]'>
-						<div>
-							<p>
-								{discount.name} - {discount.code}
+						<div className='mb-2'>
+							<p className='text-lg font-semibold text-gray-800'>
+								{discount.name} - <span className='text-blue-600'>{discount.code}</span>
 							</p>
-							<p>{discount.condition}</p>
-							<p>Ngày bắt đầu: {discount.startDate}</p>
-							<p>Ngày kết thúc: {discount.endDate}</p>
+							<p className='text-gray-600'>{discount.condition}</p>
+							<p className='text-gray-600'>Ngày bắt đầu: {formatDate(discount.startDate)}</p>
+							<p className='text-gray-600'>Ngày kết thúc: {formatDate(discount.endDate)}</p>
 						</div>
 						<div className='text-right'>
-							<Button onClick={handleApplyDiscount} onPress={onPress}>
+							<Button
+								className=' hover:bg-blue-700 rounded-lg px-4 py-2  '
+								onClick={handleApplyDiscount}
+								color='primary'
+								onPress={onPress}
+							>
 								Áp dụng
 							</Button>
 						</div>
@@ -512,91 +597,96 @@ function oneStepCheckoutPage() {
 			</div>
 		);
 	};
+
 	return (
 		<div>
 			<title>Checkout</title>
-			<div className='fixed  bottom-0 left-0 right-0 z-[99]  h-[180px] bg-white shadow-inner '>
-				<div className='mx-auto max-w-[1200px]'>
-					<div>
-						<div className='my-2 flex'>
-							<p className='w-[90%] text-right'>Thành tiền</p>
-							<p className='w-[10%] text-right'>{formatNumber(totalPriceCheckout)} đ</p>
-						</div>
-						<div className='my-2 flex'>
-							<p className='w-[90%] text-right'>Phí vận chuyển (Giao hàng tiêu chuẩn)</p>
-							<p className='w-[10%] text-right'>19.000 đ</p>
-						</div>
-						{inforDiscountCode && (
-							<div className='my-2 flex'>
-								<p className='w-[90%] text-right'>{inforDiscountCode.name}</p>
-								<p className='w-[10%] text-right'>
-									{`-${formatNumber(inforDiscountCode.priceGG)}đ`} đ
+			{isShowTotalPriceCheckout ? (
+				<div
+					className={`${inforDiscountCode ? 'h-[180px]' : 'h-[150px]'} fixed   bottom-0 left-0 right-0 z-[99] bg-white  shadow-inner `}
+				>
+					<div className='mx-auto max-w-[1200px] text-sm'>
+						<div>
+							<div className='my-2 flex items-center'>
+								<p className='w-[90%] text-right'>Thành tiền:</p>
+								<p className='w-[10%] text-right '>{formatNumber(totalPriceCheckout)} đ</p>
+							</div>
+							<div className='my-2 flex items-center'>
+								<p className='w-[90%] text-right'>Phí vận chuyển (Giao hàng tiêu chuẩn):</p>
+								<p className='w-[10%] text-right '>19.000 đ</p>
+							</div>
+							{inforDiscountCode && (
+								<div className='my-2 flex items-center'>
+									<p className='w-[90%] text-right'>{inforDiscountCode.name}:</p>
+									<p className='w-[10%] text-right '>
+										{`-${formatNumber(inforDiscountCode.priceGG)}đ`} đ
+									</p>
+								</div>
+							)}
+							<div className='my-2 flex items-center'>
+								<p className='w-[90%] text-right'>Tổng Số Tiền (gồm VAT):</p>
+								<p className='w-[10%] text-right  font-bold text-orange'>
+									{`${
+										totalPriceFinal
+											? formatNumber(totalPriceFinal + 19000)
+											: formatNumber(totalPriceCheckout + 19000)
+									} đ`}
 								</p>
 							</div>
-						)}
-						<div className='my-2 flex'>
-							<p className='w-[90%] text-right'>Tổng Số Tiền (gồm VAT)</p>
-							<p className='w-[10%] text-right font-bold text-orange'>
-								{`${
-									totalPriceFinal
-										? formatNumber(totalPriceFinal + 19000)
-										: formatNumber(totalPriceCheckout + 19000)
-								} đ`}
-							</p>
 						</div>
-					</div>
-					<div className='my-4 border'></div>
-					<div className='flex justify-between'>
-						<div className='flex items-center'>
-							<input
-								type='checkbox'
-								className='mr-4 h-4 w-4'
-								checked={checked}
-								onChange={handleChangeCheck}
-							/>
-							<div>
-								Bằng việc tiến hành Mua hàng, Bạn đã đồng ý với <br />
-								<Link href='#' className='font-bold text-blue1'>
-									Điều khoản & Điều kiện của Fahasa.com
-								</Link>
+						<div className='my-2 border'></div>
+						<div className='flex justify-between'>
+							<div className='flex items-center'>
+								<input
+									type='checkbox'
+									className='mr-4 h-4 w-4'
+									checked={checked}
+									onChange={handleChangeCheck}
+								/>
+								<div>
+									Bằng việc tiến hành Mua hàng, Bạn đã đồng ý với <br />
+									<Link href='#' className='font-bold text-blue1'>
+										Điều khoản & Điều kiện của Fahasa.com
+									</Link>
+								</div>
 							</div>
+							<Button
+								onPress={onOpen}
+								className='rounded-md bg-blue1 px-12 font-bold text-white hover:bg-blue1Hover'
+								isDisabled={!checked}
+							>
+								<p>XÁC NHẬN THANH TOÁN</p>
+							</Button>
 						</div>
-						<Button
-							onPress={onOpen}
-							className='rounded-md bg-blue1 px-12 py-2 font-bold text-white hover:bg-blue1Hover'
-							isDisabled={!checked}
-						>
-							<p>XÁC NHẬN THANH TOÁN</p>
-						</Button>
+						<Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+							<ModalContent className=' min-w-[600px]'>
+								{(onClose) => (
+									<>
+										<ModalHeader className='flex items-center justify-center bg-orange text-white'>
+											Xác nhận địa chỉ giao hàng
+										</ModalHeader>
+										<ModalBody>
+											<div className='my-4  '>
+												{/* <p>Đường Hàn Thuyên, khu phố 6 P, Thủ Đức, Thành phố Hồ Chí Minh</p> */}
+												<p>{valueAddressUser}</p>
+											</div>
+										</ModalBody>
+										<ModalFooter>
+											<Button color='danger' variant='light' onPress={onClose}>
+												Hủy
+											</Button>
+											<Button color='primary' onPress={onClose} onClick={handleConfirmPayment}>
+												{/* <Link href='/successfulTransaction'>Xác nhận</Link> */}
+												<p>Xác nhận</p>
+											</Button>
+										</ModalFooter>
+									</>
+								)}
+							</ModalContent>
+						</Modal>
 					</div>
-					<Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-						<ModalContent className=' min-w-[600px]'>
-							{(onClose) => (
-								<>
-									<ModalHeader className='flex items-center justify-center bg-orange text-white'>
-										Xác nhận địa chỉ giao hàng
-									</ModalHeader>
-									<ModalBody>
-										<div className='my-4  '>
-											{/* <p>Đường Hàn Thuyên, khu phố 6 P, Thủ Đức, Thành phố Hồ Chí Minh</p> */}
-											<p>{valueAddressUser}</p>
-										</div>
-									</ModalBody>
-									<ModalFooter>
-										<Button color='danger' variant='light' onPress={onClose}>
-											Hủy
-										</Button>
-										<Button color='primary' onPress={onClose} onClick={handleConfirmPayment}>
-											{/* <Link href='/successfulTransaction'>Xác nhận</Link> */}
-											<p>Xác nhận</p>
-										</Button>
-									</ModalFooter>
-								</>
-							)}
-						</ModalContent>
-					</Modal>
 				</div>
-			</div>
+			) : null}
 			{/* địa chỉ nhận nhàng */}
 			<div className='my-5 rounded-md bg-white p-5'>
 				<h3 className='my-4 font-bold '>ĐỊA CHỈ GIAO HÀNG</h3>
@@ -612,14 +702,6 @@ function oneStepCheckoutPage() {
 					</>
 				) : (
 					<>
-						{/* <InputInforItem
-							title='Họ và tên người nhận'
-							// defaultValue={dataUser.fullName}
-							// value={valueNameUser}
-							// onChange={handleChangeValueName}
-							value={valueNameUser}
-							onChange={handleChangeValueName}
-						/> */}
 						<div className='my-6 flex items-center'>
 							<div className='w-44'>
 								<p>Họ và tên người nhận</p>
@@ -710,9 +792,7 @@ function oneStepCheckoutPage() {
 								variant='bordered'
 								className=' ml-4 w-1/2  px-2 py-1 outline-none '
 								value={valueAddressUser}
-
 								onChange={handleChangeValueAddress}
-
 							/>
 						</div>
 					</>
@@ -823,44 +903,37 @@ function oneStepCheckoutPage() {
 							Áp dụng
 						</button>
 					</div>
-					<Button className='ml-4 ' color='primary' variant='ghost' onPress={onOpen1}>
+					<Button
+						className='ml-4 '
+						color='primary'
+						variant='ghost'
+						onPress={onOpen1}
+						onClick={() => setIsShowTotalPriceCheckout(false)}
+					>
 						Chọn mã khuyến mãi
 					</Button>
-					<Modal isOpen={isOpen1} onOpenChange={onOpenChange1} size='3xl'>
+					<Modal
+						isOpen={isOpen1}
+						onOpenChange={(isOpen) => {
+							onOpenChange1(isOpen);
+							if (!isOpen) {
+								setIsShowTotalPriceCheckout(true);
+							}
+						}}
+						size='3xl'
+					>
 						<ModalContent onScroll={true}>
 							{(onClose) => (
 								<>
 									<ModalHeader className='flex flex-col gap-1'>Danh sách mã khuyến mãi</ModalHeader>
 									<ModalBody>
-										{/* <div className=' h-96 overflow-auto'>
-											<div className='flex items-center justify-between'>
-												<p>Mã Khuyến mãi</p>
-												<p>Áp dụng tới đa: 1</p>
-											</div>
-											<div className='flex items-start gap-4 '>
-												<div className=' flex  h-36 w-[17%] items-center  justify-center  bg-image-sale bg-contain bg-no-repeat'>
-													<img
-														src='https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/promotion/ico_promotion.svg?q=105606'
-														alt='sale '
-														className=' '
-													/>
-												</div>
-												<div className='w-[80%]'>
-													<div>
-														<p>MÃ GIẢM GIÁ 20K - ĐƠN HÀNG TỪ 150K</p>
-													</div>
-													<div className=' text-right'>
-														<Button>Áp dụng</Button>
-													</div>
-												</div>
-											</div>
-										</div> */}
 										<div className='h-96 overflow-auto'>
 											{listDiscount.map((discount) => (
 												<DiscountCode
 													discount={discount}
 													onclick={handleApplyDiscountCode}
-													onPress={onClose}
+													onPress={onOpenChange1}
+													setIsShowTotalPriceCheckout={setIsShowTotalPriceCheckout}
 												/>
 											))}
 										</div>
@@ -875,43 +948,7 @@ function oneStepCheckoutPage() {
 			<div className='my-5 rounded-md bg-white p-5'>
 				<h3 className='my-4 font-bold '>KIỂM TRA LẠI ĐƠN HÀNG</h3>
 				<div className='my-2 border'></div>
-				{/* <div className=' flex items-start justify-between'>
-					<div className='flex'>
-						<img
-							src='https://cdn0.fahasa.com/media/catalog/product//8/9/8935235241275.jpg'
-							alt='adad'
-							className=' h-36 w-36'
-						/>
-						<p className='text-sm'>Tazaki Tsukuru Không Màu Và Những Năm Tháng Hành Hương</p>
-					</div>
-					<div className='mr-[100px] flex w-1/4 justify-between text-sm'>
-						<div>
-							<p>102.400 đ</p>
-							<p>128.000 đ</p>
-						</div>
-						<p>1</p>
-						<p className='text-orange'>102.400 đ</p>
-					</div>
-				</div>
-				<div className='my-2 border'></div>
-				<div className=' flex items-start justify-between'>
-					<div className='flex'>
-						<img
-							src='https://cdn0.fahasa.com/media/catalog/product//8/9/8935235241275.jpg'
-							alt='adad'
-							className=' h-36 w-36'
-						/>
-						<p className='text-sm'>Tazaki Tsukuru Không Màu Và Những Năm Tháng Hành Hương</p>
-					</div>
-					<div className='mr-[100px] flex w-1/4 justify-between text-sm'>
-						<div>
-							<p>102.400 đ</p>
-							<p>128.000 đ</p>
-						</div>
-						<p>1</p>
-						<p className='text-orange'>102.400 đ</p>
-					</div>
-				</div> */}
+
 				{dataCheckout.map((data) => (
 					<ProductItem
 						imageUrl={data.image[0]}

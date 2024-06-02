@@ -4,7 +4,7 @@ import FacebookMsg from './_components/FacebookMsg';
 import Footer from './_components/Footer';
 import Header from './_components/Header';
 import { useTheme } from './_components/ThemeProvider';
-import Favorite from './_components/favorite';
+import Favorite from './_components/Favorite';
 
 function App({ children }) {
 	const { isOnBoarding } = useTheme();
