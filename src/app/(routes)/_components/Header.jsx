@@ -307,6 +307,7 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 							</div>
 						)}
 					</div>
+
 					{roleUser === 'user' ? (
 						<div className=' relative h-5 w-5 '>
 							<Link href='/cart'>
@@ -318,10 +319,21 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 								</div>
 							) : null}
 						</div>
-					) : (
+					) : roleUser === 'admin' ? (
 						<div onClick={handleSwitchAdmin} className=' cursor-pointer'>
 							<UserRoundCog />
 							{/* <FontAwesomeIcon icon={faCartShopping} className=' h-5 w-5 ' /> */}
+						</div>
+					) : (
+						<div className=' relative h-5 w-5 '>
+							<Link href='/cart'>
+								<FontAwesomeIcon icon={faCartShopping} className=' h-5 w-5 ' />
+							</Link>
+							{quantityCart > 0 ? (
+								<div className='absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-white'>
+									<p>{quantityCart}</p>
+								</div>
+							) : null}
 						</div>
 					)}
 					{!user ? (

@@ -8,7 +8,7 @@ function ThemeProvider({ children }) {
 	const [isHeader, setIsHeader] = useState(true);
 	const [roleUser, setRoleUser] = useState('user');
 	console.log('roleUser:', roleUser);
-	const { user } = useUser(); 
+	const { user } = useUser();
 	const [userId, setUserId] = useState(user?.id);
 	console.log('userId:', userId);
 	const [isFocusSearch, setIsFocusSearch] = useState(false);
@@ -29,11 +29,9 @@ function ThemeProvider({ children }) {
 				console.error('Error fetching user role:', error);
 			}
 		};
-	
+
 		fetchUserRole();
 	}, [user?.id]);
-	
-
 
 	const [dataCheckout, setDataCheckout] = useState([
 		{
