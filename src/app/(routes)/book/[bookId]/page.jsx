@@ -58,28 +58,41 @@ export default function BookDetail({ params }) {
 				return bookResponse.json();
 			})
 			.then((bookData) => {
-				setBook(bookData);
-				setSelectedImage(bookData.image[0]);
-
-				// Lấy categoryAllId từ thông tin sách đã fetch
-				const categoryAllId = bookData?.categoryAllId;
-
-				// Fetch thông tin categoryAll
-				return fetch(`http://localhost:5000/categoryAll/${categoryAllId}`);
-			})
-			.then((categoryAllResponse) => {
-				if (!categoryAllResponse.ok) {
-					throw new Error('Network response was not ok');
-				}
-				return categoryAllResponse.json();
-			})
-			.then((categoryAllData) => {
-				setCategoryAll(categoryAllData);
+				// Tăng số lượt xem của sản phẩm
+				fetch(`http://localhost:5000/product/${params.bookId}`, {
+					method: 'PATCH', 
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({ numberOfVisit: bookData.numberOfVisit + 1 }),
+				})
+					.then((response) => {
+						if (!response.ok) {
+							throw new Error('Failed to increase visit count');
+						}
+						setBook(bookData);
+						setSelectedImage(bookData.image[0]);
+						const categoryAllId = bookData?.categoryAllId;
+						return fetch(`http://localhost:5000/categoryAll/${categoryAllId}`);
+					})
+					.then((categoryAllResponse) => {
+						if (!categoryAllResponse.ok) {
+							throw new Error('Network response was not ok');
+						}
+						return categoryAllResponse.json();
+					})
+					.then((categoryAllData) => {
+						setCategoryAll(categoryAllData);
+					})
+					.catch((error) => {
+						console.error('Error fetching data:', error);
+					});
 			})
 			.catch((error) => {
 				console.error('Error fetching data:', error);
 			});
 	}
+	
 	const loadReview = () => {
 		fetch(`http://localhost:5000/review/product/${params.bookId}`)
 			.then((reviewResponse) => {
