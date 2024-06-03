@@ -15,6 +15,7 @@ function Favorite() {
 	const [dataProduct, setDataProduct] = useState([]);
 	const [dataFilter, setDataFilter] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
+	const [isLoadingFavorites, setIsLoadingFavorites] = useState(false);
 	const [reLoad, setReLoad] = useState(0);
 	const ref = useRef();
 	const handleChangeShowFavorite = () => {
@@ -44,6 +45,19 @@ function Favorite() {
 		};
 	}, []);
 	useEffect(() => {
+		if (userId) {
+			axios
+				.get(`http://localhost:5000/favorite/user/${userId}`)
+				.then((response) => {
+					setDataFavorite(response.data);
+					setIsLoadingFavorites(true);
+				})
+				.catch((error) => {
+					console.error('Error fetching data:', error);
+				});
+		}
+	}, [userId]);
+	useEffect(() => {
 		if (reLoad > 0 || reLoadFavorites > 0) {
 			axios
 				.get(`http://localhost:5000/favorite/user/${userId}`)
@@ -56,7 +70,7 @@ function Favorite() {
 		}
 	}, [reLoad, reLoadFavorites]);
 	useEffect(() => {
-		if (isLoading) {
+		if (isLoading || isLoadingFavorites) {
 			if (dataFavorite.length > 0 && dataProduct) {
 				const filteredFavorite = dataProduct.filter((book) => {
 					return dataFavorite[0].productId.some((favorite) => {
@@ -67,7 +81,7 @@ function Favorite() {
 			}
 		}
 		// console.log('dataFavorite', dataFilter);
-	}, [dataFavorite, dataProduct, isLoading]); //
+	}, [dataFavorite, dataProduct, isLoading, isLoadingFavorites]); //
 	const FavoriteItem = ({ src, name, _id, onclick, onBlur, onCancel }) => {
 		return (
 			<div className='relative h-44  rounded-md border px-1 py-2'>

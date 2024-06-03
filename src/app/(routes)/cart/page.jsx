@@ -13,7 +13,6 @@ import {
 } from '@nextui-org/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleRight, faTicket } from '@fortawesome/free-solid-svg-icons';
-import RootLayout from '@/app/layout';
 import { useDispatch, useSelector } from 'react-redux';
 import { decreaseQuantity, increaseQuantity } from './cartReducer';
 import { dataBookss } from '../_components/data';
@@ -21,6 +20,7 @@ import { useRouter } from 'next/navigation';
 import { useTheme } from '../_components/ThemeProvider';
 import { fetchCartItems } from './cartReducer';
 import { useUser } from '@clerk/nextjs';
+import { X } from 'lucide-react';
 
 function CartPage() {
 	const { setTotalPriceCheckout, setDataCheckout, userId } = useTheme();
@@ -91,6 +91,7 @@ function CartPage() {
 		itemId,
 		isChecked,
 		onToggleCheck,
+		onClickDeleteCart,
 	}) => {
 		const dispatch = useDispatch();
 
@@ -117,7 +118,7 @@ function CartPage() {
 				</div>
 				<div className='w-[40%]'>
 					<div className='flex items-center justify-around'>
-						<div className='flex items-center'>
+						<div className='flex w-[40%] items-center justify-center '>
 							<button
 								className='flex h-8 items-center rounded-l border-y border-l px-3 py-1 text-gray-700 hover:bg-gray-100'
 								onClick={handleDecrease}
@@ -137,7 +138,12 @@ function CartPage() {
 								+
 							</button>
 						</div>
-						<p>{price.toLocaleString('vi-VN', { minimumFractionDigits: 0 })}</p>
+						<p className='w-[50%] text-center'>
+							{price.toLocaleString('vi-VN', { minimumFractionDigits: 0 })}
+						</p>
+						<div className=' w-[10%] cursor-pointer ' onClick={onClickDeleteCart}>
+							<X style={{ color: 'red' }} />
+						</div>
 					</div>
 				</div>
 			</div>
@@ -180,8 +186,15 @@ function CartPage() {
 										</div>
 										<div className='w-[40%]'>
 											<div className='flex justify-around'>
-												<p>Số lượng</p>
-												<p>Thành tiền</p>
+												<div className='w-[40%] text-center'>
+													<p>Số lượng</p>
+												</div>
+												<div className='w-[50%] text-center'>
+													<p>Thành tiền</p>
+												</div>
+												<div className='w-[10%]'>
+													<p></p>
+												</div>
 											</div>
 										</div>
 									</div>
@@ -200,6 +213,7 @@ function CartPage() {
 										))}
 									</div>
 								</div>
+
 								<div className='ml-[2%] w-[28%] rounded-md '>
 									<div className='flex items-center justify-between bg-white p-4  text-blue'>
 										<div className='flex items-center'>
@@ -262,7 +276,9 @@ function CartPage() {
 										<div className='border'></div>
 										<div className='my-2 flex items-center justify-between'>
 											<p className='font-bold'>Tổng Số Tiền (gồm VAT)</p>
-											<p className='text-xl font-bold text-orange'>{totalPriceFinal.toLocaleString('vi-VN', { minimumFractionDigits: 0 })} đ</p>
+											<p className='text-xl font-bold text-orange'>
+												{totalPriceFinal.toLocaleString('vi-VN', { minimumFractionDigits: 0 })} đ
+											</p>
 										</div>
 										<Button
 											className='my-2 block w-full rounded-md bg-blue py-2 text-center font-bold text-white hover:bg-blueHover'
@@ -275,7 +291,7 @@ function CartPage() {
 							</div>
 						</>
 					) : (
-						<div className='mt-16 flex min-h-[680px] items-center justify-center bg-white py-8'>
+						<div className='my-8 flex min-h-[100px] items-center justify-center bg-white py-8'>
 							<div>
 								<div className='my-4 flex items-center justify-center'>
 									<img
@@ -291,7 +307,22 @@ function CartPage() {
 						</div>
 					)
 				) : (
-					<div>Hãy đăng nhập</div>
+					<div className='my-8 flex min-h-[100px] items-center justify-center bg-white py-8'>
+						<div>
+							<div className='my-4 flex items-center justify-center'>
+								<img
+									src='https://cdn0.fahasa.com/skin//frontend/ma_vanese/fahasa/images/checkout_cart/ico_emptycart.svg'
+									className='h-40 w-40'
+								/>
+							</div>
+							<p className='my-8 text-sm'>
+								Đăng nhập để có thể thêm sản phẩm vào giỏ hàng của bạn.
+							</p>
+							<div className='my-4 rounded-md border border-blue bg-blue px-2 py-2 text-center text-base text-white'>
+								<Link href='#'>Đăng nhập</Link>
+							</div>
+						</div>
+					</div>
 				)}
 			</div>
 		</>

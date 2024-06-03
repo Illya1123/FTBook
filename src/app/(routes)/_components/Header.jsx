@@ -339,7 +339,7 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 					{!user ? (
 						<div className='group relative h-5 w-5'>
 							<FontAwesomeIcon icon={faUser} className='z-50 h-5 w-5 cursor-pointer' />
-							<div className=' invisible absolute right-0 top-[160%] z-50 min-w-56  animate-fade-in-down bg-white shadow-lg before:absolute before:-right-2 before:-top-3 before:h-8 before:w-11 group-hover:visible'>
+							<div className=' invisible absolute -right-10 top-[160%] z-50 min-w-56   bg-white shadow-lg before:absolute before:-right-2 before:-top-3 before:h-8 before:w-20  group-hover:visible'>
 								<div className=' rounded-md border px-2 py-2'>
 									<div className='my-2 rounded-md border border-blue bg-blue px-2 py-1 text-center text-white hover:opacity-60 '>
 										<Link href='sign-in'>Đăng nhập</Link>
