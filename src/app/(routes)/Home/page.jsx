@@ -35,7 +35,7 @@ import AnimationComponents from '../_components/AnimationComponents';
 import axios from 'axios';
 import { addItem } from '../cart/cartReducer';
 import { useDispatch, useSelector } from 'react-redux';
-import { dataBookss } from '../_components/data';
+// import { dataBooks } from '../_components/data';
 
 import FacebookMsg from '../_components/FacebookMsg';
 import { useTheme } from '../_components/ThemeProvider';
@@ -51,15 +51,18 @@ const slides = [
 
 function HomePage() {
 	const { user } = useUser();
-
-	const flashProducts = dataBookss.slice().sort((a, b) => b.ratingPoint - a.ratingPoint);
+	const { userId } = useTheme();
+	const [flashProducts, setFlashProducts] = useState([]);
 	const [dataBooks, setDataBooks] = useState([]);
-	const [isLoading, setIsLoading] = useState(true);
+	const [isLoading, setIsLoading] = useState(false);
 	const [filteredProducts, setFilteredProducts] = useState([]);
 	const [filteredTab1, setFilteredTab1] = useState([]);
 	const [filteredTab2, setFilteredTab2] = useState([]);
 	const [filteredTab3, setFilteredTab3] = useState([]);
-
+	const [dataPropose, setDataPropose] = useState([]);
+	const [dataFlash, setDataFlash] = useState([]);
+	const [dataUserId, setDataUserId] = useState([]);
+	const [isLoadingUser, setIsLoadingUser] = useState(false);
 	useEffect(() => {
 		fetch('http://localhost:5000/product')
 			.then((response) => {
@@ -75,19 +78,89 @@ function HomePage() {
 			.catch((error) => {
 				console.error('Error fetching data:', error);
 			});
-	});
+	}, []);
 	useEffect(() => {
-		if (dataBookss && isLoading) {
-			const newFilteredProducts = dataBookss.filter(
+		if (dataBooks) {
+			// sản phẩm bán chạy dựa trên ratingPoint(số lần bán ra)
+			const flashProducts = dataBooks.slice().sort((a, b) => b.ratingPoint - a.ratingPoint);
+			setFlashProducts(flashProducts);
+			// sản phẩm giảm giá trên 30%
+			const filterData = dataBooks.filter((data) => {
+				const priceSale = data.priceSell - data.priceDiscount;
+				const percent = (priceSale / data.priceSell) * 100;
+				return percent > 30;
+			});
+			setDataFlash(filterData);
+		}
+	}, [dataBooks]);
+	useEffect(() => {
+		if (userId) {
+			axios
+				.get(`http://localhost:5000/user/${userId}`)
+
+				.then((data) => {
+					setDataUserId(data);
+					setIsLoadingUser(true);
+				})
+				.catch((error) => {
+					console.error('Error fetching data:', error);
+				});
+		}
+	}, [userId]);
+	// lấy danh mục có count lớn nhất
+	// useEffect(() => {
+	// 	if (isLoadingUser && dataUserId) {
+	// 		// Step 1: Find the categoryDetailId with the highest count
+	// 		const highestCountCategoryDetail = dataUserId.data.categoryDetail.reduce((prev, current) => {
+	// 			return prev.count > current.count ? prev : current;
+	// 		});
+
+	// 		const highestCountCategoryDetailId = highestCountCategoryDetail.categoryDetailId;
+
+	// 		// Step 2: Filter products based on the identified categoryDetailId
+	// 		const dataFilter = dataBooks.filter(
+	// 			(product) => product.categoryAllId === highestCountCategoryDetailId,
+	// 		);
+
+	// 		console.log('dataFilter', dataFilter);
+	// 	}
+	// }, [dataUserId, isLoadingUser, dataBooks]);
+	// lấy danh mục của 2 count có giá trị lớn nhất
+	useEffect(() => {
+		if (isLoadingUser && dataUserId) {
+			// Step 1: Sort the categoryDetail array by count in descending order
+			const sortedCategoryDetails = [...dataUserId.data.categoryDetail].sort(
+				(a, b) => b.count - a.count,
+			);
+
+			// Step 2: Get the top 2 category details with the highest counts
+			const topTwoCategoryDetails = sortedCategoryDetails.slice(0, 2);
+
+			// Step 3: Get the categoryDetailId values of the top 2 category details
+			const topTwoCategoryDetailIds = topTwoCategoryDetails.map(
+				(detail) => detail.categoryDetailId,
+			);
+
+			// Step 4: Filter products based on the identified categoryDetailId values
+			const dataFilter = dataBooks.filter((product) =>
+				topTwoCategoryDetailIds.includes(product.categoryAllId),
+			);
+			setDataPropose(dataFilter);
+			// console.log('dataFilter', dataFilter);
+		}
+	}, [dataUserId, isLoadingUser, dataBooks]);
+	useEffect(() => {
+		if (dataBooks && isLoading) {
+			const newFilteredProducts = dataBooks.filter(
 				(product) => product.categoryAllId === '661949cc343796e299686dc7',
 			);
-			const newFilterTab1 = dataBookss.filter(
+			const newFilterTab1 = dataBooks.filter(
 				(product) => product.categoryPublishId === '66198b74c9f3ef21a7378d86',
 			);
-			const newFilterTab2 = dataBookss.filter(
+			const newFilterTab2 = dataBooks.filter(
 				(product) => product.categoryPublishId === '66198b74c9f3ef21a7378d88',
 			);
-			const newFilterTab3 = dataBookss.filter(
+			const newFilterTab3 = dataBooks.filter(
 				(product) => product.categoryPublishId === '66198b74c9f3ef21a7378d89',
 			);
 
@@ -96,7 +169,7 @@ function HomePage() {
 			setFilteredTab2(newFilterTab2);
 			setFilteredTab3(newFilterTab3);
 		}
-	}, [isLoading, dataBookss]);
+	}, [isLoading, dataBooks]);
 
 	const settingsSlider = {
 		dots: true,
@@ -360,11 +433,6 @@ function HomePage() {
 								</p>
 							)}
 							<p className='text-sm text-gray-300 line-through'>{formatNumber(priceSell)}đ</p>
-
-							{/* <p className='my-2 text-base font-bold text-red-500'>{formatNumber(priceSell)}đ</p>
-								{priceDiscount && (
-									<p className='text-sm text-gray-300 line-through'>{formatNumber(priceDiscount)}đ</p>
-								)} */}
 						</div>
 					</Link>
 				</div>
@@ -389,26 +457,30 @@ function HomePage() {
 				</div>
 
 				{!isLoading ? (
-					<Spinner />
+					<div className='flex h-20 w-full items-center justify-center'>
+						<Spinner />
+					</div>
 				) : (
 					<>
 						{/* BookCategoryFavorites */}
-						<AnimationComponents className='my-24'>
-							<div className='my-6 flex items-center justify-between'>
-								<h3 className=' text-2xl'>Đề xuất cho bạn</h3>
-								{/* <div className='flex items-center text-base hover:text-blue'>
-									<Link href='#'>Xem tất cả</Link>
-									<ChevronRight style={{ height: '16px', width: '16px' }} />
-								</div> */}
-							</div>
-							<div className='slider-container-item'>
-								<Slider {...settings}>
-									{dataBookss.map((product) => (
-										<ProductCard key={product._id} product={product} />
-									))}
-								</Slider>
-							</div>
-						</AnimationComponents>
+						{userId ? (
+							<AnimationComponents className='my-24'>
+								<div className='my-6 flex items-center justify-between'>
+									<h3 className=' text-2xl'>Đề xuất cho bạn</h3>
+								</div>
+								<div className='slider-container-item'>
+									<Slider {...settings}>
+										{dataPropose
+											? dataPropose.map((product) => (
+													<ProductCard key={product._id} product={product} />
+												))
+											: dataBooks.map((product) => (
+													<ProductCard key={product._id} product={product} />
+												))}
+									</Slider>
+								</div>
+							</AnimationComponents>
+						) : null}
 						{/* flash sale */}
 						<AnimationComponents className='my-24'>
 							<div className='my-6 flex items-center justify-between rounded-md bg-white px-2 py-4 '>
@@ -425,9 +497,13 @@ function HomePage() {
 							</div>
 							<div className='slider-container-item'>
 								<Slider {...settings}>
-									{dataBookss.map((product) => (
-										<ProductCard key={product._id} product={product} />
-									))}
+									{dataFlash
+										? dataFlash.map((product) => (
+												<ProductCard key={product._id} product={product} />
+											))
+										: dataBooks.map((product) => (
+												<ProductCard key={product._id} product={product} />
+											))}
 								</Slider>
 							</div>
 						</AnimationComponents>
@@ -459,11 +535,13 @@ function HomePage() {
 								</div>
 							</div>
 							<div className='slider-container-item'>
-								<Slider {...settings}>
-									{flashProducts.map((product) => (
-										<ProductCard key={product._id.$oid} product={product} />
-									))}
-								</Slider>
+								{isLoading ? (
+									<Slider {...settings}>
+										{flashProducts.map((product) => (
+											<ProductCard key={product._id.$oid} product={product} />
+										))}
+									</Slider>
+								) : null}
 							</div>
 						</AnimationComponents>
 						{/* ... */}

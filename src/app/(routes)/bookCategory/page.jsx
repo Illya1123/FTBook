@@ -13,6 +13,7 @@ import {
 	ModalBody,
 	ModalFooter,
 	useDisclosure,
+	Spinner,
 } from '@nextui-org/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCartShopping, faChevronDown, faEye, faHeart } from '@fortawesome/free-solid-svg-icons';
@@ -22,44 +23,26 @@ import SideBarComponent from '../_components/SideBarComponent';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { useTheme } from '../_components/ThemeProvider';
-// import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
+
 function bookCategory() {
 	const { valueSearch, setValueSearch } = useTheme();
-	console.log(valueSearch);
-	// const searchParams = useSearchParams();
-	// const receivedValue = searchParams.get('valueSearched');
-	// const valueSearchs = valueSearch;
-	// // Use the receivedValue for displaying books or further processing
-	console.log('valueSearch:', valueSearch);
 	const [dataBook, setDataBook] = useState([]);
-	const [filterValue, setFilterValue] = useState([]);
-	const [valueFilterSupplier, setValueFilterSupplier] = useState([]);
-	// const [filterValue, setValueFilterPrice] = useState();
-	const [isLoaing, setIsLoading] = useState([]);
 	const [dataFilter, setDataFilter] = useState([]);
-	const [filterValueCategory, setFilterValueCategory] = useState();
+	const [filterValue, setFilterValue] = useState([]);
 	const [filterValueSupplier, setFilterValueSupplier] = useState([]);
+	const [filterValueCategory, setFilterValueCategory] = useState();
 	const [filterValuePublished, setFilterValuePublished] = useState([]);
 	const [filterValueYear, setFilterValueYear] = useState([]);
-	// const [selectedKeys, setSelectedKeys] = React.useState(new Set(['Bestseller']));
-	// const selectedValue = React.useMemo(
-	// 	() => Array.from(selectedKeys).join(", ").replaceAll("_", " "),
-	// 	[selectedKeys]
-	//   );
 	const [selectedKeys, setSelectedKeys] = useState(new Set(['']));
-	// console.log(filterValue);
-	// console.log(filterValueSupplier);
+	const [isLoading, setIsLoading] = useState(false);
+
 	const selectedValue = React.useMemo(
 		() => Array.from(selectedKeys).join(', ').replaceAll('_', ' '),
 		[selectedKeys],
 	);
-	// console.log(selectedKeys.currentKey);
-	// console.log(dataBook);
-	useEffect(() => {
-		console.log(selectedKeys);
-		// console.log('dataBook', dataBook);
-		// console.log('dataFilter', dataFilter);
 
+	useEffect(() => {
 		if (selectedKeys.currentKey) {
 			if (dataFilter.length > 0) {
 				let sortedDataFilter;
@@ -83,7 +66,8 @@ function bookCategory() {
 				setDataBook(sortedDataBook);
 			}
 		}
-	}, [selectedKeys]);
+	}, [selectedKeys, dataBook, dataFilter]);
+
 	useEffect(() => {
 		if (valueSearch && dataBook) {
 			const filterProducts = dataBook.filter((product) =>
@@ -92,6 +76,7 @@ function bookCategory() {
 			setDataFilter(filterProducts);
 		}
 	}, [valueSearch, dataBook]);
+
 	useEffect(() => {
 		axios
 			.get('http://localhost:5000/product')
@@ -103,25 +88,25 @@ function bookCategory() {
 				console.error('Error fetching data:', error);
 			});
 	}, []);
+
 	const ProductCard = ({ product, small }) => {
 		const { name, image, priceSell, priceDiscount } = product;
 		const firstImage = image[0];
 		const { isOpen, onOpen, onOpenChange } = useDisclosure();
-		// format giá - 3 số thêm 1 dấu chấm - Example: 100000 => 100.000
+
 		function formatNumber(number) {
 			return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 		}
-		// tính % giảm giá sản phẩm
+
 		const priceSale = priceSell - priceDiscount;
 		const percentSale = Math.floor((priceSale / priceSell) * 100);
 
 		const dispatch = useDispatch();
 
 		const handleAddToCart = () => {
-			// console.log(1);
-			// const item = { id: 1, name: 'Product Name', price: 10 }; // Thay đổi thông tin sản phẩm tùy ý
-			// dispatch(addItem(item));
+			// handle add to cart logic
 		};
+
 		return (
 			<div className='relative max-w-[288px] rounded-md border bg-white'>
 				<div className='group'>
@@ -155,7 +140,6 @@ function bookCategory() {
 															<p className=' text-gray-400 line-through'>
 																Giá gốc: {formatNumber(priceSell)}đ
 															</p>
-															{/* <p>Thông tin về sách</p> */}
 														</div>
 													</div>
 												</ModalBody>
@@ -194,11 +178,6 @@ function bookCategory() {
 								</p>
 							)}
 							<p className='text-sm text-gray-300 line-through'>{formatNumber(priceSell)}đ</p>
-
-							{/* <p className='my-2 text-base font-bold text-red-500'>{formatNumber(priceSell)}đ</p>
-							{priceDiscount && (
-								<p className='text-sm text-gray-300 line-through'>{formatNumber(priceDiscount)}đ</p>
-							)} */}
 						</div>
 					</Link>
 				</div>
@@ -255,20 +234,16 @@ function bookCategory() {
 		filterValueYear,
 	]);
 
-	// useEffect(()=>{
-	// 	if()
-	// },[selectedKeys])
 	const handleChangeValue = (value) => {
-		// Nếu giá trị đã tồn tại trong mảng filterValue, hãy loại bỏ nó
 		if (filterValue.includes(value)) {
 			const updatedFilterValue = filterValue.filter((item) => item !== value);
 			setFilterValue(updatedFilterValue);
 		} else {
-			// Nếu giá trị chưa tồn tại, thêm vào mảng
 			const updatedFilterValue = [...filterValue, value];
 			setFilterValue(updatedFilterValue);
 		}
 	};
+
 	const handleChangeValueSupplier = (value) => {
 		if (filterValueSupplier.includes(value)) {
 			const updatedFilterValue = filterValueSupplier.filter((item) => item !== value);
@@ -278,6 +253,7 @@ function bookCategory() {
 			setFilterValueSupplier(updatedFilterValue);
 		}
 	};
+
 	const handleChangeValuePublish = (value) => {
 		if (filterValuePublished.includes(value)) {
 			const updatedFilterValue = filterValuePublished.filter((item) => item !== value);
@@ -287,6 +263,7 @@ function bookCategory() {
 			setFilterValuePublished(updatedFilterValue);
 		}
 	};
+
 	const handleChangeValueYear = (value) => {
 		if (filterValueYear.includes(value)) {
 			const updatedFilterValue = filterValueYear.filter((item) => item !== value);
@@ -300,10 +277,11 @@ function bookCategory() {
 	const handleChangeValueCategory = (value) => {
 		setFilterValueCategory(value);
 	};
-	const hanleChangeSelectKey = (e) => {
+
+	const handleChangeSelectKey = (e) => {
 		console.log(e);
 	};
-	// console.log('dataBooksssss', dataBook);
+
 	return (
 		<div>
 			<title>Book Category</title>
@@ -317,84 +295,68 @@ function bookCategory() {
 						filterCategory={handleChangeValueCategory}
 					/>
 				</div>
-				<div className='ml-5 w-full rounded-md bg-white p-5'>
-					<div className='flex items-center'>
-						<p className='mr-2'>Sắp xếp theo: </p>
-						<div>
-							<Dropdown type='menu'>
-								<DropdownTrigger>
-									<Button variant='bordered' className='max-h-8 rounded-md  border capitalize'>
-										{selectedValue} <FontAwesomeIcon icon={faChevronDown} />
-									</Button>
-								</DropdownTrigger>
-								<DropdownMenu
-									aria-label='Single selection example'
-									variant='flat'
-									disallowEmptySelection
-									selectionMode='single'
-									selectedKeys={selectedKeys}
-									onSelectionChange={setSelectedKeys}
-									onChange={hanleChangeSelectKey}
-									color='primary'
-								>
-									<DropdownItem key='Bán chạy tuần' textValue='ABC'>
-										Bán chạy tuần
-									</DropdownItem>
-									<DropdownItem key='Giá tăng dần'>Giá tăng dần</DropdownItem>
-									<DropdownItem key='Giá giảm dần'>Giá giảm dần</DropdownItem>
-								</DropdownMenu>
-							</Dropdown>
-						</div>
+				{!isLoading ? (
+					<div className='flex h-80 w-full items-center justify-center'>
+						<Spinner />
 					</div>
+				) : (
+					<div className='ml-5 w-full rounded-md bg-white p-5'>
+						<div className='flex items-center'>
+							<p className='mr-2'>Sắp xếp theo: </p>
+							<div>
+								<Dropdown type='menu'>
+									<DropdownTrigger>
+										<Button variant='bordered' className='max-h-8 rounded-md  border capitalize'>
+											{selectedValue} <FontAwesomeIcon icon={faChevronDown} />
+										</Button>
+									</DropdownTrigger>
+									<DropdownMenu
+										aria-label='Single selection example'
+										variant='flat'
+										disallowEmptySelection
+										selectionMode='single'
+										selectedKeys={selectedKeys}
+										onSelectionChange={setSelectedKeys}
+										onChange={handleChangeSelectKey}
+										color='primary'
+									>
+										<DropdownItem key='Bán chạy tuần' textValue='ABC'>
+											Bán chạy tuần
+										</DropdownItem>
+										<DropdownItem key='Giá tăng dần'>Giá tăng dần</DropdownItem>
+										<DropdownItem key='Giá giảm dần'>Giá giảm dần</DropdownItem>
+									</DropdownMenu>
+								</Dropdown>
+							</div>
+						</div>
 
-					{filterValueCategory === undefined &&
-					filterValue.length === 0 &&
-					filterValueSupplier.length === 0 &&
-					filterValuePublished.length === 0 &&
-					filterValueYear.length === 0 &&
-					valueSearch === undefined ? (
-						<div className=' my-5 grid grid-cols-4 gap-4'>
-							{dataBook.map((product) => (
-								<ProductCard key={product._id} product={product} small />
-							))}
-						</div>
-					) : dataFilter.length > 0 ? (
-						<div className=' my-5 grid grid-cols-4 gap-4'>
-							{dataFilter.map((product) => (
-								<ProductCard key={product._id} product={product} small />
-							))}
-						</div>
-					) : (
-						<div className='flex h-32 w-full items-center justify-center text-2xl'>
-							Không tìm thấy kết quả phù hợp
-						</div>
-					)}
-				</div>
+						{!filterValueCategory &&
+						filterValue.length === 0 &&
+						filterValueSupplier.length === 0 &&
+						filterValuePublished.length === 0 &&
+						filterValueYear.length === 0 &&
+						!valueSearch ? (
+							<div className=' my-5 grid grid-cols-4 gap-4'>
+								{dataBook.map((product) => (
+									<ProductCard key={product._id} product={product} small />
+								))}
+							</div>
+						) : dataFilter.length > 0 ? (
+							<div className=' my-5 grid grid-cols-4 gap-4'>
+								{dataFilter.map((product) => (
+									<ProductCard key={product._id} product={product} small />
+								))}
+							</div>
+						) : (
+							<div className='flex h-32 w-full items-center justify-center text-2xl'>
+								Không tìm thấy kết quả phù hợp
+							</div>
+						)}
+					</div>
+				)}
 			</div>
 		</div>
 	);
 }
 
 export default bookCategory;
-
-// {filterValueCategory === undefined &&
-// 	filterValue.length === 0 &&
-// 	filterValueSupplier.length === 0 &&
-// 	filterValuePublished.length === 0 &&
-// 	filterValueYear.length === 0 ? (
-// 		<div className='my-5 grid grid-cols-4 gap-4'>
-// 			{dataBook.map((product) => (
-// 				<ProductCard key={product._id} product={product} small />
-// 			))}
-// 		</div>
-// 	) : dataFilter.length > 0 ? (
-// 		<div className='my-5 grid grid-cols-4 gap-4'>
-// 			{dataFilter.map((product) => (
-// 				<ProductCard key={product._id} product={product} small />
-// 			))}
-// 		</div>
-// 	) : (
-// 		<div className='flex h-32 w-full items-center justify-center text-2xl'>
-// 			Không tìm thấy kết quả phù hợp
-// 		</div>
-// 	)}
