@@ -25,7 +25,7 @@ import { useTheme } from '../_components/ThemeProvider';
 // import { useSearchParams, useRouter } from 'next/navigation';
 function bookCategory() {
 	const { valueSearch, setValueSearch } = useTheme();
-
+	console.log(valueSearch);
 	// const searchParams = useSearchParams();
 	// const receivedValue = searchParams.get('valueSearched');
 	// const valueSearchs = valueSearch;

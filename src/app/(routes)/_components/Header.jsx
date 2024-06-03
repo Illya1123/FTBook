@@ -18,8 +18,9 @@ import { Book, Frown, LayoutList, RotateCcw, UserRoundCog } from 'lucide-react';
 import AnimationComponents from './AnimationComponents';
 import { useTheme } from './ThemeProvider';
 import { useRouter } from 'next/navigation';
+import axios from 'axios';
 function Header({ activeHome, activeBook, activeAbout, activeContact }) {
-	const { roleUser, setValueSearch } = useTheme();
+	const { roleUser, setValueSearch, userId } = useTheme();
 	const { user } = useUser();
 	const [isFocus, setIsFocus] = useState(false);
 	const [dataProduct, setDataProduct] = useState([]);
@@ -56,13 +57,7 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 				console.error('Error fetching data:', error);
 			});
 	});
-	// useEffect(() => {
-	// 	if (isLoading) {
-	// 		console.log(dataProduct);
-	// 	}
-	// }, [isLoading]);
 	const [quantityCart, setQuantityCart] = useState(0);
-	const [isAuth, setIsAuth] = useState(false);
 	const [valueSearched, setValueSearched] = useState([]);
 	const handleChangeValue = (e) => {
 		const value = e.target.value;
@@ -92,12 +87,72 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 		);
 	};
 	const handleSwitchAdmin = () => {
-		window.location.href = 'http://localhost:3000';
+		window.location.href = 'https://ft-book-admin.vercel.app/';
 	};
-	const handleSetValueSearched = () => {
-		setValueSearch(valueSearched);
-		router.push('/bookCategory', { query: { valueSearched } });
+	// const handleSetValueSearched = () => {
+	// 	setValueSearch(valueSearched);
+	// 	axios.get(`http://localhost:5000/user/${userId}`)
+	// 	    .then((res) => {
+	//             console.log(res.data);
+	//         })
+	// 		.catch((err) => {
+	//             console.log(err);
+	//         });
+	// 	const filterProducts = dataProduct.filter((product) =>
+	// 		product.name.toLowerCase().includes(valueSearched.toLowerCase()),
+	// 	);
+	// 	console.log(filterProducts.map((product) => product.categoryAllId));
+
+	// 	// axios.patch(`http://localhost:5000/user/${userId}`,{
+	// 	// 	categoryDetail,
+	// 	// })
+	// 	// router.push('/bookCategory', { query: { valueSearched } });
+	// };
+	const handleSetValueSearched = async () => {
+		console.log(valueSearched);
+		try {
+			setValueSearch(valueSearched);
+
+			// Fetch user data
+			const userResponse = await axios.get(`http://localhost:5000/user/${userId}`);
+			const userData = userResponse.data;
+
+			// Filter products
+			const filterProducts = dataProduct.filter((product) =>
+				product.name.toLowerCase().includes(valueSearched.toLowerCase()),
+			);
+
+			// Extract categoryAllIds from filtered products
+			const categoryAllIds = filterProducts.map((product) => product.categoryAllId);
+
+			// Update categoryDetail
+			const updatedCategoryDetail = [...userData.categoryDetail];
+
+			categoryAllIds.forEach((categoryId) => {
+				const existingCategory = updatedCategoryDetail.find(
+					(detail) => detail.categoryDetailId === categoryId,
+				);
+				if (existingCategory) {
+					existingCategory.count += 1;
+				} else {
+					updatedCategoryDetail.push({ categoryDetailId: categoryId, count: 1 });
+				}
+			});
+
+			// Update user data with new categoryDetail
+			await axios.patch(`http://localhost:5000/user/${userId}`, {
+				categoryDetail: updatedCategoryDetail,
+			});
+
+			console.log('Updated categoryDetail:', updatedCategoryDetail);
+
+			// Navigate to the bookCategory page with the search value as a query parameter
+			router.push('/bookCategory', { query: { valueSearched } });
+		} catch (err) {
+			console.log(err);
+		}
 	};
+
 	return (
 		<div className='fixed left-0 right-0 top-0 z-[90]   border-b bg-white'>
 			<div className='mx-auto flex max-w-[1200px] items-center justify-between py-4'>
@@ -202,7 +257,7 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 					{valueSearched.length > 0 && (
 						<div
 							// href={`/bookCategory`}
-							className='absolute -right-5 top-1/2 -translate-x-1/2 -translate-y-1/2 transform rounded-md bg-blue px-6 py-1 text-white hover:opacity-60'
+							className='absolute -right-5 top-1/2 -translate-x-1/2 -translate-y-1/2 transform cursor-pointer rounded-md bg-blue px-6 py-1 text-white hover:opacity-60'
 							onClick={handleSetValueSearched}
 						>
 							<FontAwesomeIcon icon={faMagnifyingGlass} className='h-4 w-4' />
