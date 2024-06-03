@@ -264,10 +264,10 @@ function oneStepCheckoutPage() {
 		if (dataUser) {
 			setValueNameUser(dataUser.fullName);
 			setValuePhoneUser(dataUser.phone);
-			setValueProvinceUser(dataUser.addresses.province);
-			setValueDistrictUser(dataUser.addresses.district);
-			setValueWardUser(dataUser.addresses.ward);
-			const fullAddress = `${dataUser.addresses.ward}, ${dataUser.addresses.district}, ${dataUser.addresses.province}`;
+			setValueProvinceUser(dataUser?.addresses?.province);
+			setValueDistrictUser(dataUser?.addresses?.district);
+			setValueWardUser(dataUser?.addresses?.ward);
+			const fullAddress = `${dataUser.addresses?.ward}, ${dataUser.addresses?.district}, ${dataUser.addresses?.province}`;
 			setValueAddressUser(fullAddress);
 		}
 	}, [dataUser]);
@@ -345,57 +345,55 @@ function oneStepCheckoutPage() {
 	}, [valueWardUser, valueDistrictUser, valueProvinceUser]);
 	// -------------------------- confirm payment ----------------------------
 
-	// Biến để đánh dấu việc callback đã nhận được
 	const handleConfirmPayment = () => {
 		const products = dataCheckout.map((product) => ({
 			productId: product._id,
 			quantity: product.quantityPurchased,
 		}));
+	
+		const userData = { 
+			userId, 
+			name: valueNameUser, 
+			address: valueAddressUser, 
+			totalPrice: totalPriceFinal ? totalPriceFinal + 19000 : totalPriceCheckout + 19000, 
+			orderStatus: 
+				selectedMethod === 'MoMo' || selectedMethod === 'VNPay' ? 'Đã thanh toán' : orderStatus, 
+			paymentMethod: selectedMethod, 
+			products, 
+		}; 
 
-		const userData = {
-			userId,
-			name: valueNameUser,
-			address: valueAddressUser,
-			totalPrice: totalPriceFinal ? totalPriceFinal + 19000 : totalPriceCheckout + 19000,
-			orderStatus:
-				selectedMethod === 'MoMo' || selectedMethod === 'VNPay' ? 'Đã thanh toán' : orderStatus,
-			paymentMethod: selectedMethod,
-			products,
-		};
-
-		// Function to handle payment for MoMo
-		const processPaymentMoMo = () => {
-			const paymentPromise = fetch('http://localhost:5000/payment_momo', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
+		const processPaymentMoMo = () => { 
+			const paymentPromise = fetch('http://localhost:5000/payment_momo', { 
+				method: 'POST', 
+				headers: { 
+					'Content-Type': 'application/json', 
 				},
-				body: JSON.stringify({
-					totalPrice: userData.totalPrice,
-				}),
-			}).then((response) => {
-				if (!response.ok) {
-					throw new Error('Network response was not ok');
-				}
-				return response.json();
-			});
-
-			paymentPromise
+				body: JSON.stringify({ 
+					totalPrice: userData.totalPrice, 
+				}), 
+			}).then((response) => { 
+				if (!response.ok) { 
+					throw new Error('Network response was not ok'); 
+				} 
+				return response.json(); 
+			}); 
+	 
+			paymentPromise 
 				.then((data) => {
-					window.location.href = data.shortLink; // Chuyển trang
-					const checkStatusPromise = fetch('http://localhost:5000/check-status-transaction', {
-						method: 'POST',
-						headers: {
-							'Content-Type': 'application/json',
-						},
-						body: JSON.stringify({ orderId: data.orderId }),
-					}).then((response) => {
-						if (!response.ok) {
-							throw new Error('Network response was not ok');
-						}
-						return response.json();
-					});
-
+					window.location.href = data.shortLink;
+					const checkStatusPromise = fetch('http://localhost:5000/check-status-transaction', { 
+						method: 'POST', 
+						headers: { 
+							'Content-Type': 'application/json', 
+						}, 
+						body: JSON.stringify({ orderId: data.orderId }), 
+					}).then((response) => { 
+						if (!response.ok) { 
+							throw new Error('Network response was not ok'); 
+						} 
+						return response.json(); 
+					}); 
+	 
 					checkStatusPromise
 						.then((statusData) => {
 							console.log(statusData);
@@ -426,7 +424,7 @@ function oneStepCheckoutPage() {
 				}
 				return response.json();
 			});
-
+	
 			paymentPromise
 				.then((data) => {
 					window.location.href = data.vnpUrl; // Redirect to VNPay payment page
@@ -443,56 +441,94 @@ function oneStepCheckoutPage() {
 						}
 						return response.json();
 					});
-
+	
 					checkStatusPromise
 						.then((statusData) => {
 							console.log(statusData);
-							if (statusData.message === 'Thành công.') {
-								processPayment();
-							}
-						})
-						.catch((err) => {
-							console.error('Error:', err);
-						});
-				})
-				.catch((err) => {
-					console.error('Error:', err);
-				});
+							if (statusData.message === 'Thành công.') { 
+								processPayment(); 
+							} 
+						}) 
+						.catch((err) => { 
+							console.error('Error:', err); 
+						}); 
+				}) 
+				.catch((err) => { 
+					console.error('Error:', err); 
+				}); 
+		}; 
+	 
+		const processPayment = () => { 
+			fetch('http://localhost:5000/payment', { 
+				method: 'POST', 
+				headers: { 
+					'Content-Type': 'application/json', 
+				}, 
+				body: JSON.stringify(userData), 
+			}) 
+				.then((response) => { 
+					if (!response.ok) { 
+						throw new Error('Network response was not ok'); 
+					} 
+					return response.json(); 
+				}) 
+				.then((data) => { 
+					setCodeOrder(data._id); 
+					router.push(`/successfulTransaction`); 
+		
+					products.forEach((product) => {
+						fetch(`http://localhost:5000/product/${product.productId}`)
+							.then((response) => {
+								if (!response.ok) {
+									throw new Error('Network response was not ok');
+								}
+								return response.json();
+							})
+							.then((currentProduct) => {
+								const updatedRatingPoint = (currentProduct.ratingPoint || 0) + 1;
+								const updatedQuantity = (currentProduct.quantity || 0) - product.quantity;
+		
+								return fetch(`http://localhost:5000/product/${product.productId}`, {
+									method: 'PATCH',
+									headers: {
+										'Content-Type': 'application/json',
+									},
+									body: JSON.stringify({
+										ratingPoint: updatedRatingPoint,
+										quantity: updatedQuantity,
+									}),
+								});
+							})
+							.then((response) => {
+								if (!response.ok) {
+									throw new Error('Network response was not ok');
+								}
+								return response.json();
+							})
+							.then((updatedProduct) => {
+								console.log('Product updated:', updatedProduct);
+							})
+							.catch((err) => {
+								console.error('Error updating product:', err);
+							});
+					});
+				}) 
+				.catch((err) => { 
+					console.error('Error:', err); 
+				}); 
 		};
-
-		const processPayment = () => {
-			fetch('http://localhost:5000/payment', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(userData),
-			})
-				.then((response) => {
-					if (!response.ok) {
-						throw new Error('Network response was not ok');
-					}
-					return response.json();
-				})
-				.then((data) => {
-					setCodeOrder(data._id);
-					router.push(`/successfulTransaction`);
-				})
-				.catch((err) => {
-					console.error('Error:', err);
-				});
-		};
-
+	
 		if (selectedMethod === 'MoMo') {
-			processPayment();
-			processPaymentMoMo();
-		} else if (selectedMethod === 'VNPay') {
-			processPayment();
-			processPaymentVNPay();
-		} else {
-			processPayment();
-		}
-	};
+			processPayment();    
+			processPaymentMoMo(); 
+		} else if (selectedMethod === 'VNPay') { 
+			processPayment(); 
+			processPaymentVNPay(); 
+		} else { 
+			processPayment(); 
+		} 
+	}; 
+	
 
 	const InputInforItem = ({ title, onChange, value }) => {
 		return (
