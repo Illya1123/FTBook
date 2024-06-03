@@ -4,6 +4,8 @@ import SwiperCore, { Navigation, Pagination, Thumbs } from 'swiper';
 import './bookDetail.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
+import Slider from 'react-slick';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import {
 	Button,
 	Modal,
@@ -11,7 +13,6 @@ import {
 	ModalContent,
 	ModalFooter,
 	ModalHeader,
-	Slider,
 	Textarea,
 	useDisclosure,
 } from '@nextui-org/react';
@@ -33,6 +34,40 @@ export default function BookDetail({ params }) {
 	const [checkReview, setCheckReview] = useState();
 	const [valueUserName, setValueUserName] = useState();
 	const [Reload, setReload] = useState(0);
+	const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
+	const handleImageChoose = (index) => {
+		setSelectedImageIndex(index);
+	  };
+
+	var settings = {
+		dots: false,
+		infinite: false,
+		speed: 500,
+		slidesToShow: 4,
+		slidesToScroll: 1,
+		initialSlide: 0,
+		nextArrow: <SampleNextArrow />,
+		prevArrow: <SamplePrevArrow />,
+	};
+
+	function SampleNextArrow(props) {
+		const { className, style, onClick } = props;
+		return (
+			<div className={className} onClick={onClick}>
+				<ChevronRight style={{ color: '#858380', fontSize: '30px' }} />
+			</div>
+		);
+	}
+	function SamplePrevArrow(props) {
+		const { className, style, onClick } = props;
+		return (
+			<div className={className} onClick={onClick}>
+				<ChevronLeft style={{ color: '#858380', fontSize: '30px' }} />
+			</div>
+		);
+	}
+
 	const loadUser = () => {
 		fetch(`http://localhost:5000/user/${userId}`)
 			.then((userResponse) => {
@@ -60,7 +95,7 @@ export default function BookDetail({ params }) {
 			.then((bookData) => {
 				// Tăng số lượt xem của sản phẩm
 				fetch(`http://localhost:5000/product/${params.bookId}`, {
-					method: 'PATCH', 
+					method: 'PATCH',
 					headers: {
 						'Content-Type': 'application/json',
 					},
@@ -92,7 +127,7 @@ export default function BookDetail({ params }) {
 				console.error('Error fetching data:', error);
 			});
 	}
-	
+
 	const loadReview = () => {
 		fetch(`http://localhost:5000/review/product/${params.bookId}`)
 			.then((reviewResponse) => {
@@ -290,33 +325,16 @@ export default function BookDetail({ params }) {
 								/>
 							</div>
 						</div>
-						<div className='image-container'>
-							<div className='image-grid grid grid-cols-4 gap-2'>
+						<div className='slider-container-item'>
+							<Slider {...settings}>
 								{book.image.map((image, index) => (
-									<img
-										key={index}
-										src={image}
-										alt={`Image ${index}`}
-										className='cursor-pointer rounded-lg border border-gray-300 hover:bg-gray-200'
-										style={{
-											width: '100%',
-											height: '100%',
-											objectFit: 'contain',
-										}}
-										onClick={() => handleImageClick(image)}
-									/>
+									<div key={index}  className={`image-wrapper ${index === selectedImageIndex ? 'selected' : ''}`}
+									onClick={() => handleImageChoose(index)}>
+										<img src={image} alt={`Image ${index}`} className='slider-image' 
+										onClick={() => handleImageClick(image)}/>
+									</div>
 								))}
-							</div>
-							{book.image.length > 5 && (
-								<button className='arrow-button left-arrow' onClick={() => scrollImages(-100)}>
-									&lt;
-								</button>
-							)}
-							{book.image.length > 5 && (
-								<button className='arrow-button right-arrow' onClick={() => scrollImages(100)}>
-									&gt;
-								</button>
-							)}
+							</Slider>
 						</div>
 					</div>
 					<div className='w-3/4'>
