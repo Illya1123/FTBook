@@ -6,7 +6,6 @@ import {
 	DropdownMenu,
 	DropdownItem,
 	Button,
-	Tooltip,
 	Modal,
 	ModalContent,
 	ModalHeader,
@@ -23,7 +22,6 @@ import SideBarComponent from '../_components/SideBarComponent';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { useTheme } from '../_components/ThemeProvider';
-import { useSearchParams, useRouter } from 'next/navigation';
 
 function bookCategory() {
 	const { valueSearch, setValueSearch } = useTheme();

@@ -128,7 +128,7 @@ function Favorite() {
 				<Heart style={{ color: 'white' }} />
 			</div>
 			{isShow && (
-				<div ref={ref} className=' h-96 w-96 bg-white  shadow-md'>
+				<div ref={ref} className=' h-96 w-96 bg-white   shadow-[0_3px_10px_rgb(0,0,0,0.2)]'>
 					<p className='border-b py-2 text-center'>Danh sách yêu thích</p>
 					{userId ? (
 						<div className='grid h-[332px]  grid-cols-2 gap-4 overflow-auto p-4 px-2'>
