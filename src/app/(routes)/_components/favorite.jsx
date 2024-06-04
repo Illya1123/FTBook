@@ -106,7 +106,6 @@ function Favorite() {
 		);
 	};
 	const handleCancel = (value) => {
-		// console.log(value);
 		axios
 			.patch(`http://localhost:5000/favorite/user/${userId}`, {
 				productId: [value],

@@ -279,7 +279,7 @@ function HomePage() {
 			};
 			try {
 				// Kiểm tra xem giỏ hàng của người dùng đã tồn tại hay chưa
-				const existingCart = await axios.get(`http://localhost:5000/cart/user/${user.id}`);
+				const existingCart = await axios.get(`http://localhost:5000/cart/user/${userId}`);
 
 				if (existingCart.data.length > 0) {
 					// Nếu giỏ hàng đã tồn tại
@@ -292,20 +292,20 @@ function HomePage() {
 						// Nếu sản phẩm đã tồn tại trong giỏ hàng, thực hiện cập nhật số lượng
 						const existingProduct = existingCart.data[0].products[existingProductIndex];
 						const newQuantity = existingProduct.quantity + 1;
-						await axios.put(`http://localhost:5000/cart/edit/${user.id}`, {
+						await axios.put(`http://localhost:5000/cart/edit/${userId}`, {
 							productId: _id,
 							quantity: newQuantity,
 						});
 						console.log('Cart updated with quantity:', newQuantity);
 					} else {
 						// Nếu sản phẩm chưa tồn tại trong giỏ hàng, thêm mới sản phẩm vào giỏ hàng
-						await axios.post(`http://localhost:5000/cart/edit/${user.id}`, cartData);
+						await axios.post(`http://localhost:5000/cart/edit/${userId}`, cartData);
 						console.log('Product added to cart.');
 					}
 				} else {
 					// Nếu giỏ hàng chưa tồn tại, thực hiện thêm mới
 					const response = await axios.post('http://localhost:5000/cart', {
-						userId: user.id,
+						userId: userId,
 						status: 'active',
 						products: [cartData],
 					});

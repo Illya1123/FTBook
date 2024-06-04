@@ -89,25 +89,6 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 	const handleSwitchAdmin = () => {
 		window.location.href = 'https://ft-book-admin.vercel.app/';
 	};
-	// const handleSetValueSearched = () => {
-	// 	setValueSearch(valueSearched);
-	// 	axios.get(`http://localhost:5000/user/${userId}`)
-	// 	    .then((res) => {
-	//             console.log(res.data);
-	//         })
-	// 		.catch((err) => {
-	//             console.log(err);
-	//         });
-	// 	const filterProducts = dataProduct.filter((product) =>
-	// 		product.name.toLowerCase().includes(valueSearched.toLowerCase()),
-	// 	);
-	// 	console.log(filterProducts.map((product) => product.categoryAllId));
-
-	// 	// axios.patch(`http://localhost:5000/user/${userId}`,{
-	// 	// 	categoryDetail,
-	// 	// })
-	// 	// router.push('/bookCategory', { query: { valueSearched } });
-	// };
 	const handleSetValueSearched = async () => {
 		console.log(valueSearched);
 		try {
@@ -192,16 +173,16 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 							<div>
 								<div className=' font-bold'>Từ khóa hot</div>
 								<div className=' flex cursor-pointer items-center gap-1 py-1 hover:bg-grayhover'>
-									<RotateCcw style={{ width: '16px', height: '16px' }} />
-									<p>Sách học Tiếng Anh</p>
+									<RotateCcw style={{ width: '14px', height: '14px' }} />
+									<p className=' text-sm'>Sách học Tiếng Anh</p>
 								</div>
 								<div className=' flex cursor-pointer items-center gap-1 py-1 hover:bg-grayhover'>
-									<RotateCcw style={{ width: '16px', height: '16px' }} />
-									<p>Sách luyện thi</p>
+									<RotateCcw style={{ width: '14px', height: '14px' }} />
+									<p className=' text-sm'>Sách luyện thi</p>
 								</div>
 								<div className=' flex cursor-pointer items-center gap-1 py-1 hover:bg-grayhover'>
-									<RotateCcw style={{ width: '16px', height: '16px' }} />
-									<p>Sách về Marketing</p>
+									<RotateCcw style={{ width: '14px', height: '14px' }} />
+									<p className=' text-sm'>Sách về Marketing</p>
 								</div>
 							</div>
 							{valueSearched.length > 0 ? (
