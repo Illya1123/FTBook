@@ -77,7 +77,7 @@ function bookCategory() {
 
 	useEffect(() => {
 		axios
-			.get('http://localhost:5000/product')
+			.get('https://backend-book-store-two.vercel.app/product')
 			.then((response) => {
 				setDataBook(response.data);
 				setIsLoading(true);

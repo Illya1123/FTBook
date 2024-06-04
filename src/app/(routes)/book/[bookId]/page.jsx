@@ -13,6 +13,7 @@ import {
 	ModalContent,
 	ModalFooter,
 	ModalHeader,
+	Spinner,
 	Textarea,
 	useDisclosure,
 } from '@nextui-org/react';
@@ -38,7 +39,7 @@ export default function BookDetail({ params }) {
 
 	const handleImageChoose = (index) => {
 		setSelectedImageIndex(index);
-	  };
+	};
 
 	var settings = {
 		dots: false,
@@ -69,7 +70,7 @@ export default function BookDetail({ params }) {
 	}
 
 	const loadUser = () => {
-		fetch(`http://localhost:5000/user/${userId}`)
+		fetch(`https://backend-book-store-two.vercel.app/user/${userId}`)
 			.then((userResponse) => {
 				if (!userResponse.ok) {
 					throw new Error('Network response was not ok');
@@ -85,7 +86,7 @@ export default function BookDetail({ params }) {
 	};
 	function fetchData() {
 		// Fetch thông tin sách
-		fetch(`http://localhost:5000/product/${params.bookId}`)
+		fetch(`https://backend-book-store-two.vercel.app/product/${params.bookId}`)
 			.then((bookResponse) => {
 				if (!bookResponse.ok) {
 					throw new Error('Network response was not ok');
@@ -94,7 +95,7 @@ export default function BookDetail({ params }) {
 			})
 			.then((bookData) => {
 				// Tăng số lượt xem của sản phẩm
-				fetch(`http://localhost:5000/product/${params.bookId}`, {
+				fetch(`https://backend-book-store-two.vercel.app/product/${params.bookId}`, {
 					method: 'PATCH',
 					headers: {
 						'Content-Type': 'application/json',
@@ -108,7 +109,7 @@ export default function BookDetail({ params }) {
 						setBook(bookData);
 						setSelectedImage(bookData.image[0]);
 						const categoryAllId = bookData?.categoryAllId;
-						return fetch(`http://localhost:5000/categoryAll/${categoryAllId}`);
+						return fetch(`https://backend-book-store-two.vercel.app/categoryAll/${categoryAllId}`);
 					})
 					.then((categoryAllResponse) => {
 						if (!categoryAllResponse.ok) {
@@ -129,7 +130,7 @@ export default function BookDetail({ params }) {
 	}
 
 	const loadReview = () => {
-		fetch(`http://localhost:5000/review/product/${params.bookId}`)
+		fetch(`https://backend-book-store-two.vercel.app/review/product/${params.bookId}`)
 			.then((reviewResponse) => {
 				if (!reviewResponse.ok) {
 					throw new Error('Network response was not ok');
@@ -166,7 +167,11 @@ export default function BookDetail({ params }) {
 	};
 
 	if (!book) {
-		return <div>Loading...</div>;
+		return (
+			<div className='flex h-[500px] items-center justify-center'>
+				<Spinner />
+			</div>
+		);
 	}
 	const StarItem = ({ rating, valueRating }) => {
 		return (
@@ -232,7 +237,7 @@ export default function BookDetail({ params }) {
 			rating: valueRating,
 			content: valueContent,
 		};
-		fetch(`http://localhost:5000/review/product/${params.bookId}`)
+		fetch(`https://backend-book-store-two.vercel.app/review/product/${params.bookId}`)
 			.then((response) => {
 				if (!response.ok) {
 					throw new Error('Network response was not ok');
@@ -246,7 +251,7 @@ export default function BookDetail({ params }) {
 						productId: params.bookId,
 						reviewer: [newReviewer],
 					};
-					fetch('http://localhost:5000/review', {
+					fetch('https://backend-book-store-two.vercel.app/review', {
 						method: 'POST',
 						headers: {
 							'Content-Type': 'application/json',
@@ -270,7 +275,7 @@ export default function BookDetail({ params }) {
 					const reviewId = response[0]._id;
 					const updatedReviewers = [...response[0].reviewer, newReviewer];
 
-					fetch(`http://localhost:5000/review/${reviewId}`, {
+					fetch(`https://backend-book-store-two.vercel.app/review/${reviewId}`, {
 						method: 'PATCH',
 						headers: {
 							'Content-Type': 'application/json',
@@ -328,10 +333,17 @@ export default function BookDetail({ params }) {
 						<div className='slider-container-item'>
 							<Slider {...settings}>
 								{book.image.map((image, index) => (
-									<div key={index}  className={`image-wrapper ${index === selectedImageIndex ? 'selected' : ''}`}
-									onClick={() => handleImageChoose(index)}>
-										<img src={image} alt={`Image ${index}`} className='slider-image' 
-										onClick={() => handleImageClick(image)}/>
+									<div
+										key={index}
+										className={`image-wrapper ${index === selectedImageIndex ? 'selected' : ''}`}
+										onClick={() => handleImageChoose(index)}
+									>
+										<img
+											src={image}
+											alt={`Image ${index}`}
+											className='slider-image'
+											onClick={() => handleImageClick(image)}
+										/>
 									</div>
 								))}
 							</Slider>

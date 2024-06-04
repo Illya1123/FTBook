@@ -21,7 +21,7 @@ export default function FlashSalePage() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [products, setProducts] = useState([]);
 	useEffect(() => {
-		fetch('http://localhost:5000/product')
+		fetch('https://backend-book-store-two.vercel.app/product')
 			.then((res) => res.json())
 			.then((data) => {
 				setProducts(data);
@@ -64,7 +64,7 @@ export default function FlashSalePage() {
 	// 		};
 	// 		try {
 	// 			// Kiểm tra xem giỏ hàng của người dùng đã tồn tại hay chưa
-	// 			const existingCart = await axios.get(`http://localhost:5000/cart/user/${user.id}`);
+	// 			const existingCart = await axios.get(`https://backend-book-store-two.vercel.app/cart/user/${user.id}`);
 
 	// 			if (existingCart.data.length > 0) {
 	// 				// Nếu giỏ hàng đã tồn tại
@@ -77,19 +77,19 @@ export default function FlashSalePage() {
 	// 					// Nếu sản phẩm đã tồn tại trong giỏ hàng, thực hiện cập nhật số lượng
 	// 					const existingProduct = existingCart.data[0].products[existingProductIndex];
 	// 					const newQuantity = existingProduct.quantity + 1;
-	// 					await axios.put(`http://localhost:5000/cart/edit/${user.id}`, {
+	// 					await axios.put(`https://backend-book-store-two.vercel.app/cart/edit/${user.id}`, {
 	// 						productId: _id,
 	// 						quantity: newQuantity,
 	// 					});
 	// 					console.log('Cart updated with quantity:', newQuantity);
 	// 				} else {
 	// 					// Nếu sản phẩm chưa tồn tại trong giỏ hàng, thêm mới sản phẩm vào giỏ hàng
-	// 					await axios.post(`http://localhost:5000/cart/edit/${user.id}`, cartData);
+	// 					await axios.post(`https://backend-book-store-two.vercel.app/cart/edit/${user.id}`, cartData);
 	// 					console.log('Product added to cart.');
 	// 				}
 	// 			} else {
 	// 				// Nếu giỏ hàng chưa tồn tại, thực hiện thêm mới
-	// 				const response = await axios.post('http://localhost:5000/cart', {
+	// 				const response = await axios.post('https://backend-book-store-two.vercel.app/cart', {
 	// 					userId: user.id,
 	// 					status: 'active',
 	// 					products: [cartData],

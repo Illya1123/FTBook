@@ -18,98 +18,6 @@ import { Select, SelectItem } from '@nextui-org/react';
 import { SelectorIcon } from '../_components/icon';
 import './style.css';
 import axios from 'axios';
-const discountCodes = [
-	{
-		id: 1,
-		code: 'DISCOUNT20',
-		name: 'Giảm giá 20K',
-		condition: 'Áp dụng cho đơn hàng từ 150K trở lên',
-		startDate: '2024-05-15',
-		endDate: '2024-05-30',
-		applicableValue: 150000,
-	},
-	{
-		id: 2,
-		code: 'SAVE10',
-		name: 'Giảm 10%',
-		condition: 'Áp dụng cho tất cả đơn hàng',
-		startDate: '2024-05-20',
-		endDate: '2024-06-10',
-		applicableValue: 0,
-	},
-	{
-		id: 3,
-		code: 'DISCOUNT50',
-		name: 'Giảm giá 50K',
-		condition: 'Áp dụng cho đơn hàng từ 200K trở lên',
-		startDate: '2024-05-18',
-		endDate: '2024-06-05',
-		applicableValue: 200000,
-	},
-	{
-		id: 4,
-		code: 'SAVE15',
-		name: 'Giảm 15%',
-		condition: 'Áp dụng cho tất cả đơn hàng',
-		startDate: '2024-05-25',
-		endDate: '2024-06-15',
-		applicableValue: 0,
-	},
-	{
-		id: 5,
-		code: 'DISCOUNT100',
-		name: 'Giảm giá 100K',
-		condition: 'Áp dụng cho đơn hàng từ 500K trở lên',
-		startDate: '2024-05-22',
-		endDate: '2024-06-20',
-		applicableValue: 500000,
-	},
-	{
-		id: 6,
-		code: 'SAVE20',
-		name: 'Giảm 20%',
-		condition: 'Áp dụng cho tất cả đơn hàng',
-		startDate: '2024-05-28',
-		endDate: '2024-06-25',
-		applicableValue: 0,
-	},
-	{
-		id: 7,
-		code: 'DISCOUNT30',
-		name: 'Giảm giá 30K',
-		condition: 'Áp dụng cho đơn hàng từ 250K trở lên',
-		startDate: '2024-05-17',
-		endDate: '2024-06-08',
-		applicableValue: 250000,
-	},
-	{
-		id: 8,
-		code: 'SAVE25',
-		name: 'Giảm 25%',
-		condition: 'Áp dụng cho tất cả đơn hàng',
-		startDate: '2024-05-30',
-		endDate: '2024-06-30',
-		applicableValue: 0,
-	},
-	{
-		id: 9,
-		code: 'DISCOUNT75',
-		name: 'Giảm giá 75K',
-		condition: 'Áp dụng cho đơn hàng từ 300K trở lên',
-		startDate: '2024-05-19',
-		endDate: '2024-06-12',
-		applicableValue: 300000,
-	},
-	{
-		id: 10,
-		code: 'SAVE30',
-		name: 'Giảm 30%',
-		condition: 'Áp dụng cho tất cả đơn hàng',
-		startDate: '2024-05-23',
-		endDate: '2024-06-18',
-		applicableValue: 0,
-	},
-];
 
 function oneStepCheckoutPage() {
 	const router = useRouter();
@@ -151,7 +59,7 @@ function oneStepCheckoutPage() {
 	}
 
 	useEffect(() => {
-		fetch('http://localhost:5000/discountCode')
+		fetch('https://backend-book-store-two.vercel.app/discountCode')
 			.then((response) => {
 				if (!response.ok) {
 					throw new Error('Network response was not ok');
@@ -186,43 +94,44 @@ function oneStepCheckoutPage() {
 		setAppliedDiscountCode(code);
 	};
 	useEffect(() => {
+		console.log(appliedDiscountCode);
 		let priceGG = 0;
-		if (appliedDiscountCode === 'DISCOUNT20') {
+		if (appliedDiscountCode === 'discount20') {
 			priceGG = 20000;
 			setTotalPriceFinal(totalPriceCheckout - priceGG);
-		} else if (appliedDiscountCode === 'SAVE10') {
+		} else if (appliedDiscountCode === 'save10') {
 			priceGG = totalPriceCheckout * 0.1;
 			setTotalPriceFinal(totalPriceCheckout - priceGG);
-		} else if (appliedDiscountCode === 'DISCOUNT50') {
+		} else if (appliedDiscountCode === 'discount50') {
 			priceGG = 50000;
 			setTotalPriceFinal(totalPriceCheckout - priceGG);
-		} else if (appliedDiscountCode === 'SAVE15') {
+		} else if (appliedDiscountCode === 'save15') {
 			priceGG = totalPriceCheckout * 0.15;
 			setTotalPriceFinal(totalPriceCheckout - priceGG);
-		} else if (appliedDiscountCode === 'DISCOUNT100') {
+		} else if (appliedDiscountCode === 'discount100') {
 			priceGG = 100000;
 			setTotalPriceFinal(totalPriceCheckout - priceGG);
-		} else if (appliedDiscountCode === 'SAVE20') {
+		} else if (appliedDiscountCode === 'save20') {
 			priceGG = totalPriceCheckout * 0.2;
 			setTotalPriceFinal(totalPriceCheckout - priceGG);
-		} else if (appliedDiscountCode === 'DISCOUNT30') {
+		} else if (appliedDiscountCode === 'discount30') {
 			priceGG = 30000;
 			setTotalPriceFinal(totalPriceCheckout - priceGG);
-		} else if (appliedDiscountCode === 'SAVE25') {
+		} else if (appliedDiscountCode === 'save25') {
 			priceGG = totalPriceCheckout * 0.25;
 			setTotalPriceFinal(totalPriceCheckout - priceGG);
-		} else if (appliedDiscountCode === 'DISCOUNT75') {
+		} else if (appliedDiscountCode === 'discount75') {
 			priceGG = 75000;
 			setTotalPriceFinal(totalPriceCheckout - priceGG);
-		} else if (appliedDiscountCode === 'SAVE30') {
+		} else if (appliedDiscountCode === 'save30') {
 			priceGG = totalPriceCheckout * 0.3;
 			setTotalPriceFinal(totalPriceCheckout - priceGG);
 		}
 
-		const discountInfo = discountCodes.filter(
+		const discountInfo = dataDiscountCode.filter(
 			(discountCode) => discountCode.code === appliedDiscountCode,
 		);
-
+		console.log(discountInfo);
 		if (discountInfo.length > 0) {
 			setInforDiscountCode({
 				...discountInfo[0], // Chắc chắn chỉ lấy phần tử đầu tiên
@@ -243,7 +152,7 @@ function oneStepCheckoutPage() {
 		setChecked(event.target.checked);
 	};
 	useEffect(() => {
-		fetch(`http://localhost:5000/user/${userId}`)
+		fetch(`https://backend-book-store-two.vercel.app/user/${userId}`)
 			.then((response) => {
 				if (!response.ok) {
 					throw new Error('Network response was not ok');
@@ -261,16 +170,17 @@ function oneStepCheckoutPage() {
 
 	// ---------------------------- delivery address information --------------------------
 	useEffect(() => {
-		if (dataUser) {
-			setValueNameUser(dataUser.fullName);
+		if (dataUser && isLoading) {
+			setValueNameUser(dataUser.firstName + ' ' + dataUser.lastName);
 			setValuePhoneUser(dataUser.phone);
 			setValueProvinceUser(dataUser?.addresses?.province);
 			setValueDistrictUser(dataUser?.addresses?.district);
 			setValueWardUser(dataUser?.addresses?.ward);
-			const fullAddress = `${dataUser.addresses?.ward}, ${dataUser.addresses?.district}, ${dataUser.addresses?.province}`;
+			// const fullAddress = ` ${dataUser.addresses?.ward}, ${dataUser.addresses?.district}, ${dataUser.addresses?.province}`;
+			const fullAddress = '';
 			setValueAddressUser(fullAddress);
 		}
-	}, [dataUser]);
+	}, [dataUser, isLoading]);
 	const handleChangeValueName = (e) => {
 		setValueNameUser(e.target.value);
 	};
@@ -350,50 +260,53 @@ function oneStepCheckoutPage() {
 			productId: product._id,
 			quantity: product.quantityPurchased,
 		}));
-	
-		const userData = { 
-			userId, 
-			name: valueNameUser, 
-			address: valueAddressUser, 
-			totalPrice: totalPriceFinal ? totalPriceFinal + 19000 : totalPriceCheckout + 19000, 
-			orderStatus: 
-				selectedMethod === 'MoMo' || selectedMethod === 'VNPay' ? 'Đã thanh toán' : orderStatus, 
-			paymentMethod: selectedMethod, 
-			products, 
-		}; 
 
-		const processPaymentMoMo = () => { 
-			const paymentPromise = fetch('http://localhost:5000/payment_momo', { 
-				method: 'POST', 
-				headers: { 
-					'Content-Type': 'application/json', 
+		const userData = {
+			userId,
+			name: valueNameUser,
+			address: valueAddressUser,
+			totalPrice: totalPriceFinal ? totalPriceFinal + 19000 : totalPriceCheckout + 19000,
+			orderStatus:
+				selectedMethod === 'MoMo' || selectedMethod === 'VNPay' ? 'Đã thanh toán' : orderStatus,
+			paymentMethod: selectedMethod,
+			products,
+		};
+
+		const processPaymentMoMo = () => {
+			const paymentPromise = fetch('https://backend-book-store-two.vercel.app/payment_momo', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify({ 
-					totalPrice: userData.totalPrice, 
-				}), 
-			}).then((response) => { 
-				if (!response.ok) { 
-					throw new Error('Network response was not ok'); 
-				} 
-				return response.json(); 
-			}); 
-	 
-			paymentPromise 
+				body: JSON.stringify({
+					totalPrice: userData.totalPrice,
+				}),
+			}).then((response) => {
+				if (!response.ok) {
+					throw new Error('Network response was not ok');
+				}
+				return response.json();
+			});
+
+			paymentPromise
 				.then((data) => {
 					window.location.href = data.shortLink;
-					const checkStatusPromise = fetch('http://localhost:5000/check-status-transaction', { 
-						method: 'POST', 
-						headers: { 
-							'Content-Type': 'application/json', 
-						}, 
-						body: JSON.stringify({ orderId: data.orderId }), 
-					}).then((response) => { 
-						if (!response.ok) { 
-							throw new Error('Network response was not ok'); 
-						} 
-						return response.json(); 
-					}); 
-	 
+					const checkStatusPromise = fetch(
+						'https://backend-book-store-two.vercel.app/check-status-transaction',
+						{
+							method: 'POST',
+							headers: {
+								'Content-Type': 'application/json',
+							},
+							body: JSON.stringify({ orderId: data.orderId }),
+						},
+					).then((response) => {
+						if (!response.ok) {
+							throw new Error('Network response was not ok');
+						}
+						return response.json();
+					});
+
 					checkStatusPromise
 						.then((statusData) => {
 							console.log(statusData);
@@ -410,7 +323,7 @@ function oneStepCheckoutPage() {
 				});
 		};
 		const processPaymentVNPay = () => {
-			const paymentPromise = fetch('http://localhost:5000/order', {
+			const paymentPromise = fetch('https://backend-book-store-two.vercel.app/order', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -424,60 +337,63 @@ function oneStepCheckoutPage() {
 				}
 				return response.json();
 			});
-	
+
 			paymentPromise
 				.then((data) => {
 					window.location.href = data.vnpUrl; // Redirect to VNPay payment page
-					const checkStatusPromise = fetch('http://localhost:5000/check-status-transaction-vnpay', {
-						method: 'POST',
-						headers: {
-							'Content-Type': 'application/json',
+					const checkStatusPromise = fetch(
+						'https://backend-book-store-two.vercel.app/check-status-transaction-vnpay',
+						{
+							method: 'POST',
+							headers: {
+								'Content-Type': 'application/json',
+							},
+							// body: JSON.stringify({ orderId: data.orderId }),
+							body: JSON.stringify({ orderId: data.vnp_TxnRef }),
 						},
-						// body: JSON.stringify({ orderId: data.orderId }),
-						body: JSON.stringify({ orderId: data.vnp_TxnRef }),
-					}).then((response) => {
+					).then((response) => {
 						if (!response.ok) {
 							throw new Error('Network response was not ok');
 						}
 						return response.json();
 					});
-	
+
 					checkStatusPromise
 						.then((statusData) => {
 							console.log(statusData);
-							if (statusData.message === 'Thành công.') { 
-								processPayment(); 
-							} 
-						}) 
-						.catch((err) => { 
-							console.error('Error:', err); 
-						}); 
-				}) 
-				.catch((err) => { 
-					console.error('Error:', err); 
-				}); 
-		}; 
-	 
-		const processPayment = () => { 
-			fetch('http://localhost:5000/payment', { 
-				method: 'POST', 
-				headers: { 
-					'Content-Type': 'application/json', 
-				}, 
-				body: JSON.stringify(userData), 
-			}) 
-				.then((response) => { 
-					if (!response.ok) { 
-						throw new Error('Network response was not ok'); 
-					} 
-					return response.json(); 
-				}) 
-				.then((data) => { 
-					setCodeOrder(data._id); 
-					router.push(`/successfulTransaction`); 
-		
+							if (statusData.message === 'Thành công.') {
+								processPayment();
+							}
+						})
+						.catch((err) => {
+							console.error('Error:', err);
+						});
+				})
+				.catch((err) => {
+					console.error('Error:', err);
+				});
+		};
+
+		const processPayment = () => {
+			fetch('https://backend-book-store-two.vercel.app/payment', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(userData),
+			})
+				.then((response) => {
+					if (!response.ok) {
+						throw new Error('Network response was not ok');
+					}
+					return response.json();
+				})
+				.then((data) => {
+					setCodeOrder(data._id);
+					router.push(`/successfulTransaction`);
+
 					products.forEach((product) => {
-						fetch(`http://localhost:5000/product/${product.productId}`)
+						fetch(`https://backend-book-store-two.vercel.app/product/${product.productId}`)
 							.then((response) => {
 								if (!response.ok) {
 									throw new Error('Network response was not ok');
@@ -487,17 +403,20 @@ function oneStepCheckoutPage() {
 							.then((currentProduct) => {
 								const updatedRatingPoint = (currentProduct.ratingPoint || 0) + 1;
 								const updatedQuantity = (currentProduct.quantity || 0) - product.quantity;
-		
-								return fetch(`http://localhost:5000/product/${product.productId}`, {
-									method: 'PATCH',
-									headers: {
-										'Content-Type': 'application/json',
+
+								return fetch(
+									`https://backend-book-store-two.vercel.app/product/${product.productId}`,
+									{
+										method: 'PATCH',
+										headers: {
+											'Content-Type': 'application/json',
+										},
+										body: JSON.stringify({
+											ratingPoint: updatedRatingPoint,
+											quantity: updatedQuantity,
+										}),
 									},
-									body: JSON.stringify({
-										ratingPoint: updatedRatingPoint,
-										quantity: updatedQuantity,
-									}),
-								});
+								);
 							})
 							.then((response) => {
 								if (!response.ok) {
@@ -512,23 +431,22 @@ function oneStepCheckoutPage() {
 								console.error('Error updating product:', err);
 							});
 					});
-				}) 
-				.catch((err) => { 
-					console.error('Error:', err); 
-				}); 
+				})
+				.catch((err) => {
+					console.error('Error:', err);
+				});
 		};
-	
+
 		if (selectedMethod === 'MoMo') {
-			processPayment();    
-			processPaymentMoMo(); 
-		} else if (selectedMethod === 'VNPay') { 
-			processPayment(); 
-			processPaymentVNPay(); 
-		} else { 
-			processPayment(); 
-		} 
-	}; 
-	
+			processPayment();
+			processPaymentMoMo();
+		} else if (selectedMethod === 'VNPay') {
+			processPayment();
+			processPaymentVNPay();
+		} else {
+			processPayment();
+		}
+	};
 
 	const InputInforItem = ({ title, onChange, value }) => {
 		return (
@@ -826,6 +744,7 @@ function oneStepCheckoutPage() {
 							<Input
 								type='text'
 								variant='bordered'
+								readOnly
 								className=' ml-4 w-1/2  px-2 py-1 outline-none '
 								value={valueAddressUser}
 								onChange={handleChangeValueAddress}
