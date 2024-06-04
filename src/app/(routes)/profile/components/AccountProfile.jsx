@@ -14,31 +14,42 @@ import {
 	Calendar,
 } from '@nextui-org/react';
 import { day, month, year } from '../../_components/data';
+import { set } from 'mongoose';
 
 export const AccountProfile = () => {
 	const { userId } = useTheme();
 	const [dataUser, setDataUser] = useState();
-	const [name, setName] = useState();
-	const [email, setEmail] = useState();
-	const [phone, setPhone] = useState();
+	const [firstName, setFirstName] = useState('');
+	const [lastName, setLastName] = useState('');
+	const [email, setEmail] = useState('');
+	const [phone, setPhone] = useState('');
 	const [gender, setGender] = useState(); //male and female
 	const [days, setDays] = useState([]);
 	const [months, setMonths] = useState([]);
 	const [years, setYears] = useState([]);
 	const [selectedMonth, setSelectedMonth] = useState('');
 	const [selectedYear, setSelectedYear] = useState('');
+	const [avatar, setAvatar] = useState('');
 	useEffect(() => {
 		if (userId) {
 			axios
-				.get(`http://localhost:5000/users/${userId}`)
+				.get(`http://localhost:5000/user/${userId}`)
 				.then((res) => {
 					setDataUser(res.data);
+					setAvatar(res.data.img);
+					setFirstName(res.data.firstName);
+					setLastName(res.data.lastName);
+					setEmail(res.data.email);
+					setPhone(res.data?.phone);
 				})
 				.catch((err) => {
 					console.log(err);
 				});
 		}
 	}, [userId]);
+
+	
+
 	useEffect(() => {
 		if (selectedMonth !== '' && selectedYear !== '') {
 			const daysInMonth = getDaysInMonth(parseInt(selectedMonth), parseInt(selectedYear));
@@ -58,6 +69,7 @@ export const AccountProfile = () => {
 					className='outline-none'
 					onChange={onChange}
 					value={value}
+					readOnly
 				/>
 			</div>
 		);
@@ -102,61 +114,17 @@ export const AccountProfile = () => {
 					<div className='  '>
 						<div className='my-4'>
 							<Image
-								src='https://static.vecteezy.com/system/resources/thumbnails/002/318/271/small_2x/user-profile-icon-free-vector.jpg'
+								src={avatar}
 								className='h-32 w-32'
 							/>
 						</div>
 						{/* Các trường thông tin tài khoản */}
 
-						<ItemInputProfile label='Họ' type='text' />
-						<ItemInputProfile label='Tên' type='text' />
-						<ItemInputProfile label='Email' type='email' />
-						<ItemInputProfile label='Số điện thoại' type='text' />
-
-						<div className='flex items-center rounded-lg py-4 shadow-sm'>
-							<p className='w-1/4 text-base font-semibold text-gray-600'>Giới tính:</p>
-							<RadioGroup className='' orientation='horizontal' size='sm'>
-								<Radio value='male' className=' text-lg'>
-									Nam
-								</Radio>
-								<Radio value='female' className='ml-10 text-lg'>
-									Nữ
-								</Radio>
-							</RadioGroup>
-						</div>
-						{/* <div className='flex items-center rounded-lg  py-4 shadow-sm'>
-							<p className='w-1/3 text-base font-semibold text-gray-600'>Giới tính:</p>
-							<Input type='text' variant='bordered' radius='sm' />
-						</div> */}
-						<div className='flex items-center rounded-lg py-4 shadow-sm'>
-							<p className='w-full text-base font-semibold text-gray-600'>Ngày sinh:</p>
-							{/* <Spacer x={1} /> */}
-							<Select label='Ngày' className='mr-2'>
-								{days.map((day) => (
-									<SelectItem key={day.key}>{day.label}</SelectItem>
-								))}
-							</Select>
-							<Select
-								label='Tháng'
-								className='mr-2'
-								onChange={(e) => setSelectedMonth(e.target.value)}
-							>
-								{months.map((month) => (
-									<SelectItem key={month.key}>{month.label}</SelectItem>
-								))}
-							</Select>
-							<Select label='Năm' onChange={(e) => setSelectedYear(e.target.value)}>
-								{years.map((year) => (
-									<SelectItem key={year.key}>{year.label}</SelectItem>
-								))}
-							</Select>
-							{/* <Calendar aria-label='Date (Show Month and Year Picker)' showMonthAndYearPickers /> */}
-						</div>
-					</div>
-					<div className='my-5 flex items-center justify-center '>
-						<Button color='primary' className='px-10'>
-							Lưu thay đổi
-						</Button>
+						<ItemInputProfile label='Họ' type='text' value={lastName} onChange={(e) => setLastName(e.target.value)}/>
+						<ItemInputProfile label='Tên' type='text' value={firstName} onChange={(e) => setFirstName(e.target.value)}/>
+						<ItemInputProfile label='Email' type='email' value={email} onChange={(e) => setEmail(e.target.value)} />
+						<ItemInputProfile label='Số điện thoại' type='text' value={phone} onChange={(e) => setPhone(e.target.value)} />
+						
 					</div>
 				</>
 			) : (

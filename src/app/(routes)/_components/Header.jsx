@@ -318,7 +318,7 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 							<div className=' animate-fadeindown invisible absolute right-0 top-[160%]  z-50 min-w-64  bg-white before:absolute before:-right-2  before:-top-3 before:h-12 before:w-28 group-hover:visible'>
 								<div className='rounded-md border '>
 									<div className='flex  items-center border-b px-2 py-4'>
-										<FontAwesomeIcon icon={faBell} className='h-4 w-4' />
+										<FontAwesomeIcon icon={faBell} className='h-5 w-5' />
 										<h3 className='ml-2 text-base font-bold'>Thông báo</h3>
 									</div>
 
@@ -345,25 +345,33 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 					</div>
 
 					{roleUser === 'user' ? (
-						<div className=' relative h-5 w-5 '>
-							<Link href='/cart'>
-								<FontAwesomeIcon icon={faCartShopping} className=' h-5 w-5 ' />
-							</Link>
-							{quantityCart > 0 ? (
-								<div className='absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-white'>
-									<p>{quantityCart}</p>
+						<div className='flex items-center gap-4'>
+							<div className='relative h-5 w-5'>
+								<Link href='/cart'>
+									<FontAwesomeIcon icon={faCartShopping} className='h-5 w-5' />
+								</Link>
+								{quantityCart > 0 ? (
+									<div className='absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-white'>
+										<p>{quantityCart}</p>
+									</div>
+								) : null}
+							</div>
+							{user ? (
+								<div className='relative h-5 w-5'>
+									<Link href='/profile'>
+										<FontAwesomeIcon icon={faUser} className='h-5 w-5' />
+									</Link>
 								</div>
 							) : null}
 						</div>
 					) : roleUser === 'admin' ? (
-						<div onClick={handleSwitchAdmin} className=' cursor-pointer'>
+						<div onClick={handleSwitchAdmin} className='cursor-pointer'>
 							<UserRoundCog />
-							{/* <FontAwesomeIcon icon={faCartShopping} className=' h-5 w-5 ' /> */}
 						</div>
 					) : (
-						<div className=' relative h-5 w-5 '>
+						<div className='relative h-5 w-5'>
 							<Link href='/cart'>
-								<FontAwesomeIcon icon={faCartShopping} className=' h-5 w-5 ' />
+								<FontAwesomeIcon icon={faCartShopping} className='h-5 w-5' />
 							</Link>
 							{quantityCart > 0 ? (
 								<div className='absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-white'>
