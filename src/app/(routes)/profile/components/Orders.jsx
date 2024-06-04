@@ -38,8 +38,7 @@ export const Orders = () => {
 	useEffect(() => {
 		if (userId) {
 			axios
-				// .get(`http://localhost:5000/payment/user/${userId}`)
-				.get(`http://localhost:5000/payment/user/6642f919e60deac0b3e1eb4e`)
+				.get(`http://localhost:5000/payment/user/${userId}`)
 				.then((res) => {
 					// console.log(res.data);
 					setDataPayment(res.data);
