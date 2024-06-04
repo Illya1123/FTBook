@@ -64,7 +64,7 @@ function HomePage() {
 	const [dataUserId, setDataUserId] = useState([]);
 	const [isLoadingUser, setIsLoadingUser] = useState(false);
 	useEffect(() => {
-		fetch('http://localhost:5000/product')
+		fetch('https://backend-book-store-two.vercel.app/product')
 			.then((response) => {
 				if (!response.ok) {
 					throw new Error('Network response was not ok');
@@ -96,7 +96,7 @@ function HomePage() {
 	useEffect(() => {
 		if (userId) {
 			axios
-				.get(`http://localhost:5000/user/${userId}`)
+				.get(`https://backend-book-store-two.vercel.app/user/${userId}`)
 
 				.then((data) => {
 					setDataUserId(data);
@@ -279,7 +279,9 @@ function HomePage() {
 			};
 			try {
 				// Kiểm tra xem giỏ hàng của người dùng đã tồn tại hay chưa
-				const existingCart = await axios.get(`http://localhost:5000/cart/user/${userId}`);
+				const existingCart = await axios.get(
+					`https://backend-book-store-two.vercel.app/cart/user/${userId}`,
+				);
 
 				if (existingCart.data.length > 0) {
 					// Nếu giỏ hàng đã tồn tại
@@ -292,19 +294,22 @@ function HomePage() {
 						// Nếu sản phẩm đã tồn tại trong giỏ hàng, thực hiện cập nhật số lượng
 						const existingProduct = existingCart.data[0].products[existingProductIndex];
 						const newQuantity = existingProduct.quantity + 1;
-						await axios.put(`http://localhost:5000/cart/edit/${userId}`, {
+						await axios.put(`https://backend-book-store-two.vercel.app/cart/edit/${userId}`, {
 							productId: _id,
 							quantity: newQuantity,
 						});
 						console.log('Cart updated with quantity:', newQuantity);
 					} else {
 						// Nếu sản phẩm chưa tồn tại trong giỏ hàng, thêm mới sản phẩm vào giỏ hàng
-						await axios.post(`http://localhost:5000/cart/edit/${userId}`, cartData);
+						await axios.post(
+							`https://backend-book-store-two.vercel.app/cart/edit/${userId}`,
+							cartData,
+						);
 						console.log('Product added to cart.');
 					}
 				} else {
 					// Nếu giỏ hàng chưa tồn tại, thực hiện thêm mới
-					const response = await axios.post('http://localhost:5000/cart', {
+					const response = await axios.post('https://backend-book-store-two.vercel.app/cart', {
 						userId: userId,
 						status: 'active',
 						products: [cartData],
@@ -323,7 +328,7 @@ function HomePage() {
 			console.log('================================');
 
 			axios
-				.get(`http://localhost:5000/favorite/user/${userId}`)
+				.get(`https://backend-book-store-two.vercel.app/favorite/user/${userId}`)
 				.then((res) => {
 					// console.log('existingFavorite', res.data);
 					const existingFavorite = res.data;
@@ -332,7 +337,7 @@ function HomePage() {
 						console.log('1s');
 
 						axios
-							.patch(`http://localhost:5000/favorite/user/${userId}`, {
+							.patch(`https://backend-book-store-two.vercel.app/favorite/user/${userId}`, {
 								productId: [value],
 							})
 							.then((res) => {
@@ -344,7 +349,7 @@ function HomePage() {
 							});
 					} else {
 						axios
-							.post('http://localhost:5000/favorite', {
+							.post('https://backend-book-store-two.vercel.app/favorite', {
 								userId: userId,
 								productId: [value],
 							})
@@ -486,9 +491,6 @@ function HomePage() {
 							<div className='my-6 flex items-center justify-between rounded-md bg-white px-2 py-4 '>
 								<div className='flex items-center '>
 									<img src='https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/flashsale/label-flashsale.svg?q=' />
-
-									{/* <p className=' mx-5'>Kết thúc sau</p> */}
-									{/* <Countdown date={Date.now() + 10000} /> */}
 								</div>
 								<div className='flex items-center text-base hover:text-blue'>
 									<Link href='/flashSale'> Xem tất cả</Link>

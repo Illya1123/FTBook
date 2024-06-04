@@ -130,7 +130,7 @@ function CartPage() {
 			// 	.catch((err) => {
 			// 		console.log(err);
 			// 	});
-			fetch(`http://localhost:5000/cart/user/cancel/${userId}`, {
+			fetch(`https://backend-book-store-two.vercel.app/cart/user/cancel/${userId}`, {
 				method: 'PATCH',
 				headers: {
 					'Content-Type': 'application/json', // Assuming JSON data

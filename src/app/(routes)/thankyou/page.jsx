@@ -13,7 +13,7 @@
 
 // 	useEffect(() => {
 // 		axios
-// 			.get(`http://localhost:5000/user/${userId}`)
+// 			.get(`https://backend-book-store-two.vercel.app/user/${userId}`)
 // 			.then((response) => {
 // 				setDateUser(response.data);
 // 				// setIsLoading(false);
@@ -53,7 +53,7 @@
 // 		}));
 // 		console.log(categoryDetail);
 // 		axios
-// 			.patch(`http://localhost:5000/user/${userId}`, {
+// 			.patch(`https://backend-book-store-two.vercel.app/user/${userId}`, {
 // 				categoryDetail: categoryDetail,
 // 				firstLogin: false,
 // 			})
@@ -108,7 +108,7 @@ function OnboardingPage() {
 
 	useEffect(() => {
 		axios
-			.get(`http://localhost:5000/user/${userId}`)
+			.get(`https://backend-book-store-two.vercel.app/user/${userId}`)
 			.then((response) => {
 				setDateUser(response.data);
 				setIsLoading(false);
@@ -160,7 +160,7 @@ function OnboardingPage() {
 
 		console.log(categoryDetail);
 		axios
-			.patch(`http://localhost:5000/user/${userId}`, {
+			.patch(`https://backend-book-store-two.vercel.app/user/${userId}`, {
 				categoryDetail: categoryDetail,
 				firstLogin: false,
 			})
