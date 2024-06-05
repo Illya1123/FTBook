@@ -246,7 +246,7 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 					)}
 				</div>
 
-				<div className='grid grid-cols-3 place-content-center items-center gap-4'>
+				<div className={`grid  grid-cols-4  items-center  justify-items-center  gap-2`}>
 					<div className=' group relative h-5 w-5 '>
 						<FontAwesomeIcon icon={faBell} className='h-5 w-5 cursor-pointer' />
 						{user ? (
@@ -343,28 +343,27 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 							</div>
 						)}
 					</div>
-
-					{roleUser === 'user' ? (
-						<div className='flex items-center gap-4'>
-							<div className='relative h-5 w-5'>
-								<Link href='/cart'>
-									<FontAwesomeIcon icon={faCartShopping} className='h-5 w-5' />
-								</Link>
-								{quantityCart > 0 ? (
-									<div className='absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-white'>
-										<p>{quantityCart}</p>
-									</div>
-								) : null}
+					<div className='relative h-5 w-5'>
+						<Link href='/cart'>
+							<FontAwesomeIcon icon={faCartShopping} className='h-5 w-5' />
+						</Link>
+						{quantityCart > 0 ? (
+							<div className='absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-white'>
+								<p>{quantityCart}</p>
 							</div>
-							{user ? (
-								<div className='relative h-5 w-5'>
-									<Link href='/profile'>
-										<FontAwesomeIcon icon={faUser} className='h-5 w-5' />
-									</Link>
-								</div>
-							) : null}
-						</div>
-					) : roleUser === 'admin' ? (
+						) : null}
+					</div>
+					{roleUser === 'user' ? (
+						// <div className='flex items-center gap-4'>
+						user ? (
+							<div className='relative h-5 w-5'>
+								<Link href='/profile'>
+									<FontAwesomeIcon icon={faUser} className='h-5 w-5' />
+								</Link>
+							</div>
+						) : null
+					) : // </div>
+					roleUser === 'admin' ? (
 						<div onClick={handleSwitchAdmin} className='cursor-pointer'>
 							<UserRoundCog />
 						</div>
@@ -380,6 +379,7 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 							) : null}
 						</div>
 					)}
+
 					{!user ? (
 						<div className='group relative h-5 w-5'>
 							<FontAwesomeIcon icon={faUser} className='z-50 h-5 w-5 cursor-pointer' />

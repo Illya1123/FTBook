@@ -267,7 +267,7 @@ function oneStepCheckoutPage() {
 			address: valueAddressUser,
 			totalPrice: totalPriceFinal ? totalPriceFinal + 19000 : totalPriceCheckout + 19000,
 			orderStatus:
-				selectedMethod === 'MoMo' || selectedMethod === 'VNPay' ? 'Đã thanh toán' : orderStatus,
+				selectedMethod === 'MoMo' || selectedMethod === 'ZaloPay' ? 'Đã thanh toán' : orderStatus,
 			paymentMethod: selectedMethod,
 			products,
 		};
@@ -322,52 +322,40 @@ function oneStepCheckoutPage() {
 					console.error('Error:', err);
 				});
 		};
-		const processPaymentVNPay = () => {
-			const paymentPromise = fetch('https://backend-book-store-two.vercel.app/order', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({
-					totalPrice: userData.totalPrice,
-				}),
-			}).then((response) => {
-				if (!response.ok) {
-					throw new Error('Network response was not ok');
-				}
-				return response.json();
-			});
+		const processPaymentZaloPay = () => {
+			// console.log(typeof userData.totalPrice);
+			let amount = userData.totalPrice;
+			const paymentPromise = axios
+				.post('http://localhost:5000/payment_zaloPay', {
+					amount,
+				})
+				.then((response) => {
+					return response.data;
+				})
+				.catch((err) => {
+					console.error('Error:', err);
+				});
+
+			console.log(paymentPromise);
 
 			paymentPromise
 				.then((data) => {
-					window.location.href = data.vnpUrl; // Redirect to VNPay payment page
-					const checkStatusPromise = fetch(
-						'https://backend-book-store-two.vercel.app/check-status-transaction-vnpay',
-						{
-							method: 'POST',
-							headers: {
-								'Content-Type': 'application/json',
-							},
-							// body: JSON.stringify({ orderId: data.orderId }),
-							body: JSON.stringify({ orderId: data.vnp_TxnRef }),
-						},
-					).then((response) => {
-						if (!response.ok) {
-							throw new Error('Network response was not ok');
-						}
-						return response.json();
-					});
+					console.log(data.order_url);
+					window.location.href = data.order_url;
+					// window.location.href = data.order_url;
+					// const checkStatusPromise = axios
+					// 	.post('http://localhost:5000/check-status-order-zaloPay', {
+					// 		orderId: data.orderId,
+					// 	})
+					// 	.then((response) => {
+					// 		return response.data;
+					// 	})
+					// 	.catch((err) => {
+					// 		console.error('Error during status check API call:', err);
+					// 		throw err; // rethrow the error to handle it in the subsequent catch
+					// 	});
 
-					checkStatusPromise
-						.then((statusData) => {
-							console.log(statusData);
-							if (statusData.message === 'Thành công.') {
-								processPayment();
-							}
-						})
-						.catch((err) => {
-							console.error('Error:', err);
-						});
+					// return checkStatusPromise;
 				})
 				.catch((err) => {
 					console.error('Error:', err);
@@ -435,19 +423,56 @@ function oneStepCheckoutPage() {
 				.catch((err) => {
 					console.error('Error:', err);
 				});
+			const productId = dataCheckout.map((data) => data._id);
+
+			fetch(`https://backend-book-store-two.vercel.app/cart/user/cancel/${userId}`, {
+				method: 'PATCH',
+				headers: {
+					'Content-Type': 'application/json', // Assuming JSON data
+				},
+				body: JSON.stringify({ productId: productId }), // Stringify data object
+			})
+				.then((response) => response.json()) // Parse the JSON response
+				.then((data) => {
+					console.log(data);
+					// setReLoad(reLoad + 1);
+				})
+				.catch((error) => {
+					console.error(error);
+				});
 		};
 
 		if (selectedMethod === 'MoMo') {
 			processPayment();
 			processPaymentMoMo();
-		} else if (selectedMethod === 'VNPay') {
+		} else if (selectedMethod === 'ZaloPay') {
 			processPayment();
-			processPaymentVNPay();
+			processPaymentZaloPay();
 		} else {
 			processPayment();
 		}
 	};
+	// const handleConfirmPayment = () => {
+	// 	console.log('1s');
+	// 	const productId = dataCheckout.map((data) => data._id);
+	// 	console.log('dataCheckout', productId);
 
+	// 	fetch(`https://backend-book-store-two.vercel.app/cart/user/cancel/${userId}`, {
+	// 		method: 'PATCH',
+	// 		headers: {
+	// 			'Content-Type': 'application/json', // Assuming JSON data
+	// 		},
+	// 		body: JSON.stringify({ productId: productId }), // Stringify data object
+	// 	})
+	// 		.then((response) => response.json()) // Parse the JSON response
+	// 		.then((data) => {
+	// 			console.log(data);
+	// 			// setReLoad(reLoad + 1);
+	// 		})
+	// 		.catch((error) => {
+	// 			console.error(error);
+	// 		});
+	// };
 	const InputInforItem = ({ title, onChange, value }) => {
 		return (
 			<div className='my-6 flex items-center'>
