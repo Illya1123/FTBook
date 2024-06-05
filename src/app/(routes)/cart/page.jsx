@@ -130,21 +130,22 @@ function CartPage() {
 			// 	.catch((err) => {
 			// 		console.log(err);
 			// 	});
-			fetch(`https://backend-book-store-two.vercel.app/cart/user/cancel/${userId}`, {
-				method: 'PATCH',
-				headers: {
-					'Content-Type': 'application/json', // Assuming JSON data
-				},
-				body: JSON.stringify({ productId: [_id] }), // Stringify data object
-			})
-				.then((response) => response.json()) // Parse the JSON response
-				.then((data) => {
-					console.log(data);
-					setReLoad(reLoad + 1);
-				})
-				.catch((error) => {
-					console.error(error);
-				});
+			console.log(_id);
+			// fetch(`https://backend-book-store-two.vercel.app/cart/user/cancel/${userId}`, {
+			// 	method: 'PATCH',
+			// 	headers: {
+			// 		'Content-Type': 'application/json', // Assuming JSON data
+			// 	},
+			// 	body: JSON.stringify({ productId: [_id] }), // Stringify data object
+			// })
+			// 	.then((response) => response.json()) // Parse the JSON response
+			// 	.then((data) => {
+			// 		console.log(data);
+			// 		setReLoad(reLoad + 1);
+			// 	})
+			// 	.catch((error) => {
+			// 		console.error(error);
+			// 	});
 		};
 
 		return (
