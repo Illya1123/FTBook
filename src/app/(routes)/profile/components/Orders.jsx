@@ -38,7 +38,7 @@ export const Orders = () => {
 	useEffect(() => {
 		if (userId) {
 			axios
-				.get(`http://localhost:5000/payment/user/${userId}`)
+				.get(`https://backend-book-store-two.vercel.app/payment/user/${userId}`)
 				.then((res) => {
 					// console.log(res.data);
 					setDataPayment(res.data);
@@ -51,7 +51,7 @@ export const Orders = () => {
 	}, [userId]);
 	useEffect(() => {
 		axios
-			.get(`http://localhost:5000/product`)
+			.get(`https://backend-book-store-two.vercel.app/product`)
 			.then((res) => {
 				setDataProduct(res.data);
 			})
