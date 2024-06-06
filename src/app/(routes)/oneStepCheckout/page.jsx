@@ -378,7 +378,7 @@ function oneStepCheckoutPage() {
 				})
 				.then((data) => {
 					setCodeOrder(data._id);
-					router.push(`/successfulTransaction`);
+					// router.push(`/successfulTransaction`);
 
 					products.forEach((product) => {
 						fetch(`https://backend-book-store-two.vercel.app/product/${product.productId}`)
