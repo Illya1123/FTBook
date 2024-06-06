@@ -41,7 +41,7 @@ export const ProductCard = ({ product }) => {
 		};
 		try {
 			// Kiểm tra xem giỏ hàng của người dùng đã tồn tại hay chưa
-			const existingCart = await axios.get(`http://localhost:5000/cart/user/${userId}`);
+			const existingCart = await axios.get(`https://backend-book-store-two.vercel.app/cart/user/${userId}`);
 
 			if (existingCart.data.length > 0) {
 				// Nếu giỏ hàng đã tồn tại
@@ -54,19 +54,19 @@ export const ProductCard = ({ product }) => {
 					// Nếu sản phẩm đã tồn tại trong giỏ hàng, thực hiện cập nhật số lượng
 					const existingProduct = existingCart.data[0].products[existingProductIndex];
 					const newQuantity = existingProduct.quantity + 1;
-					await axios.put(`http://localhost:5000/cart/edit/${userId}`, {
+					await axios.put(`https://backend-book-store-two.vercel.app/cart/edit/${userId}`, {
 						productId: _id,
 						quantity: newQuantity,
 					});
 					console.log('Cart updated with quantity:', newQuantity);
 				} else {
 					// Nếu sản phẩm chưa tồn tại trong giỏ hàng, thêm mới sản phẩm vào giỏ hàng
-					await axios.post(`http://localhost:5000/cart/edit/${userId}`, cartData);
+					await axios.post(`https://backend-book-store-two.vercel.app/cart/edit/${userId}`, cartData);
 					console.log('Product added to cart.');
 				}
 			} else {
 				// Nếu giỏ hàng chưa tồn tại, thực hiện thêm mới
-				const response = await axios.post('http://localhost:5000/cart', {
+				const response = await axios.post('https://backend-book-store-two.vercel.app/cart', {
 					userId,
 					status: 'active',
 					products: [cartData],

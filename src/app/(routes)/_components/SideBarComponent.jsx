@@ -75,7 +75,7 @@ function SideBarComponent({
 	const [dataYear, setDataYear] = useState([]);
 	useEffect(() => {
 		axios
-			.get('http://localhost:5000/categoryAll')
+			.get('https://backend-book-store-two.vercel.app/categoryAll')
 			.then((response) => {
 				setDataCategoryDetail(response.data);
 			})
@@ -83,7 +83,7 @@ function SideBarComponent({
 				console.error('Error fetching data:', error);
 			});
 		axios
-			.get('http://localhost:5000/categorySupplier')
+			.get('https://backend-book-store-two.vercel.app/categorySupplier')
 			.then((response) => {
 				setDataSupplier(response.data);
 			})
@@ -91,7 +91,7 @@ function SideBarComponent({
 				console.error('Error fetching data:', error);
 			});
 		axios
-			.get('http://localhost:5000/categoryPublish')
+			.get('https://backend-book-store-two.vercel.app/categoryPublish')
 			.then((response) => {
 				setDataPublish(response.data);
 			})
@@ -99,7 +99,7 @@ function SideBarComponent({
 				console.error('Error fetching data:', error);
 			});
 		axios
-			.get('http://localhost:5000/categoryYear')
+			.get('https://backend-book-store-two.vercel.app/categoryYear')
 			.then((response) => {
 				setDataYear(response.data);
 			})
