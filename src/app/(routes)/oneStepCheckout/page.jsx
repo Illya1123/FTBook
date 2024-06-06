@@ -326,7 +326,7 @@ function oneStepCheckoutPage() {
 			// console.log(typeof userData.totalPrice);
 			let amount = userData.totalPrice;
 			const paymentPromise = axios
-				.post('http://localhost:5000/payment_zaloPay', {
+				.post('https://backend-book-store-two.vercel.app/payment_zaloPay', {
 					amount,
 				})
 				.then((response) => {
@@ -428,11 +428,11 @@ function oneStepCheckoutPage() {
 			fetch(`https://backend-book-store-two.vercel.app/cart/user/cancel/${userId}`, {
 				method: 'PATCH',
 				headers: {
-					'Content-Type': 'application/json', // Assuming JSON data
+					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify({ productId: productId }), // Stringify data object
+				body: JSON.stringify({ productId: productId }),
 			})
-				.then((response) => response.json()) // Parse the JSON response
+				.then((response) => response.json())
 				.then((data) => {
 					console.log(data);
 					// setReLoad(reLoad + 1);
