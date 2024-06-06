@@ -326,7 +326,7 @@ function oneStepCheckoutPage() {
 			// console.log(typeof userData.totalPrice);
 			let amount = userData.totalPrice;
 			const paymentPromise = axios
-				.post('http://localhost:5000/payment_zaloPay', {
+				.post('https://backend-book-store-two.vercel.app/payment_zaloPay', {
 					amount,
 				})
 				.then((response) => {
