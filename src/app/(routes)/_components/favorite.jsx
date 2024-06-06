@@ -23,7 +23,7 @@ function Favorite() {
 	};
 	useEffect(() => {
 		axios
-			.get('http://localhost:5000/product')
+			.get('https://backend-book-store-two.vercel.app/product')
 			.then((response) => {
 				setDataProduct(response.data);
 				setIsLoading(true);
@@ -47,7 +47,7 @@ function Favorite() {
 	useEffect(() => {
 		if (userId) {
 			axios
-				.get(`http://localhost:5000/favorite/user/${userId}`)
+				.get(`https://backend-book-store-two.vercel.app/favorite/user/${userId}`)
 				.then((response) => {
 					setDataFavorite(response.data);
 					setIsLoadingFavorites(true);
@@ -60,7 +60,7 @@ function Favorite() {
 	useEffect(() => {
 		if (reLoad > 0 || reLoadFavorites > 0) {
 			axios
-				.get(`http://localhost:5000/favorite/user/${userId}`)
+				.get(`https://backend-book-store-two.vercel.app/favorite/user/${userId}`)
 				.then((response) => {
 					setDataFavorite(response.data);
 				})
@@ -107,7 +107,7 @@ function Favorite() {
 	};
 	const handleCancel = (value) => {
 		axios
-			.patch(`http://localhost:5000/favorite/user/${userId}`, {
+			.patch(`https://backend-book-store-two.vercel.app/favorite/user/${userId}`, {
 				productId: [value],
 			})
 			.then((res) => {

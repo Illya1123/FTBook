@@ -42,7 +42,7 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 	// 	});
 	// };
 	useEffect(() => {
-		fetch('http://localhost:5000/product')
+		fetch('https://backend-book-store-two.vercel.app/product')
 			.then((response) => {
 				if (!response.ok) {
 					throw new Error('Network response was not ok');
@@ -95,7 +95,7 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 			setValueSearch(valueSearched);
 
 			// Fetch user data
-			const userResponse = await axios.get(`http://localhost:5000/user/${userId}`);
+			const userResponse = await axios.get(`https://backend-book-store-two.vercel.app/user/${userId}`);
 			const userData = userResponse.data;
 
 			// Filter products
@@ -121,7 +121,7 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 			});
 
 			// Update user data with new categoryDetail
-			await axios.patch(`http://localhost:5000/user/${userId}`, {
+			await axios.patch(`https://backend-book-store-two.vercel.app/user/${userId}`, {
 				categoryDetail: updatedCategoryDetail,
 			});
 
