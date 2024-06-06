@@ -41,9 +41,9 @@ export const ProductCard = ({ product }) => {
 		};
 		try {
 			// Kiểm tra xem giỏ hàng của người dùng đã tồn tại hay chưa
-			const existingCart = await axios.get(
-				`https://backend-book-store-two.vercel.app/cart/user/${userId}`,
-			);
+
+			const existingCart = await axios.get(`https://backend-book-store-two.vercel.app/cart/user/${userId}`);
+
 
 			if (existingCart.data.length > 0) {
 				// Nếu giỏ hàng đã tồn tại
@@ -63,10 +63,9 @@ export const ProductCard = ({ product }) => {
 					console.log('Cart updated with quantity:', newQuantity);
 				} else {
 					// Nếu sản phẩm chưa tồn tại trong giỏ hàng, thêm mới sản phẩm vào giỏ hàng
-					await axios.post(
-						`https://backend-book-store-two.vercel.app/cart/edit/${userId}`,
-						cartData,
-					);
+
+					await axios.post(`https://backend-book-store-two.vercel.app/cart/edit/${userId}`, cartData);
+
 					console.log('Product added to cart.');
 				}
 			} else {

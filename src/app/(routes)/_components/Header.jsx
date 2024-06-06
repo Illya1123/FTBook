@@ -99,9 +99,9 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 			setValueSearch(valueSearched);
 
 			// Fetch user data
-			const userResponse = await axios.get(
-				`https://backend-book-store-two.vercel.app/user/${userId}`,
-			);
+
+			const userResponse = await axios.get(`https://backend-book-store-two.vercel.app/user/${userId}`);
+
 			const userData = userResponse.data;
 
 			// Filter products

@@ -311,7 +311,7 @@ function oneStepCheckoutPage() {
 						.then((statusData) => {
 							console.log(statusData);
 							if (statusData.message === 'Thành công.') {
-								processPayment();
+								// processPayment();
 							}
 						})
 						.catch((err) => {

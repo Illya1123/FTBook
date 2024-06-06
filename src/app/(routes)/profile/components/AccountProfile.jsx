@@ -33,7 +33,7 @@ export const AccountProfile = () => {
 	useEffect(() => {
 		if (userId) {
 			axios
-				.get(`http://localhost:5000/user/${userId}`)
+				.get(`https://backend-book-store-two.vercel.app/user/${userId}`)
 				.then((res) => {
 					setDataUser(res.data);
 					setAvatar(res.data.img);
