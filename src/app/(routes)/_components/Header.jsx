@@ -77,13 +77,17 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 	const handleBlur = () => {
 		setIsFocus(false);
 	};
-	const ItemResult = ({ imageUrl, name }) => {
+	const ItemResult = ({ imageUrl, name, id }) => {
+		console.log(id);
 		return (
-			<div className='flex cursor-pointer items-center gap-2 px-1 py-2 hover:bg-grayhover'>
+			<Link
+				href={`/book/${id}`}
+				className='flex cursor-pointer items-center gap-2 px-1 py-2 hover:bg-grayhover'
+			>
 				<img src={imageUrl} alt='a' className='h-16 w-12 ' />
 
 				<p className='line-clamp-2'>{name}</p>
-			</div>
+			</Link>
 		);
 	};
 	const handleSwitchAdmin = () => {
@@ -95,7 +99,9 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 			setValueSearch(valueSearched);
 
 			// Fetch user data
+
 			const userResponse = await axios.get(`https://backend-book-store-two.vercel.app/user/${userId}`);
+
 			const userData = userResponse.data;
 
 			// Filter products
@@ -198,6 +204,7 @@ function Header({ activeHome, activeBook, activeAbout, activeContact }) {
 													key={result._id}
 													imageUrl={result.image[0]}
 													name={result.name}
+													id={result._id}
 												/>
 											))
 									) : (

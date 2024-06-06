@@ -87,7 +87,7 @@ function bookCategory() {
 			});
 	}, []);
 
-	const ProductCard = ({ product, small }) => {
+	const ProductCard = ({ product, small, _id }) => {
 		const { name, image, priceSell, priceDiscount } = product;
 		const firstImage = image[0];
 		const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -165,7 +165,7 @@ function bookCategory() {
 							</div>
 						</div>
 					</div>
-					<Link href='#'>
+					<Link href={`/book/${_id}`}>
 						<div className='mx-4 px-2 py-4'>
 							<div>
 								<p className='line-clamp-2 h-10 text-sm'>{name}</p>
@@ -336,13 +336,13 @@ function bookCategory() {
 						!valueSearch ? (
 							<div className=' my-5 grid grid-cols-4 gap-4'>
 								{dataBook.map((product) => (
-									<ProductCard key={product._id} product={product} small />
+									<ProductCard key={product._id} product={product} small _id={product._id} />
 								))}
 							</div>
 						) : dataFilter.length > 0 ? (
 							<div className=' my-5 grid grid-cols-4 gap-4'>
 								{dataFilter.map((product) => (
-									<ProductCard key={product._id} product={product} small />
+									<ProductCard key={product._id} product={product} small _id={product._id} />
 								))}
 							</div>
 						) : (
