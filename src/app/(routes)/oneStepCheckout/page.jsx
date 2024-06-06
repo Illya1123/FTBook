@@ -428,11 +428,11 @@ function oneStepCheckoutPage() {
 			fetch(`https://backend-book-store-two.vercel.app/cart/user/cancel/${userId}`, {
 				method: 'PATCH',
 				headers: {
-					'Content-Type': 'application/json', // Assuming JSON data
+					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify({ productId: productId }), // Stringify data object
+				body: JSON.stringify({ productId: productId }),
 			})
-				.then((response) => response.json()) // Parse the JSON response
+				.then((response) => response.json())
 				.then((data) => {
 					console.log(data);
 					// setReLoad(reLoad + 1);
