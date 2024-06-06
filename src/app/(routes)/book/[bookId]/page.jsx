@@ -8,6 +8,7 @@ import Slider from 'react-slick';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import {
 	Button,
+	Image,
 	Modal,
 	ModalBody,
 	ModalContent,
@@ -22,7 +23,7 @@ import { faThumbsUp } from '@fortawesome/free-regular-svg-icons';
 import { useTheme } from '../../_components/ThemeProvider';
 
 export default function BookDetail({ params }) {
-	const { userId } = useTheme();
+	const { userId, userName, avatar, userDataLoaded } = useTheme();
 	const [book, setBook] = useState(null);
 	const [selectedImage, setSelectedImage] = useState(null);
 	const [quantity, setQuantity] = useState(1);
@@ -34,6 +35,7 @@ export default function BookDetail({ params }) {
 	const [dataReview, setDataReview] = useState();
 	const [checkReview, setCheckReview] = useState();
 	const [valueUserName, setValueUserName] = useState();
+	const [userAvatar, setUserAvatar] = useState();
 	const [Reload, setReload] = useState(0);
 	const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
@@ -78,7 +80,8 @@ export default function BookDetail({ params }) {
 				return userResponse.json();
 			})
 			.then((userData) => {
-				setValueUserName(userData.fullName);
+				setUserAvatar(userData?.img);
+				console.log(userAvatar);
 			})
 			.catch((error) => {
 				console.error('Error fetching data:', error);
@@ -191,13 +194,17 @@ export default function BookDetail({ params }) {
 			</div>
 		);
 	};
-	const ReviewItem = ({ name, createAt, content, rating }) => {
+	const ReviewItem = ({ name, avatar, createAt, content, rating }) => {
 		return (
 			<div className='border-t  py-4'>
 				<div className='flex'>
 					<div className='mr-32'>
-						<p className='text-lg font-semibold text-gray-800'>{name}</p>
+						<p className='text-l font-semibold text-gray-800'>{name}</p>
 						<p className='text-sm text-gray-500'>{createAt}</p>
+						<Image
+							src={avatar}
+							className='h-16 w-16 rounded-full'
+						/>
 					</div>
 					<div className='flex-1'>
 						<div className='mb-2'>
@@ -232,8 +239,9 @@ export default function BookDetail({ params }) {
 		console.log(valueRating);
 		console.log(valueContent);
 		const newReviewer = {
-			userName: valueUserName,
+			userName: userName,
 			userId: userId,
+			userAvatar: avatar,
 			rating: valueRating,
 			content: valueContent,
 		};
@@ -533,7 +541,8 @@ export default function BookDetail({ params }) {
 						dataReview[0].reviewer.map((data, index) => (
 							<ReviewItem
 								key={index}
-								name={data.userName} // Replace with actual user name if available
+								name={data.userName || 'Khách'}
+								avatar={data.userAvatar}
 								createdAt={data.createdAt}
 								content={data.content}
 								rating={data.rating}

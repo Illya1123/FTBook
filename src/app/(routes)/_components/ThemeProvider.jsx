@@ -2,6 +2,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
+import { set } from 'mongoose';
 
 const HeaderContext = createContext();
 
@@ -11,11 +12,14 @@ function ThemeProvider({ children }) {
 	console.log('roleUser:', roleUser);
 	const { user } = useUser();
 	const [userId, setUserId] = useState(user?.id);
+	const [userName, setUserName] = useState('');
+	const [avatar, setAvatar] = useState('');
 	console.log('userId:', userId);
 	const [isFocusSearch, setIsFocusSearch] = useState(false);
 	const [isFirstLogin, setIsFirstLogin] = useState(false);
 	console.log('isFirstLogin:', isFirstLogin);
 	const router = useRouter();
+	const [userDataLoaded, setUserDataLoaded] = useState();
 	const [dataCheckout, setDataCheckout] = useState([]);
 	const [valueSearch, setValueSearch] = useState();
 	const [totalPriceCheckout, setTotalPriceCheckout] = useState(300000);
@@ -36,6 +40,9 @@ function ThemeProvider({ children }) {
 					setUserId(userData[0]?._id);
 					setRoleUser(userData[0]?.role);
 					setIsFirstLogin(userData[0]?.firstLogin);
+					setUserName(userData[0]?.lastName + ' ' + userData[0]?.firstName);
+					setAvatar(userData[0]?.img);
+					setUserDataLoaded(userData[0]);
 
 					await fetch(`https://backend-book-store-two.vercel.app/user/${userData[0]?._id}`, {
 						method: 'PATCH',
@@ -70,6 +77,8 @@ function ThemeProvider({ children }) {
 			value={{
 				isHeader,
 				setIsHeader,
+				userDataLoaded,
+				setUserDataLoaded,
 				roleUser,
 				setRoleUser,
 				setDataCheckout,
@@ -80,6 +89,10 @@ function ThemeProvider({ children }) {
 				setPurchasedProduct,
 				userId,
 				setUserId,
+				userName,
+				setUserName,
+				avatar,
+				setAvatar,
 				codeOrder,
 				setCodeOrder,
 				isOnBoarding,
